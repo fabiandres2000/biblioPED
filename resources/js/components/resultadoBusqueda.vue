@@ -94,8 +94,9 @@
                                                     <a href="#">
                                                         <div class="media-object" style="height: 140px !important; width: 200px;">
                                                             <img  
+                                                            v-if="item.contenido_busqueda.imagen != ''"
                                                             :src="item.contenido_busqueda.imagen"
-                                                            alt="Generic placeholder image"
+                                                            alt="No hay imagen"
                                                             style="width: 100%; height: inherit;">
                                                         </div>
                                                     </a>

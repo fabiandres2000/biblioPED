@@ -41,3 +41,31 @@ export function guardarDatosContenido($data) {
         }
     );
 }
+
+export function listarContenidoRegistrado() {
+    return http().get('/api/listar-contenido-registrado');
+}
+
+export function editarDatosContenido($data) {
+    return http().post(
+        '/api/editar-contenido', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}
+
+export function eliminarDatosContenido($data) {
+    return http().post(
+        '/api/eliminar-contenido', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}

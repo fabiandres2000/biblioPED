@@ -94,6 +94,9 @@ Route::prefix('api')->group(function () {
 
     Route::post('/corregir-texto', [AdminController::class, 'corregirTexto'])->name('corregirTexto');
     Route::post('/guardar-contenido', [AdminController::class, 'guardarContenido'])->name('guardarContenido');
+    Route::get('/listar-contenido-registrado', [AdminController::class, 'consultarContenidoRegistrado'])->name('consultarContenidoRegistrado');
+    Route::post('/editar-contenido', [AdminController::class, 'editarContenido'])->name('editarContenido');
+    Route::post('/eliminar-contenido', [AdminController::class, 'eliminarContenido'])->name('eliminarContenido');
 
     Route::post('/pdf-apuntes', [ExportarController::class, 'generateApuntesPDF'])->name('generateApuntesPDF');
 });

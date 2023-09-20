@@ -59,7 +59,7 @@ class MongoController extends Controller
                     'contenido_busqueda' => '$$ROOT',
                 ]],
             ])->toArray();
-
+            
 
             foreach ($resultados1 as $res) {
                 array_push($array_id, $res->contenido_busqueda->id);
@@ -79,7 +79,7 @@ class MongoController extends Controller
 
             $resultados = array_merge($resultados1, $resultados2);
 
-            if(count($resultados) >= 5){
+            if(count($resultados) >= 1){
 
                 $resultados = array_slice($resultados, $offset, 10); 
 
@@ -101,7 +101,6 @@ class MongoController extends Controller
                     }
                 }
             }else{
-                $resultados = [];
                 $palabrasArray = explode(' ', $variable1);
 
                 $palabrasFiltradas = array_filter($palabrasArray, function($palabra) {
@@ -138,7 +137,12 @@ class MongoController extends Controller
 
                 foreach ($resultados as $resultado) {
                     $parrafos = preg_split('/\n\s*\n/', $resultado->contenido_busqueda->contenido_texto);
-                    $resultado->parrafo = $parrafos[1];
+                    if(count($parrafos) == 1){
+                        $resultado->parrafo = $parrafos[0];
+                    }else{
+                        $resultado->parrafo = $parrafos[1];
+                    }
+                    
                 }
             }
 
@@ -197,9 +201,12 @@ class MongoController extends Controller
         
         $resultados = $collection->aggregate([
             ['$match' => [
+                '$and' => [
+                    ['tipo_multimedia' => 'video']
+                ],
                 '$or' => [
                     ['tema' => ['$regex' => $variable1, '$options' => 'i']],
-                    ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']]
+                    ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']],
                 ]
             ]],
             ['$project' => [
@@ -229,14 +236,18 @@ class MongoController extends Controller
                 $key->contenido_busqueda->id_original = $contenido_doc->id;
                 $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo($contenido_doc->cont_documento);
             }else{
+                
                 $collection2 = $mongoDB->selectCollection('cont_documento_modulos');
 
                 
-                $key->contenido_busqueda->id_contenido_original = $collection2->findOne(
+                $contenido_doc = $collection2->findOne(
                     [
                         'contenido' => intval($key->contenido_busqueda->id_contenido),
                     ]
-                )->id;
+                );
+
+                $key->contenido_busqueda->id_original = $contenido_doc->id;
+                $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo($contenido_doc->cont_documento);
             }
         }
 
@@ -280,6 +291,10 @@ class MongoController extends Controller
                 }else{
                     if($variable2 == "imagenes"){
                         $ruta = "resultado-imagenes/".$variable1."/imagenes";
+                    }else{
+                        if($variable2 == "videos"){
+                            $ruta = "resultado-videos/".$variable1."/videos/1";
+                        }
                     }
                 }
 
@@ -349,7 +364,7 @@ class MongoController extends Controller
         
         $numero_filas = count(array_merge($resultados1, $resultados2));
 
-        if($numero_filas < 5){
+        if($numero_filas < 1){
 
             $palabrasArray = explode(' ', $variable1);
 
@@ -595,6 +610,9 @@ class MongoController extends Controller
        
         $resultados = $collection->aggregate([
             ['$match' => [
+                '$and' => [
+                    ['tipo_multimedia' => 'video']
+                ],
                 '$or' => [
                     ['tema' => ['$regex' => $variable1, '$options' => 'i']],
                     ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']]

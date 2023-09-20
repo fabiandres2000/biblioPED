@@ -212,8 +212,10 @@
                                                                             </div>
                                                                         </div>
                                                                         <br>
-                                                                        <div v-if="tipo_contenido=='normal'">
+                                                                        <div v-if="tipo_contenido=='normal' || tipo_contenido=='video'">
                                                                             <QuillEditor  style="height: 300px;" theme="snow" toolbar="full" />
+                                                                            <br>
+                                                                            <br>
                                                                         </div>
                                                                         <div v-if="tipo_contenido=='metafacto'">
                                                                             <form style="display: flex; align-items: center; justify-content: center;" @click="openFileInput" action="#" class="dropzone dropzone-area" id="dpz-single-file">
@@ -236,7 +238,7 @@
                                                                                     <h3><strong>Cargar Video</strong></h3>
                                                                                 </div>
                                                                                 <div v-if="selectedVideo" style="display: flex; align-items: center; justify-content: center; width: 70%; height: 400px; text-align: center">
-                                                                                    <video controls>
+                                                                                    <video style="width: 71%; height: 90%;" controls>
                                                                                         <source :src="selectedVideo" type="video/mp4" />
                                                                                         Tu navegador no admite la reproducción de video.
                                                                                     </video>
@@ -543,7 +545,7 @@ export default {
             this.selectedVideo = null;
         },
         async guardarDatosContenido() {
-           
+            var navigate = this.$router;
             const formData = new FormData();
             formData.append('tipo_subida', this.tipo_subida);
             formData.append('tipo_contenido', this.tipo_contenido);
@@ -558,7 +560,8 @@ export default {
                 case "metafacto":
                     formData.append('multimedia', this.imageFile);
                     break;
-                case "video":
+                case "video":+
+                    formData.append('contenido', document.querySelector(".ql-editor").innerHTML);
                     formData.append('multimedia', this.videoFile);
                     break;
             }
@@ -590,7 +593,7 @@ export default {
 
                         this.loading = false;
                         setTimeout(() => {
-                            location.reload();
+                            navigate.push({ name: 'listaContenido' })
                         }, 1000)
                     } catch (error) {
                         toastr.error('Error al guardar los datos'+ error);

@@ -17,6 +17,7 @@ import listaForosProfesor from './components/foros/listaForosProfesor.vue'
 import listaApuntes from './components/listaApuntes.vue'
 import listaContenido from './components/contenido/listaContenido.vue'
 import agregarContenido from './components/contenido/agregarContenido.vue'
+import editarContenido from './components/contenido/editarContenido.vue'
 
 
 const routes = [
@@ -110,6 +111,11 @@ const routes = [
     path: '/agregar-contenido',
     name: 'agregarContenido',
     component: agregarContenido
+  },
+  {
+    path: '/editar-contenido',
+    name: 'editarContenido',
+    component: editarContenido
   },
 ]
 

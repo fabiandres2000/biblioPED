@@ -94,7 +94,7 @@
             <div class="navbar-container container center-layout" style="max-width: 100%;">
                 <div class="collapse navbar-collapse" id="navbar-mobile">
                     <ul class="nav navbar-nav mr-auto float-left">
-                        <a href="/"><img class="brand-logo" alt="stack admin logo" src="{{ asset('img/logo.png') }}" height="40"></a>
+                        <a href="/"><img class="brand-logo" alt="stack admin logo" src="{{ asset('img/letras.png') }}" height="40"></a>
                     </ul>
                     <ul class="nav navbar-nav float-right">
                         @if (Session::has('logueado'))
@@ -497,9 +497,9 @@
     <!-- BEGIN: Footer-->
     <footer class="footer fixed-bottom footer-dark navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2 container center-layout"><span
-                class="float-md-left d-block d-md-inline-block">Copyright &copy; 2020 <a
+                class="float-md-left d-block d-md-inline-block">Copyright &copy; {{ date("Y") }} <a
                     class="text-bold-800 grey darken-2" href="https://1.envato.market/pixinvent_portfolio"
-                    target="_blank">PIXINVENT </a></span><span class="float-md-right d-none d-lg-block">Hand-crafted &
+                    target="_blank">LEER INGENIERIA S.A.S </a></span><span class="float-md-right d-none d-lg-block">Hand-crafted &
                 Made with <i class="feather icon-heart pink"></i></span></p>
     </footer>
     <!-- END: Footer-->

@@ -13,18 +13,18 @@
                             
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
-                            <label for="users-list-status">Estado</label>
+                            <label for="users-list-status">Tipo de multimedia</label>
                             <fieldset class="form-group">
                                 <select v-model="filtro" class="form-control" id="users-list-status">
                                     <option value="todos">Todos</option>
                                     <option value="metafacto">Metafactos</option>
                                     <option value="video">Videos</option>
-                                    <option value="Contenido">Contenido</option>
+                                    <option value="normal">Contenido</option>
                                 </select>
                             </fieldset>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-1  d-flex align-items-center">
-                            <button @click="filtrarDatos" type="button" class="btn btn-block btn-warning glow"><i class="fas fa-search"></i></button>
+                            <button style="margin-top: 5px" @click="filtrarDatos" type="button" class="btn btn-block btn-warning glow"><i class="fas fa-search"></i></button>
                         </div>
                        
                     </div>
@@ -36,30 +36,28 @@
                         <div class="card-body">
                             <!-- datatable start -->
                             <div class="table-responsive">
-                                <table id="users-list-datatable" class="table">
+                                <table id="contenido_registrado_table" class="table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Nombre</th>
-                                            <th>Sexo</th>
-                                            <th>Teléfono</th>
-                                            <th>Email</th>
-                                            <th>Direccion</th>
-                                            <th>Estado</th>
-                                            <th>Editar</th>
+                                            <th style="width: 400px">Tema</th>
+                                            <th>Tipo Contenido</th>
+                                            <th>Tipo Multimedia</th>
+                                            <th>Asignatura</th>
+                                            <th>Grado</th>
+                                            <th style="text-align: center">Opciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item, index) in docentesFiltrados" :key="index">
-                                            <td>{{ item.identificacion }}</td>
-                                            <td>{{ item.nombre }}</td>
-                                            <td>{{ item.sexo }}</td>
-                                            <td>{{ item.telefono }}</td>
-                                            <td>{{ item.correo }}</td>
-                                            <td>{{ item.direccion }}</td>
-                                            <td><span :class="item.estado == 'Activo' ? 'badge badge-success' : 'badge badge-danger'">{{ item.estado }}</span></td>
-                                            <td>
-                                                <a  @click="datosEditar = item" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalEditarDocente" class="btn btn-warning" type="button"><i style="color: white" class="fas fa-edit"></i></a>
+                                        <tr v-for="(item, index) in contenidosFiltrados" :key="index">
+                                            <td>{{ item.tipo_contenido_registrado == 'Multimedia' ? item.tema : item.titulo }}</td>
+                                            <td>{{ item.tipo_contenido_registrado }}</td>
+                                            <td style="text-transform: capitalize">{{ item.tipo_multimedia }}</td>
+                                            <td>{{ item.asignatura }}</td>
+                                            <td>Grado {{ item.grado }}º</td>
+                                            <td style="text-align: center">
+                                                <a  @click="mensajeEliminar(item)" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalEditarDocente" class="btn btn-danger" type="button"><i style="color: white" class="fas fa-trash"></i></a>
+                                                <a  @click="editarContenido(item, true)" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalEditarDocente" class="btn btn-warning" type="button"><i style="color: white" class="fas fa-edit"></i></a>
+                                                <a  @click="editarContenido(item, false)" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalEditarDocente" class="btn btn-success" type="button"><i style="color: white" class="fas fa-eye"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -71,229 +69,12 @@
                 </div>
             </div>
         </section>
-
-        <div class="modal fade text-left" id="modalregistroDocente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <section class="row flexbox-container">
-                            <div class="col-12 d-flex align-items-center justify-content-center">
-                                <div class="col-lg-12 col-md-8 col-10  p-0">
-                                    <div class="card border-grey border-lighten-3 px-1 py-1 m-0" style="box-shadow: none">
-                                        <div class="card-header border-0">
-                                            <div class="card-title text-center">
-                                                <img src="img/logo_1.png" style="height: 90px;" alt="branding logo">
-                                            </div>
-                                        
-                                        </div>
-                                        <div class="card-content">
-                                            <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1"><span>Ingrese los siguientes datos</span></p>
-                                            <div class="card-body">
-                                                <form class="form-horizontal" id="formularioRegistroDocente" method="POST" validate>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input type="text" class="form-control" v-model="datosRegistro.identificacion" name="identificacion" placeholder="Ingrese su identificación" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-id-card"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input type="text" class="form-control" v-model="datosRegistro.nombre" name="nombre" placeholder="Ingrese su nombre" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="feather icon-user"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <select name="sexo" v-model="datosRegistro.sexo" class="form-control">
-                                                                    <option value="">Seleccione su sexo</option>
-                                                                    <option value="Masculino">Masculino</option>
-                                                                    <option value="Femenino">Femenino</option>
-                                                                </select>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-user"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosRegistro.telefono" type="text" class="form-control" name="telefono" placeholder="Ingrese su número  de teléfono" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-phone-volume"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosRegistro.correo" type="text" class="form-control" name="correo" placeholder="Ingrese un email" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="feather icon-mail"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosRegistro.password" type="password" class="form-control" name="password" placeholder="Ingrese una contraseña" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-unlock-alt"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosRegistro.direccion" type="text" class="form-control" name="direccion" placeholder="Ingrese su dirección" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-street-view"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <hr>
-                                                   
-                                                </form>
-                                            </div>
-                                            <div class="card-body" style="display: flex; padding: 0.5rem; justify-content: space-between;">
-                                                <button style="width: 48%" @click="registro_docente" class="btn btn-outline-success btn-block"><i class="feather icon-user"></i> Registrate</button>
-                                                <button data-dismiss="modal" aria-label="Close" style="width: 48%; margin: 0" class="btn btn-outline-danger btn-block"><i class="feather icon-x"></i> Cancelar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade text-left" id="modalEditarDocente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <section class="row flexbox-container">
-                            <div class="col-12 d-flex align-items-center justify-content-center">
-                                <div class="col-lg-12 col-md-8 col-10  p-0">
-                                    <div class="card border-grey border-lighten-3 px-1 py-1 m-0" style="box-shadow: none">
-                                        <div class="card-header border-0">
-                                            <div class="card-title text-center">
-                                                <img src="img/logo_1.png" style="height: 90px;" alt="branding logo">
-                                            </div>
-                                        
-                                        </div>
-                                        <div class="card-content">
-                                            <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1"><span>Ingrese los siguientes datos</span></p>
-                                            <div class="card-body">
-                                                <form class="form-horizontal"  method="POST" validate>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input type="text" class="form-control" v-model="datosEditar.identificacion" name="identificacion" placeholder="Ingrese su identificación" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-id-card"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input type="text" class="form-control" v-model="datosEditar.nombre" name="nombre" placeholder="Ingrese su nombre" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="feather icon-user"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <select name="sexo" v-model="datosEditar.sexo" class="form-control">
-                                                                    <option value="">Seleccione su sexo</option>
-                                                                    <option value="Masculino">Masculino</option>
-                                                                    <option value="Femenino">Femenino</option>
-                                                                </select>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-user"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosEditar.telefono" type="text" class="form-control" name="telefono" placeholder="Ingrese su número  de teléfono" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-phone-volume"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosEditar.correo" type="text" class="form-control" name="correo" placeholder="Ingrese un email" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="feather icon-mail"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosEditar.password" type="password" class="form-control" name="password" placeholder="Ingrese una contraseña" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-unlock-alt"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosEditar.direccion" type="text" class="form-control" name="direccion" placeholder="Ingrese su dirección" required>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-street-view"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <fieldset class="form-group position-relative has-icon-left">
-                                                                <select class="form-control" name="estado" id="estado" v-model="datosEditar.estado">
-                                                                    <option value="Activo">Activo</option>
-                                                                    <option value="Inactivo">Inactivo</option>
-                                                                </select>
-                                                                <div class="form-control-position">
-                                                                    <i class="fas fa-toggle-on"></i>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <hr>
-                                                   
-                                                </form>
-                                            </div>
-                                            <div class="card-body" style="display: flex; padding: 0.5rem; justify-content: space-between;">
-                                                <button style="width: 48%" @click="editar_docente" class="btn btn-outline-warning btn-block"><i class="feather icon-user"></i> Editar</button>
-                                                <button data-dismiss="modal" aria-label="Close" style="width: 48%; margin: 0" class="btn btn-outline-danger btn-block"><i class="feather icon-x"></i> Cancelar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 <script>
+
 import * as adminService from "../../services/admin";
+import Swal from 'sweetalert2';
 
 export default {
     components: {
@@ -301,28 +82,19 @@ export default {
     },
     data() {
         return {
-            datosRegistro: {
-                identificacion: "",
-                nombre: "",
-                sexo: "",
-                telefono: "",
-                correo: "",
-                password: "",
-                direccion: "",
-            },
            loading: false,
-           docentes: [],
-           docentesFiltrados: [],
+           contenidos: [],
+           contenidosFiltrados: [],
            filtro: "todos",
            datosEditar: {},
         };
     },
     mounted() {
-        this.listarDocentes();
+        this.listarContenido();
     },
     methods: {
         dataTables() {
-            $("#users-list-datatable").DataTable({
+            $("#contenido_registrado_table").DataTable({
                 language: {
                     "decimal": "",
                     "emptyTable": "No hay información",
@@ -345,55 +117,17 @@ export default {
                 },
                 'columnDefs': [{
                     "orderable": false,
-                    "targets": [7]
                 }]
             });
         },
-        async registro_docente(){
+        listarContenido: async function () {
             this.loading = true;
             try {
-                if(this.datosRegistro.identificacion != "" && this.datosRegistro.nombre != "" && this.datosRegistro.correo != "" && this.datosRegistro.direccion != "" && this.datosRegistro.sexo != "" && this.datosRegistro.password != "" && this.datosRegistro.telefono != ""){
-                    await adminService.registrar_docente(this.datosRegistro).then(respuesta => {
-                        var respuesta_ok = respuesta.data;
-                        if(respuesta_ok[1] == 1){
-                            toastr.success(respuesta_ok[0]);
-                            $('#modalregistroDocente').modal('hide');
-                            this.listarDocentes();
-                        }else{
-                            toastr.error(respuesta_ok[0]);
-                        }
-                    });
-                }else{
-                    toastr.warning("Todos los campos son obligatorios");
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        async editar_docente(){
-            if(this.datosEditar.identificacion != "" && this.datosEditar.nombre != "" && this.datosEditar.correo != "" && this.datosEditar.direccion != "" && this.datosEditar.sexo != "" && this.datosEditar.password != "" && this.datosEditar.telefono != "" && this.datosEditar.estado != ""){
-                this.datosEditar._id = this.datosEditar._id.$oid;
-                await adminService.editar_docente(this.datosEditar).then(respuesta => {
-                    var respuesta_ok = respuesta.data;
-                    if(respuesta_ok[1] == 1){
-                        toastr.success(respuesta_ok[0]);
-                        $('#modalEditarDocente').modal('hide');
-                    }else{
-                        toastr.error(respuesta_ok[0]);
-                    }
-                });
-            }else{
-                toastr.warning("Todos los campos son obligatorios");
-            }
-        },
-        listarDocentes: async function () {
-            this.loading = true;
-            try {
-                await adminService.listarDocentes().then(respuesta => {
-                    this.docentesFiltrados = respuesta.data;
-                    this.docentes = respuesta.data;
+                await adminService.listarContenidoRegistrado().then(respuesta => {
+                    this.contenidosFiltrados = respuesta.data;
+                    this.contenidos = respuesta.data;
                     this.loading = false;
-                    $('#users-list-datatable').DataTable().destroy();
+                    $('#contenido_registrado_table').DataTable().destroy();
                     setTimeout(() => {
                         this.dataTables();
                     }, 200);
@@ -404,15 +138,67 @@ export default {
         },
         filtrarDatos(){
             if (this.filtro == 'todos') {
-                this.docentesFiltrados =  this.docentes;
+                this.contenidosFiltrados =  this.contenidos;
             } else {
-                this.docentesFiltrados = this.docentes.filter(item => item.estado == this.filtro);
+                this.contenidosFiltrados = this.contenidos.filter(item => item.tipo_multimedia == this.filtro);
             }
 
-            $('#users-list-datatable').DataTable().destroy();
+            $('#contenido_registrado_table').DataTable().destroy();
             setTimeout(() => {
                 this.dataTables();
             }, 200);
+        },
+        editarContenido(objetoParaEnviar, editableP){
+            this.$router.push({
+                name: 'editarContenido',
+                params: {
+                    objeto: JSON.stringify(objetoParaEnviar),
+                    editable: editableP
+                },
+            });
+        },
+        mensajeEliminar(objetoParaEnviar){
+            Swal.fire({
+                title: '¿Desea eliminar este contenido?',
+                text: "No puede revertir esta acción",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                   this.eliminarContenido(objetoParaEnviar);
+                }
+            })
+        },
+        async eliminarContenido(objetoParaEnviar){
+            var navigate = this.$router;
+            this.loading = true;
+
+            const formData = new FormData();
+            formData.append('tipo_contenido', objetoParaEnviar.tipo_contenido);
+            formData.append('tipo_multimedia', objetoParaEnviar.tipo_multimedia);
+            formData.append('oid', objetoParaEnviar._id.$oid);
+
+            try {
+                await adminService.eliminarDatosContenido(formData).then(respuesta => {
+                    const respuesta_ok = respuesta.data;
+                    if (respuesta_ok.estado === 1) {
+                        toastr.success(respuesta_ok.mensaje);
+                    } else {
+                        toastr.error(respuesta_ok.mensaje);
+                    }
+
+                    this.loading = false;
+                    setTimeout(() => {
+                        navigate.push({ name: 'listaContenido' })
+                    }, 1000)
+                });
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
 };
