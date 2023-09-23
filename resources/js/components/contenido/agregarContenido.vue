@@ -423,6 +423,8 @@ export default {
             })
 
         });
+
+        document.title = 'Registrar contenido - BiblioPED';
     },
     created() {
         document.title = "Registrar - Contenido";

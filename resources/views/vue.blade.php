@@ -10,9 +10,8 @@
     <meta name="keywords"
         content="admin template, stack admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
-    <title>Search Page - Stack Responsive Bootstrap 4 Admin Template</title>
-    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png.css') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('app-assets/images/ico/favicon.ico.css') }}">
+    <title>Inicio - BiblioPED</title>
+    <link rel="shortcut icon" type="image/png" href="{{ asset('/img/isotipo.png') }}">
     <link
         href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i"
         rel="stylesheet">
@@ -70,6 +69,19 @@
 
         thead {
             background-color: #16d39a94;
+        }
+
+        body::before {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            z-index: -1;
+            content: url("/img/fondo_inicio.png") url("/img/fondo_resultados.png") url("/img/logo_1_2.png") url("/img/fondo_imagen.png") url("/img/fondo_video.png");
+        }
+
+        .breadcrumb-item{
+            font-weight: 700
         }
     </style>
 </head>
@@ -133,6 +145,10 @@
                                    
                                     @if (session('tipo_registro') == "docente")
                                     <hr>
+                                        <a  class="dropdown-item" href="/apuntes">
+                                            <i class="fas fa-edit"></i>
+                                            Apuntes
+                                        </a>
                                         <a  class="dropdown-item" href="/lista-contenido">
                                             <i class="fas fa-book"></i>
                                             Gestión de Contenido
@@ -174,11 +190,11 @@
                                 </div>
                                 <span class="user-name">Opciones</span>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item btn btn-info m-2" data-toggle="modal" data-target="#modalLoginForm">
+                                    <a style="padding: 11px 21px 10px 25px" class="dropdown-item btn btn-info m-2" data-toggle="modal" data-target="#modalLoginForm">
                                         <i class="feather icon-unlock"></i> 
                                         Iniciar Sesión
                                     </a>
-                                    <a class="dropdown-item btn btn-warning m-2" data-toggle="modal" data-target="#modalLoginForm2">
+                                    <a style="padding: 11px 21px 10px 25px" class="dropdown-item btn btn-warning m-2" data-toggle="modal" data-target="#modalLoginForm2">
                                         <i class="feather icon-user"></i> 
                                         Registrate
                                     </a>
@@ -493,14 +509,13 @@
         </div>
     </div>
 
-    <div id="app" style="background-color: #f5f7fa;"></div>
+    <div id="app"></div>
     <!-- BEGIN: Footer-->
     <footer class="footer fixed-bottom footer-dark navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2 container center-layout"><span
                 class="float-md-left d-block d-md-inline-block">Copyright &copy; {{ date("Y") }} <a
                     class="text-bold-800 grey darken-2" href="https://1.envato.market/pixinvent_portfolio"
-                    target="_blank">LEER INGENIERIA S.A.S </a></span><span class="float-md-right d-none d-lg-block">Hand-crafted &
-                Made with <i class="feather icon-heart pink"></i></span></p>
+                    target="_blank">LEER INGENIERIA S.A.S </a></span><span class="float-md-right d-none d-lg-block">Tu bliblioteca al alcance <i style="color: #fc4f00" class="fa fa-book"></i></span></p>
     </footer>
     <!-- END: Footer-->
     

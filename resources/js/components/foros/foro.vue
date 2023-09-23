@@ -52,7 +52,7 @@
                                         <div style="display: flex; justify-content: center; align-items: center;">
                                             <img style="width: 30px; height: 30px" :src="'/'+foro.profesor.imagen"> <strong style="margin-left: 10px;"> {{ foro.profesor.nombre }}</strong>
                                         </div>
-                                        <a style="margin-left: 60px;" href=""><i class="far fa-file-word"></i> Contenido asociado</a>
+                                        <a style="margin-left: 60px;" href="" data-toggle="modal" data-target="#xlargeContenido"><i class="far fa-file-word"></i> Contenido asociado</a>
                                     </div>
                                     <br>
                                     <hr>
@@ -131,6 +131,23 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade text-left" id="xlargeContenido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel16" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel16">{{ foro.contenido_html.titulo }}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding: 55px;" v-html="foro.contenido_html.cont_documento"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn red btn-outline-danger" data-dismiss="modal">Cerrar Pestaña</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
   </template>
 <script>
@@ -147,9 +164,6 @@
             Skeleton,
             QuillEditor
         },
-        created() {
-            document.title = 'Foro';
-        },
         data() {
             return {
                 loading: true,
@@ -161,6 +175,10 @@
                     profesor: {
                         imagen: '',
                         nombre: '',
+                    },
+                    contenido_html: {
+                        titulo: '',
+                        cont_documento: ''
                     }
                 },
                 editorContent: "",
@@ -194,6 +212,7 @@
             async foroData() {
                 await forosService.foro(this.id).then(respuesta => {
                     this.foro = respuesta.data;
+                    document.title = 'Foro - '+this.foro.titulo;
                     this.loading = false
                 });
             },

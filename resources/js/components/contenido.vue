@@ -12,25 +12,7 @@
         <div class="app-content container center-layout mt-2" style="max-width: 80%;">
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
-                <div class="content-header row">
-                    <div class="content-header-left col-md-6 col-12 mb-2">
-                        <h3 class="content-header-title mb-0">Search Website</h3>
-                        <div class="row breadcrumbs-top">
-                            <div class="breadcrumb-wrapper col-12">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Inicio</a>
-                                    </li>
-                                    <li class="breadcrumb-item"><a href="#">Busqueda</a>
-                                    </li>
-                                    <li class="breadcrumb-item"><a href="#">Busqueda de Contenido</a> 
-                                    </li>
-                                    <li class="breadcrumb-item active"><a href="#">Resultado</a>
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
                 <div class="content-body">
                     <!-- Search form-->
                     <section id="search-website" class="card overflow-hidden">
@@ -657,7 +639,12 @@ export default {
 
             if(this.subrayados.length > 0) {
                 await usuarioService.guardarSeleccion(data).then(respuesta => {
-                    toastr.success(respuesta.data);
+                    const respuesta_ok = respuesta.data;
+                    if (respuesta_ok.estado === 1) {
+                        toastr.success('<i class="fas fa-check"></i> '+respuesta_ok.mensaje);
+                    } else {
+                        toastr.error('<i class="fas fa-exclamation-triangle"></i> '+respuesta_ok.mensaje);
+                    }
                 });
             }else{
                 toastr.warning("¡No hay apuntes que guardar!");

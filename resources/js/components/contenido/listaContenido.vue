@@ -91,6 +91,7 @@ export default {
     },
     mounted() {
         this.listarContenido();
+        document.title = 'Lista de contenido - BiblioPED';
     },
     methods: {
         dataTables() {

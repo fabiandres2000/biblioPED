@@ -141,7 +141,7 @@ export default {
     mounted() {
         this.ListarApuntes();
         this.verificarLogin();
-        document.title =  'Mis apuntes';
+        document.title = 'Mis apuntes - BiblioPED';
     },
     methods: {
         async verificarLogin(){

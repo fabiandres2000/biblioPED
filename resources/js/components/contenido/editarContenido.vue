@@ -431,6 +431,8 @@ export default {
         });
 
         this.mostrarObjeto();
+
+        document.title = 'Editar contenido - BiblioPED';
     },
     created() {
         document.title = "Registrar - Contenido";

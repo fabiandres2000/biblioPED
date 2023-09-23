@@ -415,6 +415,7 @@ export default {
     mounted() {
         this.misDatos();
         this.verificarLogin();
+        document.title = 'Mi Perfil - BiblioPED';
     },
     methods: {
         async verificarLogin(){

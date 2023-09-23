@@ -36,7 +36,7 @@
                                                 <table id="recomendacion-datatable" class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Profesor</th>
+                                                            <th style="width: 200px">Profesor</th>
                                                             <th>Tema</th>
                                                             <th>Fecha</th>
                                                             <th>Hora</th>
@@ -86,6 +86,7 @@ export default {
     mounted() {
         this.obtenerRecomendacionesEstudiante();
         this.verificarLogin();
+        document.title = 'Recomendaciones - BiblioPED';
     },
     methods: {
         async verificarLogin(){

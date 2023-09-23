@@ -133,6 +133,7 @@ export default {
     mounted() {
         this.obtenerHistorial();
         this.verificarLogin();
+        document.title = 'Historial - BiblioPED';
     },
     methods: {
         async verificarLogin(){

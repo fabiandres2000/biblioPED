@@ -112,6 +112,7 @@ export default {
     mounted() {
         this.BuscarFavoritos();
         this.verificarLogin();
+        document.title = 'Favoritos - BiblioPED';
     },
     methods: {
         async verificarLogin(){

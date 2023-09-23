@@ -1,12 +1,12 @@
 <template>
-    <div>
-        <div class="app-content container center-layout mt-2" style="max-width: 90%">
+    <div id="fondo_imagen">
+        <div class="app-content container center-layout mt-2 pagina_resultado">
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
                 <div class="content-header row">
                     <div class="content-header-left col-md-6 col-12 mb-2">
                         <h3 class="content-header-title mb-0">
-                            Search Website
+                            Resultado de la búsqueda
                         </h3>
                         <div class="row breadcrumbs-top">
                             <div class="breadcrumb-wrapper col-12">
@@ -29,9 +29,7 @@
                     <!-- Search form-->
                     <section id="search-website" class="card overflow-hidden">
                         <div class="card-header">
-                            <h4 class="card-title">
-                                RESULTADOS DE LA BÚSQUEDA
-                            </h4>
+                           
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
@@ -100,27 +98,26 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="modal fade text-left" id="modImagen" tabindex="-1" role="dialog" aria-labelledby="myModalLabel15"
-                                aria-hidden="true">
-                                <div class="modal-dialog  modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-success white">
-                                            <h4 class="modal-title" style="text-transform: capitalize;"><span>{{ tituloImagen }}</span></h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div id='ListEval' style="height: 400px; overflow: auto;text-align: center;display: flex;justify-content: center;align-items: center;">
-                                                <img style="height: 85%;" :src="imagenSeleccionada" alt="">
-                                            </div>
-                                            
-                                            <button @click.prevent="descargarImagen"  type="button" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i> Descargar</button>
-                                            <button style="margin-left: 20px;" type="button" id="btn_salir" class="btn btn-danger" data-dismiss="modal"><i class="ft-corner-up-left position-right"></i><i class="fas fa-times"></i> Cancelar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </section>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade text-left" id="modImagen" tabindex="-1" role="dialog" aria-labelledby="myModalLabel15"
+            aria-hidden="true">
+            <div class="modal-dialog  modal-lg" role="document" style="margin-top: 9%;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success white">
+                        <h4 class="modal-title" style="text-transform: capitalize;"><span>{{ tituloImagen }}</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id='ListEval' style="height: 400px; overflow: auto;text-align: center;display: flex;justify-content: center;align-items: center;">
+                            <img style="height: 85%;" :src="imagenSeleccionada" alt="">
+                        </div>
+                        
+                        <button @click.prevent="descargarImagen"  type="button" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i> Descargar</button>
+                        <button style="margin-left: 20px;" type="button" id="btn_salir" class="btn btn-danger" data-dismiss="modal"><i class="ft-corner-up-left position-right"></i><i class="fas fa-times"></i> Cancelar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,6 +148,7 @@ export default {
 
         this.verificarConexion();
         this.BuscarResultadoNuevamente(); 
+        document.title = 'Resultados - '+this.texto;
     },
     methods: {
         async BuscarResultadoNuevamente() {
@@ -240,7 +238,6 @@ export default {
         getAboutLink(tipo_enlace){
             var navigate = this.$router;
             var texto = this.$route.params.texto;
-            var tipo = this.$route.params.tipo;
             switch  (tipo_enlace) { 
                 case 0:
                     navigate.push({ name: 'paginaBusqueda' })
@@ -252,7 +249,7 @@ export default {
                     navigate.push({ name: 'ResultadoImagenes', params: { texto: texto, tipo: "imagenes" } })
                 break;
                 case 3: 
-                    navigate.push({ name: 'ResultadoVideos', params: { texto: texto, tipo: "contenido", pagina: 1 } })
+                    navigate.push({ name: 'ResultadoVideos', params: { texto: texto, tipo: "videos", pagina: 1 } })
                 break
             }
         }
@@ -264,5 +261,21 @@ export default {
 .loader {
     text-align: center;
     margin: 20px 0;
+}
+
+#fondo_imagen{
+    background-image: url('/img/fondo_imagen.png') !important; 
+    background-size: 100% 100%;
+}  
+
+.pagina_resultado {
+    max-width: 100%; 
+    height: 92vh; 
+    margin-top: 0.7rem !important;
+    padding-top: 20px;
+    padding-left: 5%;
+    padding-right: 5%;
+    overflow: scroll !important;
+    width: 100%;
 }
 </style>

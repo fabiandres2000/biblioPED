@@ -318,6 +318,7 @@ export default {
     },
     mounted() {
         this.listarDocentes();
+        document.title = 'Gestión docentes - BiblioPED';
     },
     methods: {
         dataTables() {

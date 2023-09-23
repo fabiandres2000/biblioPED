@@ -260,7 +260,6 @@ class UsuarioController extends Controller
         return response()->json($usuarios, 200);
     }
 
-
     public function compartirContenido(Request $request){
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
@@ -368,7 +367,6 @@ class UsuarioController extends Controller
         }
         return response()->json($datos_agrupados, 200);
     }
-
 
     public function recomendacionesEstudiante(Request $request){
         $mongoClient = new Client('mongodb://localhost:27017');
@@ -539,7 +537,6 @@ class UsuarioController extends Controller
         return response()->json("¡Se ha creado el foro correctamente!", 200);
     }
 
-
     public function guardarSeleccion(Request $request){
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
@@ -552,40 +549,44 @@ class UsuarioController extends Controller
         $data = $request->input('data');
         $ruta = $request->input('ruta');
 
-        $apuntes = $collection->find(
-            [
-                'id_usuario' => $id_usuario,
-            ]
-        )->toArray();
-
-        if(count($apuntes) <= 10){
-            $filtro = [
-                'id_contenido' => $id_contenido,
-                'tipo_contenido' => $tipo_contenido,
-            ];
-            
-            $actualizacion = [
-                '$set' => [
-                    'titulo' => $titulo,
+        if($id_usuario != null){
+            $apuntes = $collection->find(
+                [
                     'id_usuario' => $id_usuario,
-                    'data' => $data,
-                    'ruta' => $ruta,
-                    'fecha' => date('d/m/Y'),
-                    'horas' => date('H:i:s'),
-                ],
-                '$setOnInsert' => $filtro, 
-            ];
-            
-            $opciones = [
-                'upsert' => true,
-            ];
-            
-            $resultado = $collection->updateOne($filtro, $actualizacion, $opciones);
+                ]
+            )->toArray();
     
-            return response()->json("¡Tus apuntes se han guardado correctamente!", 200);
+            if(count($apuntes) <= 10){
+                $filtro = [
+                    'id_contenido' => $id_contenido,
+                    'tipo_contenido' => $tipo_contenido,
+                ];
+                
+                $actualizacion = [
+                    '$set' => [
+                        'titulo' => $titulo,
+                        'id_usuario' => $id_usuario,
+                        'data' => $data,
+                        'ruta' => $ruta,
+                        'fecha' => date('d/m/Y'),
+                        'horas' => date('H:i:s'),
+                    ],
+                    '$setOnInsert' => $filtro, 
+                ];
+                
+                $opciones = [
+                    'upsert' => true,
+                ];
+                
+                $resultado = $collection->updateOne($filtro, $actualizacion, $opciones);
+                return response()->json(['mensaje' => '¡Tus apuntes se han guardado correctamente!', 'estado' => 1]);
+            }else{
+                return response()->json(['mensaje' => '¡La cantidad maxima de apuntes que puedes guardar es (10)!', 'estado' => 0]);
+            }
         }else{
-            return response()->json("¡La cantidad maxima de apuntes que puedes guardar es (10)!", 200);
+            return response()->json(['mensaje' => '¡Debe iniciar sesión para poder guardar sus apuntes!', 'estado' => 0]);
         }
+        
     }
 
     public function listarApuntes(Request $request){

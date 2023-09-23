@@ -243,6 +243,7 @@ export default {
     mounted() {
         this.verificarLogin();
         this.getSessionData();
+        document.title = 'Mis foros - BiblioPED';
     },
     methods: {
         goBack() {

@@ -111,6 +111,7 @@ export default {
     mounted() {
         this.obtenerRecomendacionesDocente();
         this.verificarLogin();
+        document.title = 'Recomendaciones - BiblioPED';
     },
     methods: {
         async verificarLogin(){

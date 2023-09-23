@@ -81,7 +81,7 @@ export default {
         SkeletonTabla
     },
     created() {
-        document.title = 'Foros';
+        document.title = 'Mis foros - BiblioPED';
     },
     data() {
         return {

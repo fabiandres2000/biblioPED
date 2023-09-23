@@ -157,6 +157,9 @@ class MongoController extends Controller
                         '_id' => 0,
                         'datos' => '$$ROOT',
                     ]],
+                    [
+                        '$skip' => (5 * $pagina),
+                    ],
                     ['$limit' => 5 * ($pagina + 1)]
                 ])->toArray();
 

@@ -140,6 +140,18 @@ class ForosController extends Controller
             $foro['comentarios'] = $comentarios;
         }
 
+        $parametros = explode('/',$foro->ruta);
+
+        if($parametros[2] == 'N'){
+            $foro->contenido_html = $mongoDB->selectCollection('cont_documento')->findOne([
+                'id' => (int) $parametros[1],
+            ]);
+        }else{
+            $foro->contenido_html = $mongoDB->selectCollection('cont_documento_modulos')->findOne([
+                'id' => (int) $parametros[1],
+            ]);
+        }
+
         return $foro;
     }
 

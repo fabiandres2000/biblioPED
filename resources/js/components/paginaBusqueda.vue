@@ -1,6 +1,6 @@
 <template lang="">
-    <div>
-        <div class="app-content container center-layout mt-2">
+    <div id="fondo">
+        <div class="app-content container center-layout mt-2" id="pagina_busqueda">
         <div class="content-overlay"></div>
         <div class="content-wrapper" style="padding: 0rem">
             <div class="content-header row">
@@ -8,11 +8,11 @@
             <div class="content-body">
                 <div class="row full-height-vh-with-nav">
                     <div class="col-12 d-flex align-items-center justify-content-center">
-                        <form id="form-data" style="width: 100%" class="d-flex align-items-center justify-content-center"
+                        <form id="form-data" style="width: 100%; top: -36px; position: relative;" class="d-flex align-items-center justify-content-center"
                             action="{{ route('busqueda') }}" method="GET">
                             <div class="col-lg-6 col-10">
-                                <img class="img-fluid mx-auto d-block pb-3 pt-4 width-65-per"
-                                :src="`img/logo_1.png`" alt="Stack Search" style="    width: 100% !important;">
+                                <img class="mx-auto d-block pb-3 pt-4 width-65-per"
+                                :src="`img/logo_1_2.png`" alt="Stack Search" style="width: 750px !important; position: relative; left: -2%; width: 740px !important;">
                                 <fieldset class="form-group position-relative">
                                     <input id="speechToText" name="textoBusqueda" type="text"
                                         class="form-control form-control-lg input-lg round" 
@@ -28,7 +28,7 @@
                                         @click.prevent="BuscarConTexto" class="btn btn-primary btn-md"><i
                                                 class="feather icon-search"></i> Buscar</button>
                                         <div class="btn-group mr-1" style="margin-left: 10px">
-                                            <select id="tipoBusqueda" name="tipoBusqueda" style="width: 208px;" class="btn btn-warning">
+                                            <select id="tipoBusqueda" name="tipoBusqueda" style="width: 208px;    background-color: #fc4f00 !important;width: 208px;border-color: #fc4f00 !important;" class="btn btn-warning">
                                                 <option class="text-left" value="contenido"><i class="feather icon-globe"></i> Buscar Contenido</option>
                                                 <option class="text-left" value="imagenes"><i class="fa fa-file-image-o"></i> Buscar Imagenes</option>
                                                 <option class="text-left" value="videos"><i class="feather icon-video"></i> Buscar Videos</option>
@@ -133,6 +133,23 @@ export default {
     }
 }
 </script>
-<style lang="">
-    
+<style>
+    #fondo{
+        background-image: url('/img/fondo_inicio.png') !important; 
+        background-size: 100% 100%;
+    }  
+
+    #pagina_busqueda {
+        max-width: 100%; 
+        height: 92vh; 
+        margin-top: 0.5rem !important;
+        backdrop-filter: blur(4px);
+    }
+
+    .pt-4, .py-4 {
+        padding-top: 4.5rem !important;
+    }
+    .pb-3, .py-3 {
+        padding-bottom: 1rem !important;
+    }
 </style>

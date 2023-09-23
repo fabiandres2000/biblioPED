@@ -1,11 +1,11 @@
 <template >
-    <div>
-        <div class="app-content container center-layout mt-2" style="max-width: 90%;">
+    <div id="fondo_busqueda">
+        <div class="app-content container center-layout mt-2 pagina_resultado">
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
                 <div class="content-header row">
                     <div class="content-header-left col-md-6 col-12 mb-2">
-                        <h3 class="content-header-title mb-0">Search Website</h3>
+                        <h3 class="content-header-title mb-0">Resultado de la búsqueda</h3>
                         <div class="row breadcrumbs-top">
                             <div class="breadcrumb-wrapper col-12">
                                 <ol class="breadcrumb">
@@ -24,7 +24,7 @@
                     <!-- Search form-->
                     <section id="search-website" class="card overflow-hidden">
                         <div class="card-header">
-                            <h4 class="card-title">RESULTADOS DE LA BÚSQUEDA</h4>
+                            
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
@@ -191,6 +191,7 @@ export default {
         this.pagina = this.$route.params.pagina;
         this.BuscarResultado();
         this.verificarConexion();
+        document.title = 'Resultados - '+this.texto;
     },
     methods: {
         scrollToTop() {
@@ -325,7 +326,6 @@ export default {
         getAboutLink(tipo_enlace){
             var navigate = this.$router;
             var texto = this.$route.params.texto;
-            var tipo = this.$route.params.tipo;
             switch  (tipo_enlace) {  
                 case 0:
                     navigate.push({ name: 'paginaBusqueda' })
@@ -345,4 +345,19 @@ export default {
 }
 </script>
 <style>
+
+    #fondo_busqueda{
+        background-image: url('/img/fondo_resultados.png') !important; 
+        background-size: 100% 100%;
+    }  
+
+    .pagina_resultado {
+        max-width: 100%; 
+        height: 92vh; 
+        margin-top: 0.7rem !important;
+        padding-top: 20px;
+        padding-left: 5%;
+        padding-right: 5%;
+        overflow: scroll !important;
+    }
 </style>
