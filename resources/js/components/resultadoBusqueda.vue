@@ -52,29 +52,13 @@
                                 </div>
                             </div>
                             <!--Search Navbar-->
-                            <div id="search-nav" class="card-body">
-                                <ul class="nav nav-inline">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" @click.prevent="getAboutLink(1)"><i class="fa fa-link"></i>
-                                            Contenido</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(2)"><i class="fa fa-file-image-o"></i>
-                                            Imagenes</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(3)"><i class="fa fa-file-video-o"></i>
-                                            Videos</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <TipoBusqueda :tipo="'normal'"></TipoBusqueda>
                             <!--/ Search Navbar-->
                             <!--Search Result-->
                             <div id="search-results" class="card-body">
                                 <div class="row">
                                     <div class="col-12 col-md-12">
-                                        <p class="text-muted font-small-3">Cerca de 455 results (0.58
-                                            seconds) </p>
+                                        <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ paginacion.numero_registros }} resultados ({{ tiempoConsulta  }} segundos) </p>
                                         <ul class="media-list p-0">
                                             <!--search with image-->
                                             <div style="width: 100%;">
@@ -102,9 +86,21 @@
                                                     </a>
                                                 </div>
                                             </li>
+                                            <div v-if="datos.length == 0 && !loading" style="padding-left: 20px;">
+                                                <p>No se han encontrado resultados para tu búsqueda <strong> ({{ texto }})</strong></p>
+                                                <p>Sugerencias: </p>
+                                                <ul>
+                                                    <li>Asegúrate de que todas las palabras estén escritas correctamente.</li>
+                                                    <li>Prueba diferentes palabras clave.</li>
+                                                    <li>Prueba palabras clave más generales.</li>
+                                                    <li>Prueba menos palabras clave.</li>
+                                                </ul>
+                                                <br>
+                                                <img src="/img/no_results.gif" style="position: absolute; width: 465px; right: 15%; top: -41px;" alt="">
+                                            </div>
                                         </ul>
                                         <p class="px-1"></p>
-                                        <div class="row">
+                                        <div class="row" v-if="paginacion.numero_registros > 0">
                                             <div class="col-md-10">
                                                 <ul class="pagination">
                                                     <!-- flecha anterior -->
@@ -168,10 +164,13 @@
 <script>
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
+import TipoBusqueda from './tipoBusqueda.vue'
+
 
 export default {
     components: {
-        Skeleton
+        Skeleton,
+        TipoBusqueda
     },
     data() {
         return {
@@ -182,7 +181,8 @@ export default {
             datos: [],
             paginacion: [],
             primera: 0,
-            ultima: 0
+            ultima: 0,
+            tiempoConsulta : 0,
         };
     },
     mounted() {
@@ -212,11 +212,16 @@ export default {
             }
         },
         async paginador() {
+            const inicio = Date.now(); 
             await busquedaService.paginacion(this.texto, this.tipo, this.pagina).then(respuesta => {
                 this.paginacion = respuesta.data;
                 this.pagina = parseInt(this.pagina);
                 this.primera = this.pagina - 4 > 1 ? this.pagina - 4 : 1;
                 this.ultima = this.pagina + 4 < this.paginacion.paginas_consulta ? this.pagina + 4 : this.paginacion.paginas_consulta;
+
+                const finalizacion = Date.now(); 
+                const tiempoTranscurrido = (finalizacion - inicio) / 1000; 
+                this.tiempoConsulta = tiempoTranscurrido;
             });
         },
         incrementarPagina() {
@@ -245,15 +250,8 @@ export default {
                     this.resaltaPalabra();
                 });
 
-                this.paginador();
-
                 if (this.pagina == 1) {
-                    await busquedaService.paginacion(this.texto, this.tipo, this.pagina).then(respuesta => {
-                        this.paginacion = respuesta.data;
-                        this.pagina = parseInt(this.pagina);
-                        this.primera = this.pagina - 4 > 1 ? this.pagina - 4 : 1;
-                        this.ultima = this.pagina + 4 < this.paginacion.paginas_consulta ? this.pagina + 4 : this.paginacion.paginas_consulta;
-                    });
+                    this.paginador();
                 }
             } catch (error) {
                 console.log(error);
@@ -323,24 +321,6 @@ export default {
                 console.log(response);
             });
         },
-        getAboutLink(tipo_enlace){
-            var navigate = this.$router;
-            var texto = this.$route.params.texto;
-            switch  (tipo_enlace) {  
-                case 0:
-                    navigate.push({ name: 'paginaBusqueda' })
-                break  
-                case 1: 
-                    navigate.push({ name: 'ResultadoBusqueda', params: { texto: texto, tipo: "contenido", pagina: 1 } })
-                break;
-                case 2: 
-                    navigate.push({ name: 'ResultadoImagenes', params: { texto: texto, tipo: "imagenes" } })
-                break;
-                case 3: 
-                    navigate.push({ name: 'ResultadoVideos', params: { texto: texto, tipo: "videos", pagina: 1 } })
-                break
-            }
-        }
     }
 }
 </script>

@@ -102,6 +102,14 @@
                                                                                     </label>
                                                                                 </div>
                                                                             </div>
+                                                                            <div class="col-lg-4">
+                                                                                <div id="r03" class="card_radio" @click="select_radio_0('r03', 'card03')">
+                                                                                    <input class="radio_b" value="modulo e"  type="radio" name="tipo_subida" id="card03">
+                                                                                    <label for="card03">
+                                                                                        <img src="/img/modulo.png" width="170" height="120" alt="">
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                         <br>
                                                                         <br>
@@ -174,8 +182,18 @@
                                                                                 <h2 class="steps">Paso 3 - 4</h2>
                                                                             </div>
                                                                         </div> 
-                                                                        <div class="row">
+                                                                        <div class="row" v-if="tipo_subida != 'modulo e'">
                                                                             <div class="col-lg-3" v-for="(item, index) in grados" :key="index" style="margin-bottom: 20px">
+                                                                                <div  :id="'rg'+item" :class="grado == item ? 'card_radio_active' : 'card_radio'" @click="select_radio_3('rg'+item, 'cardg'+item)">
+                                                                                    <input class="radio_b" :value="item" v-model="grado" type="radio" name="grado" :id="'cardg'+item">
+                                                                                    <label :for="'cardg'+item">
+                                                                                        <img :src="'/img/grados/'+item+'.png'" :width="item < 10 ? '120' : '200'" height="100" alt="">
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div> 
+                                                                        <div class="row" v-if="tipo_subida == 'modulo e'">
+                                                                            <div class="col-lg-3" v-for="(item, index) in grados_modulo_e" :key="index" style="margin-bottom: 20px">
                                                                                 <div  :id="'rg'+item" :class="grado == item ? 'card_radio_active' : 'card_radio'" @click="select_radio_3('rg'+item, 'cardg'+item)">
                                                                                     <input class="radio_b" :value="item" v-model="grado" type="radio" name="grado" :id="'cardg'+item">
                                                                                     <label :for="'cardg'+item">
@@ -283,6 +301,7 @@ export default {
     data(){
         return {
             grados: [1,2,3,4,5,6,7,8,9,10,11],
+            grados_modulo_e: [3,5,7,9,11],
             asignaturas: [
                 {
                     nombre: 'LENGUAJE',
@@ -350,6 +369,36 @@ export default {
                     nombre: 'EMPRENDIMIENTO',
                     imagen: 'emprendimiento.png'
                 }
+            ],
+            modulos_e: [
+                { 
+                    nombre:"CIENCIAS NATURALES",
+                    imagen: 'cuencias_naturalez_me.png'
+                },
+                { 
+                    nombre:"Competencia Ciudadana",
+                    imagen: 'competencia_ciudadana_me.png'
+                },  
+                { 
+                    nombre:"INGLÉS",
+                    imagen: 'ingles_me.png'
+                },
+                { 
+                    nombre:"LECTURA CRÍTICA",
+                    imagen: 'lectura_critica_me.png'
+                },
+                { 
+                    nombre:"LENGUAJE",
+                    imagen: 'lenguaje_me.png'
+                },
+                { 
+                    nombre:"MATEMATICAS",
+                    imagen: 'matematicas_me.png'
+                },
+                { 
+                    nombre:"COMPETENCIAS CIUDADANAS",
+                    imagen: 'competencia_ciudadana_me.png'
+                },
             ],
             selectedImage: null,
             selectedVideo: null,
@@ -454,7 +503,12 @@ export default {
             if(this.tipo_subida == "asignatura"){
                 this.asignaturas_filtradas = this.asignaturas;
             }else{
-                this.asignaturas_filtradas = this.modulos;
+                if(this.tipo_subida == "modulo transversal"){
+                    this.asignaturas_filtradas = this.modulos;
+                }else{
+                    this.asignaturas_filtradas = this.modulos_e;
+                    this.select_radio_1('r3', 'card3');
+                }
             }
 
 
@@ -525,13 +579,13 @@ export default {
             this.$router.go(-1);
         },
         select_radio_0(id, rb){
-           
            document.querySelector('#card01').checked = false;
            document.querySelector('#card02').checked = false;
+           document.querySelector('#card03').checked = false;
 
            document.querySelector('#'+rb).checked = true;
 
-            for (let index = 1; index < 3; index++) {
+            for (let index = 1; index <= 3; index++) {
                 let id_l = "r0"+index;
                 if(id == id_l){
                     document.getElementById(id_l).classList.remove("card_radio");    
@@ -547,7 +601,29 @@ export default {
             if(this.tipo_subida == "asignatura"){
                 this.asignaturas_filtradas = this.asignaturas;
             }else{
-                this.asignaturas_filtradas = this.modulos;
+                if(this.tipo_subida == "modulo transversal"){
+                    this.asignaturas_filtradas = this.modulos;
+                }else{
+                    this.asignaturas_filtradas = this.modulos_e;
+                    this.select_radio_1('r3', 'card3');
+                }
+            }
+
+            if(this.tipo_subida == "modulo e"){
+                document.getElementById("r3").classList.remove("disabled_div");
+                for (let index = 1; index < 3; index++) {
+                    let id_l = "r"+index;
+                    document.getElementById(id_l).classList.add("disabled_div");
+                }
+            } else{
+                document.getElementById("r3").classList.add("disabled_div");
+                document.querySelector('#card3').checked = false;
+                document.getElementById("r3").classList.add("card_radio");    
+                document.getElementById("r3").classList.remove("card_radio_active");
+                for (let index = 1; index < 3; index++) {
+                    let id_l = "r"+index;
+                    document.getElementById(id_l).classList.remove("disabled_div");
+                }
             }
         },
         select_radio_1(id, rb){

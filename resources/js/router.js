@@ -18,7 +18,7 @@ import listaApuntes from './components/listaApuntes.vue'
 import listaContenido from './components/contenido/listaContenido.vue'
 import agregarContenido from './components/contenido/agregarContenido.vue'
 import editarContenido from './components/contenido/editarContenido.vue'
-
+import ResultadoMetafactos from './components/resultadoMetafactos.vue'
 
 const routes = [
   {
@@ -45,6 +45,11 @@ const routes = [
     path: '/resultado-videos/:texto/:tipo/:pagina',
     name: 'ResultadoVideos',
     component: ResultadoVideos
+  },
+  {
+    path: '/resultado-metafactos/:texto/:tipo/:pagina',
+    name: 'ResultadoMetafactos',
+    component: ResultadoMetafactos
   },
   {
     path: '/historial',

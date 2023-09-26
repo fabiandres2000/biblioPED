@@ -78,7 +78,7 @@ Route::prefix('api')->group(function () {
     Route::get('/copiar', [DatosController::class, 'migrartablasCont'])->name('migrartablasCont');
     Route::get('/crear-tabla-contenido', [DatosController::class, 'crearContenidoBusqueda'])->name('crear_tabla_contenido');
     Route::get('/migrar-videos', [DatosController::class, 'migrarVideos'])->name('migrarVideos');
-
+    Route::get('/migrar-metafactos', [DatosController::class, 'migrarMetafactos'])->name('migrarMetafactos');
 
     Route::post('/registro-docente', [AdminController::class, 'RegistroDocente'])->name('RegistroDocente');
     Route::get('/listar-docentes', [AdminController::class, 'listarDocentes'])->name('listarDocentes');

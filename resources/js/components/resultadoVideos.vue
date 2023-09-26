@@ -52,35 +52,19 @@
                                 </div>
                             </div>
                             <!--Search Navbar-->
-                            <div id="search-nav" class="card-body">
-                                <ul class="nav nav-inline">
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(1)"><i class="fa fa-link"></i>
-                                            Contenido</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(2)"><i class="fa fa-file-image-o"></i>
-                                            Imagenes</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" @click.prevent="getAboutLink(3)"><i class="fa fa-file-video-o"></i>
-                                            Videos</a>
-                                    </li>
-                                </ul>
-                            </div>
+                           <TipoBusqueda :tipo="'videos'"></TipoBusqueda>
                             <!--/ Search Navbar-->
                             <!--Search Result-->
                             <div id="search-results" class="card-body">
                                 <div class="row">
                                     <div class="col-10 col-md-10">
-                                        <p class="text-muted font-small-3">Cerca de 455 results (0.58
-                                            seconds) </p>
+                                        <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ paginacion.numero_registros }} resultados ({{ tiempoConsulta  }} segundos) </p>
                                         <ul class="media-list p-0">
                                             <!--search with image-->
                                             <div style="width: 100%;">
                                                 <Skeleton v-if="loading"></Skeleton>
                                             </div>
-                                            <li v-for="(item, index) in datos" :key="index" class="row item_lista" style="margin-top: 20px;">
+                                            <li style="padding-left: 15px; margin-top: 20px;"  v-for="(item, index) in datos" :key="index" class="row item_lista">
                                                 <p class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
                                                 <div class="col-md-3 col-sm-12">
                                                     <video :key="'video'+index" width="270" height="200" controls>
@@ -99,8 +83,20 @@
                                                 </div>
                                             </li>
                                         </ul>
+                                        <div v-if="datos.length == 0 && !loading" style="padding-left: 20px;">
+                                            <p>No se han encontrado resultados para tu búsqueda <strong> ({{ texto }})</strong></p>
+                                            <p>Sugerencias: </p>
+                                            <ul>
+                                                <li>Asegúrate de que todas las palabras estén escritas correctamente.</li>
+                                                <li>Prueba diferentes palabras clave.</li>
+                                                <li>Prueba palabras clave más generales.</li>
+                                                <li>Prueba menos palabras clave.</li>
+                                            </ul>
+                                            <br>
+                                                <img src="/img/no_results.gif" style="position: absolute; width: 465px; right: 1%; top: -41px;" alt="">
+                                        </div>
                                         <p class="px-1"></p>
-                                        <div class="row">
+                                        <div class="row" v-if="paginacion.numero_registros > 0">
                                             <div class="col-md-10">
                                                 <ul class="pagination">
                                                     <!-- flecha anterior -->
@@ -164,10 +160,12 @@
 <script>
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
+import TipoBusqueda from './tipoBusqueda.vue'
 
 export default {
     components: {
-        Skeleton
+        Skeleton,
+        TipoBusqueda
     },
     data() {
         return {
@@ -178,7 +176,8 @@ export default {
             datos: [],
             paginacion: [],
             primera: 0,
-            ultima: 0
+            ultima: 0,
+            tiempoConsulta : 0,
         };
     },
     mounted() {
@@ -198,7 +197,6 @@ export default {
             try {
                 await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
                     this.datos = respuesta.data;
-                    debugger
                     this.loading = false;
                 });
 
@@ -209,12 +207,17 @@ export default {
             }
         },
         async paginador() {
+            const inicio = Date.now(); 
+
             await busquedaService.paginacionMultimedia(this.texto, this.tipo, this.pagina).then(respuesta => {
                 this.paginacion = respuesta.data;
                 this.pagina = parseInt(this.pagina);
                 this.primera = this.pagina - 4 > 1 ? this.pagina - 4 : 1;
                 this.ultima = this.pagina + 4 < this.paginacion.paginas_consulta ? this.pagina + 4 : this.paginacion.paginas_consulta;
-                console.log(this.paginacion);
+
+                const finalizacion = Date.now(); 
+                const tiempoTranscurrido = (finalizacion - inicio) / 1000; 
+                this.tiempoConsulta = tiempoTranscurrido;
             });
         },
         incrementarPagina() {
@@ -295,24 +298,6 @@ export default {
                 console.log(response);
             });
         },
-        getAboutLink(tipo_enlace){
-            var navigate = this.$router;
-            var texto = this.$route.params.texto;
-            switch  (tipo_enlace) {  
-                case 0:
-                    navigate.push({ name: 'paginaBusqueda' })
-                break  
-                case 1: 
-                    navigate.push({ name: 'ResultadoBusqueda', params: { texto: texto, tipo: "contenido", pagina: 1 } })
-                break;
-                case 2: 
-                    navigate.push({ name: 'ResultadoImagenes', params: { texto: texto, tipo: "imagenes" } })
-                break;
-                case 3: 
-                    navigate.push({ name: 'ResultadoVideos', params: { texto: texto, tipo: "videos", pagina: 1 } })
-                break
-            }
-        }
     }
 }
 </script>

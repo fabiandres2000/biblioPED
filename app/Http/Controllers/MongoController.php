@@ -177,6 +177,28 @@ class MongoController extends Controller
                 if($variable2 == "videos"){
                     $resultados = self::buscarVideos($variable1, $variable2, $request->input('pagina'));
                     return response()->json($resultados, 200);
+                }else{
+                    $collection2 = $mongoDB->selectCollection('multimedia');
+                    $resultados = $collection2->aggregate([
+                        ['$match' => 
+                        [
+                            '$and' => [
+                                ['tipo_multimedia' => 'metafacto']
+                            ],
+                            '$or' => [
+                                ['tema' => ['$regex' => $variable1, '$options' => 'i']],
+                                ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']],
+                            ]
+                        ]],
+                        ['$project' => [
+                            '_id' => 0,
+                            'datos' => '$$ROOT',
+                        ]],
+                        ['$skip' => (10 * $pagina)],
+                        ['$limit' => 10 * ($pagina + 1)]
+                    ])->toArray();
+
+                    return response()->json($resultados, 200);
                 }
             }
         }

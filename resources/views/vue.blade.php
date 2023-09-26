@@ -77,12 +77,33 @@
             height: 0;
             overflow: hidden;
             z-index: -1;
-            content: url("/img/fondo_inicio.png") url("/img/fondo_resultados.png") url("/img/logo_1_2.png") url("/img/fondo_imagen.png") url("/img/fondo_video.png");
+            content: url("/img/fondo_inicio.png") url("/img/fondo_resultados.png") url("/img/logo_1_2.png") url("/img/fondo_imagen.png") url("/img/fondo_video.png") url("/img/no_results.gif");
         }
 
         .breadcrumb-item{
             font-weight: 700
         }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 15px;
+        }
+
+        /* scrollbar track */
+        ::-webkit-scrollbar-track {
+            background-color: #e4e4e4;
+            border-radius: 100px;
+        }
+        
+        /* scrollbar thumb */
+        ::-webkit-scrollbar-thumb {
+            border-radius: 200px !important;
+            background: #a6a3b6 !important;
+            border: 6px solid rgba(0, 0, 0, 0.2) !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+        }
+        
     </style>
 </head>
 
@@ -222,7 +243,7 @@
     </nav>
 
     <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document" style="margin-top: 10%;">
             <div class="modal-content">
                 <div class="modal-body">
                     <section class="row flexbox-container">
@@ -278,7 +299,7 @@
     </div>
 
     <div class="modal fade text-left" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document" style="margin-top: 8%;">
             <div class="modal-content">
                 <div class="modal-body">
                     <section class="row flexbox-container">

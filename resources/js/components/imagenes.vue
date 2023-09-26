@@ -63,25 +63,12 @@
                                 </div>
                             </div>
                             <!--Search Navbar-->
-                            <div id="search-nav" class="card-body">
-                                <ul class="nav nav-inline">
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(1)"><i class="fa fa-link"></i>
-                                            Contenido</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" @click.prevent="getAboutLink(2)"><i class="fa fa-file-image-o"></i>
-                                            Imagenes</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="getAboutLink(3)"><i class="fa fa-file-video-o"></i>
-                                            Videos</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <TipoBusqueda :tipo="'imagenes'"></TipoBusqueda>
                             <!--/ Search Navbar-->
                             <!--Search Result-->
                             <div id="search-results" class="card-body">
+                                <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ numero_registros_imagenes }} resultados ({{ tiempoConsulta  }} segundos) </p>
+                                <br>
                                 <div class="row">
                                     <div class="col-12 col-md-12 contenedor_imagenes">
                                         <div v-for="(image, index) in images" :key="index" class="imagen_busqueda">
@@ -91,6 +78,18 @@
                                         <div v-if="loading" class="loader" style="width: 100%;">
                                             <Skeleton></Skeleton>
                                         </div>
+                                    </div>
+                                    <div v-if="images.length == 0 && !loading" style="padding-left: 20px;">
+                                        <p>No se han encontrado resultados para tu búsqueda <strong> ({{ texto }})</strong></p>
+                                        <p>Sugerencias: </p>
+                                        <ul>
+                                            <li>Asegúrate de que todas las palabras estén escritas correctamente.</li>
+                                            <li>Prueba diferentes palabras clave.</li>
+                                            <li>Prueba palabras clave más generales.</li>
+                                            <li>Prueba menos palabras clave.</li>
+                                        </ul>
+                                        <br>
+                                        <img src="/img/no_results.gif" style="position: absolute; width: 465px; right: 15%; top: 39%;" alt="">
                                     </div>
                                     <hr>
                                     <div class="col-12 text-center">
@@ -127,9 +126,12 @@
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeletonImagen.vue';
 import cheerio from 'cheerio';
+import TipoBusqueda from './tipoBusqueda.vue'
+
 export default {
     components: {
-        Skeleton
+        Skeleton,
+        TipoBusqueda
     },
     data() {
         return {
@@ -139,7 +141,9 @@ export default {
             loading: false, 
             pagina: 1,
             imagenSeleccionada: '',
-            tituloImagen: ''
+            tituloImagen: '',
+            tiempoConsulta : 0,
+            numero_registros_imagenes: 0
         };
     },
     mounted() {
@@ -152,15 +156,18 @@ export default {
     },
     methods: {
         async BuscarResultadoNuevamente() {
+            const inicio = Date.now();
             this.images = [];
             this.$router.replace({ path: '/resultado-imagenes/' + this.texto + '/' + this.tipo  });
             try {
                 this.loading = true; 
                 await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
                     var html_array = respuesta.data;
-                    html_array.forEach(element => {
-                        this.obtenerImagenesDesdeHTML(element)
-                    });
+                    this.obtenerImagenesDesdeHTML(html_array);
+                    const finalizacion = Date.now();
+                    const tiempoTranscurrido = (finalizacion - inicio) / 1000;
+                  
+                    this.tiempoConsulta = tiempoTranscurrido;
                 });
             } catch (error) {
                 console.error(error);
@@ -168,18 +175,21 @@ export default {
                 this.loading = false; 
             }
         },
-        obtenerImagenesDesdeHTML(elemento) {
-            const $ = cheerio.load(elemento.datos.cont_documento);
-            $('img').each((index, element) => {
-                const src = $(element).attr('src');
-                if (src) {
-                    this.images.push({
-                        src: src,
-                        titulo: elemento.datos.titulo,
-                        ruta: '/contenido/' + elemento.datos.id_contenido + '/' + elemento.datos.tipo_contenido
-                    });
-                }
+        async obtenerImagenesDesdeHTML(html_array) {
+            html_array.forEach(elemento => {
+                const $ = cheerio.load(elemento.datos.cont_documento);
+                $('img').each((index, element) => {
+                    const src = $(element).attr('src');
+                    if (src) {
+                        this.images.push({
+                            src: src,
+                            titulo: elemento.datos.titulo,
+                            ruta: '/contenido/' + elemento.datos.id_contenido + '/' + elemento.datos.tipo_contenido
+                        });
+                    }
+                });
             });
+            this.numero_registros_imagenes = this.images.length;
         },
         async BuscarConAudio() {
             var elemento = this.$refs.microfono;
@@ -215,10 +225,7 @@ export default {
             this.loading = true; 
             await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
                 var html_array = respuesta.data;
-                html_array.forEach(element => {
-                    this.obtenerImagenesDesdeHTML(element);
-                });
-
+                this.obtenerImagenesDesdeHTML(html_array);
                 this.loading = false;
             });
         },
@@ -235,24 +242,6 @@ export default {
             link.click();
             document.body.removeChild(link);
         },
-        getAboutLink(tipo_enlace){
-            var navigate = this.$router;
-            var texto = this.$route.params.texto;
-            switch  (tipo_enlace) { 
-                case 0:
-                    navigate.push({ name: 'paginaBusqueda' })
-                break     
-                case 1: 
-                    navigate.push({ name: 'ResultadoBusqueda', params: { texto: texto, tipo: "contenido", pagina: 1 } })
-                break;
-                case 2: 
-                    navigate.push({ name: 'ResultadoImagenes', params: { texto: texto, tipo: "imagenes" } })
-                break;
-                case 3: 
-                    navigate.push({ name: 'ResultadoVideos', params: { texto: texto, tipo: "videos", pagina: 1 } })
-                break
-            }
-        }
     },
 };
 </script>

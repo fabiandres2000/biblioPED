@@ -164,6 +164,39 @@ class DatosController extends Controller
         return response()->json("guardado", 200);
     }
 
+    public function migrarMetafactos()
+    {
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+
+        $resultados = DB::table('imagenes_moduloe as ime')
+        ->select('ime.id', 'ime.imagen', 'tme.titulo', 'ame.nombre', 'ame.grado')
+        ->join('temas_moduloe as tme', 'tme.id', '=', 'ime.tema')
+        ->join('asignaturas_mode as ame', 'ame.id', '=', 'tme.asignatura')
+        ->where('ime.imagen', '!=', '')
+        ->get();
+
+
+        foreach ($resultados as $resultado) {
+            $dato = [
+                'tipo_multimedia' => 'metafacto',
+                'asignatura' => $resultado->nombre,
+                'grado' => $resultado->grado,
+                'tema' => $resultado->titulo,
+                'tema_sin_tilde' => self::removeAccents($resultado->titulo),
+                'ruta' => $resultado->imagen,
+                'fecha' => date('d/m/Y'),
+                'horas' => date('H:i:s'),
+            ];
+
+            $collection = $mongoDB->selectCollection('multimedia');
+
+            $collection->insertOne($dato);
+        }
+
+        return response()->json("guardado", 200);
+    }
+
     function removeAccents($str) {
         $unwanted = array(
             'á' => 'a',

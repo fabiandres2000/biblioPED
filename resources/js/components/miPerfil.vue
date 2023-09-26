@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        <div class="app-content content" style = "background-color: #f5f7fa;">
+        <div class="app-content content" style = "background-color: #f5f7fa; padding-top: 40px">
             <div class="content-overlay"></div>
             <div class="content-wrapper">
                 <div class="content-header row">
