@@ -22,6 +22,9 @@ class MongoController extends Controller
         $variable2 = $request->input('tipoBusqueda');
         $pagina = $request->input('pagina');
 
+        $asignatura = $request->input('asignatura');
+        $grado = $request->input('grado');
+
         $limit = 10;
 
         if ($pagina == null || $pagina == "") {
@@ -50,26 +53,56 @@ class MongoController extends Controller
         self::guardarBusqueda($request);
 
         if($variable2 == "contenido"){
+
+            $match = ['$match' => [
+                'titulo' => ['$regex' => $variable1, '$options' => 'i']
+            ]];
+            
+            if ($asignatura != 'no' || $grado != 'no') {
+                $match['$match']['$and'] = [];
+            
+                if ($asignatura != 'no') {
+                    $match['$match']['$and'][] = ['asignatura' => $asignatura];
+                }
+            
+                if ($grado != 'no') {
+                    $match['$match']['$and'][] = ['grado' => $grado];
+                }
+            }
+            
             $resultados1 = $collection->aggregate([
-                ['$match' => [
-                    'titulo' => ['$regex' => $variable1, '$options' => 'i']
-                ]],
+                $match,
                 ['$project' => [
                     '_id' => 0,
                     'contenido_busqueda' => '$$ROOT',
                 ]],
             ])->toArray();
-            
+
 
             foreach ($resultados1 as $res) {
                 array_push($array_id, $res->contenido_busqueda->id);
             }
            
+
+            $match2 = ['$match' => [
+                'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
+                'contenido_busqueda.id' => ['$nin' => $array_id]
+            ]];
+
+            if ($asignatura != 'no' || $grado != 'no') {
+                $match2['$match']['$and'] = [];
+            
+                if ($asignatura != 'no') {
+                    $match2['$match']['$and'][] = ['asignatura' => $asignatura];
+                }
+            
+                if ($grado != 'no') {
+                    $match2['$match']['$and'][] = ['grado' => $grado];
+                }
+            }
+
             $resultados2 =  $collection->aggregate([
-                ['$match' => [
-                    'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
-                    'contenido_busqueda.id' => ['$nin' => $array_id]
-                ]],
+                $match2,
                 ['$project' => [
                     '_id' => 0,
                     'contenido_busqueda' => '$$ROOT',
@@ -107,7 +140,26 @@ class MongoController extends Controller
                     return mb_strlen($palabra) > 3;
                 });
 
+                $match = ['$match' => [
+                    'modulo' => ['$ne' => null],
+                ]];
+    
+                if ($asignatura != 'no' || $grado != 'no') {
+                    $and = [];
+
+                    if ($asignatura != 'no') {
+                        $and[] = ['asignatura' => $asignatura];
+                    }
+
+                    if ($grado != 'no') {
+                        $and[] = ['grado' => $grado];
+                    }
+
+                    $match['$match']['$and'] = $and;
+                }
+
                 $resultados_n = $collection->aggregate([
+                    $match,
                     ['$project' => [
                         '_id' => 0,
                         'contenido_busqueda' => '$$ROOT',
@@ -124,7 +176,7 @@ class MongoController extends Controller
                         }
                     }
 
-                    if($cont >= (count($palabrasFiltradas) / 2)){
+                    if($cont > (count($palabrasFiltradas) / 2)){
                         $resultado->palabras_encontradas = $cont;
                         array_push($resultados,  $resultado);
                     }
@@ -175,7 +227,7 @@ class MongoController extends Controller
                 return response()->json($resultados, 200);
             }else{
                 if($variable2 == "videos"){
-                    $resultados = self::buscarVideos($variable1, $variable2, $request->input('pagina'));
+                    $resultados = self::buscarVideos($variable1, $variable2, $request->input('pagina'), $grado, $asignatura);
                     return response()->json($resultados, 200);
                 }else{
                     $collection2 = $mongoDB->selectCollection('multimedia');
@@ -204,7 +256,7 @@ class MongoController extends Controller
         }
     }
 
-    public function buscarVideos($variable1, $variable2, $pagina){
+    public function buscarVideos($variable1, $variable2, $pagina, $grado, $asignatura){
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
         $collection = $mongoDB->selectCollection('multimedia');
@@ -224,16 +276,28 @@ class MongoController extends Controller
             $offset = $pagina * $limit;
         }
         
+        $match = ['$match' => [
+            '$and' => [
+                ['tipo_multimedia' => 'video']
+            ],
+            '$or' => [
+                ['tema' => ['$regex' => $variable1, '$options' => 'i']],
+                ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']],
+            ]
+        ]];
+        
+           
+        if ($asignatura != 'no') {
+            $match['$match']['$and'][] = ['asignatura' => $asignatura];
+        }
+    
+        if ($grado != 'no') {
+            $match['$match']['$and'][] = ['grado' => $grado];
+        }
+       
+
         $resultados = $collection->aggregate([
-            ['$match' => [
-                '$and' => [
-                    ['tipo_multimedia' => 'video']
-                ],
-                '$or' => [
-                    ['tema' => ['$regex' => $variable1, '$options' => 'i']],
-                    ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']],
-                ]
-            ]],
+            $match,
             ['$project' => [
                 '_id' => 0,
                 'contenido_busqueda' => '$$ROOT',
@@ -319,6 +383,8 @@ class MongoController extends Controller
                     }else{
                         if($variable2 == "videos"){
                             $ruta = "resultado-videos/".$variable1."/videos/1";
+                        }else{
+                            $ruta = "resultado-metafactos/".$variable1."/metafactos/1";
                         }
                     }
                 }
@@ -355,6 +421,9 @@ class MongoController extends Controller
         $variable2 = $request->input('tipoBusqueda');
         $pagina = $request->input('pagina');
 
+        $asignatura = $request->input('asignatura');
+        $grado = $request->input('grado');
+
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
         
@@ -362,10 +431,24 @@ class MongoController extends Controller
 
         $array_id = [];
 
+        $match = ['$match' => [
+            'titulo' => ['$regex' => $variable1, '$options' => 'i']
+        ]];
+        
+        if ($asignatura != 'no' || $grado != 'no') {
+            $match['$match']['$and'] = [];
+        
+            if ($asignatura != 'no') {
+                $match['$match']['$and'][] = ['asignatura' => $asignatura];
+            }
+        
+            if ($grado != 'no') {
+                $match['$match']['$and'][] = ['grado' => $grado];
+            }
+        }
+
         $resultados1 = $collection->aggregate([
-            ['$match' => [
-                'titulo' => ['$regex' => $variable1, '$options' => 'i']
-            ]],
+            $match,
             ['$project' => [
                 '_id' => 0,
                 'contenido_busqueda' => '$$ROOT',
@@ -376,11 +459,25 @@ class MongoController extends Controller
             array_push($array_id, $res->contenido_busqueda->id);
         }
        
+        $match2 = ['$match' => [
+            'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
+            'contenido_busqueda.id' => ['$nin' => $array_id]
+        ]];
+
+        if ($asignatura != 'no' || $grado != 'no') {
+            $match2['$match']['$and'] = [];
+        
+            if ($asignatura != 'no') {
+                $match2['$match']['$and'][] = ['asignatura' => $asignatura];
+            }
+        
+            if ($grado != 'no') {
+                $match2['$match']['$and'][] = ['grado' => $grado];
+            }
+        }
+
         $resultados2 =  $collection->aggregate([
-            ['$match' => [
-                'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
-                'contenido_busqueda.id' => ['$nin' => $array_id]
-            ]],
+            $match2,
             ['$project' => [
                 '_id' => 0,
                 'contenido_busqueda' => '$$ROOT',
@@ -399,7 +496,26 @@ class MongoController extends Controller
 
             $numero_filas = 0;
 
+            $match = ['$match' => [
+                'modulo' => ['$ne' => null],
+            ]];
+
+            if ($asignatura != 'no' || $grado != 'no') {
+                $and = [];
+
+                if ($asignatura != 'no') {
+                    $and[] = ['asignatura' => $asignatura];
+                }
+
+                if ($grado != 'no') {
+                    $and[] = ['grado' => $grado];
+                }
+
+                $match['$match']['$and'] = $and;
+            }
+
             $resultados_n = $collection->aggregate([
+                $match,
                 ['$project' => [
                     '_id' => 0,
                     'contenido_busqueda' => '$$ROOT',
@@ -415,7 +531,7 @@ class MongoController extends Controller
                     }
                 }
 
-                if($cont >= (count($palabrasFiltradas) / 2)){
+                if($cont > (count($palabrasFiltradas) / 2)){
                    $numero_filas += 1;
                 }
             }
@@ -627,22 +743,36 @@ class MongoController extends Controller
         $variable1 = $request->input('textoBusqueda');
         $variable2 = $request->input('tipoBusqueda');
         $pagina = $request->input('pagina');
+        $asignatura = $request->input('asignatura');
+        $grado = $request->input('grado');
 
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
         $collection = $mongoDB->selectCollection('multimedia');
 
        
+        $match = ['$match' => [
+            '$and' => [
+                ['tipo_multimedia' => 'video']
+            ],
+            '$or' => [
+                ['tema' => ['$regex' => $variable1, '$options' => 'i']],
+                ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']],
+            ]
+        ]];
+        
+           
+        if ($asignatura != 'no') {
+            $match['$match']['$and'][] = ['asignatura' => $asignatura];
+        }
+    
+        if ($grado != 'no') {
+            $match['$match']['$and'][] = ['grado' => $grado];
+        }
+       
+
         $resultados = $collection->aggregate([
-            ['$match' => [
-                '$and' => [
-                    ['tipo_multimedia' => 'video']
-                ],
-                '$or' => [
-                    ['tema' => ['$regex' => $variable1, '$options' => 'i']],
-                    ['tema_sin_tilde' => ['$regex' => $variable1, '$options' => 'i']]
-                ]
-            ]],
+            $match,
             ['$project' => [
                 '_id' => 0,
                 'contenido_busqueda' => '$$ROOT',

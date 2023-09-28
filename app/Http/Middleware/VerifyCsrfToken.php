@@ -26,6 +26,7 @@ class VerifyCsrfToken extends Middleware
         '/pdf-apuntes',
         '/guardar-contenido',
         '/editar-contenido',
-        '/eliminar-contenido'
+        '/eliminar-contenido',
+        '/guardar-publicacion'
     ];
 }

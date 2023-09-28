@@ -1,5 +1,6 @@
 <template >
     <div id="fondo_video">
+        <filtro></filtro>
         <div class="app-content container center-layout mt-2 pagina_resultado">
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
@@ -28,8 +29,7 @@
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
-                                    <li><a data-action="reload"><i class="feather icon-rotate-cw"></i></a></li>
-                                    <li><a data-action="expand"><i class="feather icon-maximize"></i></a></li>
+                                   
                                 </ul>
                             </div>
                         </div>
@@ -64,6 +64,9 @@
                                             <div style="width: 100%;">
                                                 <Skeleton v-if="loading"></Skeleton>
                                             </div>
+                                            <button @click="mostrarFiltros" id="boton_filtro_video" class="add-task-btn btn btn-blue btn-darken-4">
+                                                <i class="fas fa-filter"></i>
+                                            </button>
                                             <li style="padding-left: 15px; margin-top: 20px;"  v-for="(item, index) in datos" :key="index" class="row item_lista">
                                                 <p class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
                                                 <div class="col-md-3 col-sm-12">
@@ -77,6 +80,7 @@
                                                     <p class="mb-0"><a :href="'/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido ==  'asignatura' ? 'N' : 'T')" class="teal darken-1">{{ '/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido == "asignatura" ? 'N' : 'T')  }}<span class="text-bold-600"></span> <i class="fa fa-angle-down" aria-hidden="true"></i></a></p>
                                                     <ul class="list-inline list-inline-pipe text-muted">
                                                         <li><strong>{{ item.contenido_busqueda.asignatura }}</strong></li>
+                                                        <li><strong>Grado {{ item.contenido_busqueda.grado }}°</strong></li>
                                                         <li>{{ item.contenido_busqueda.fecha }}</li>
                                                     </ul>
                                                     <p>{{ item.contenido_busqueda.parrafo }}</p>
@@ -96,7 +100,7 @@
                                                 <img src="/img/no_results.gif" style="position: absolute; width: 465px; right: 1%; top: -41px;" alt="">
                                         </div>
                                         <p class="px-1"></p>
-                                        <div class="row" v-if="paginacion.numero_registros > 0">
+                                        <div style="margin-left: 6px;" class="row" v-if="paginacion.numero_registros > 0">
                                             <div class="col-md-10">
                                                 <ul class="pagination">
                                                     <!-- flecha anterior -->
@@ -160,12 +164,14 @@
 <script>
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
-import TipoBusqueda from './tipoBusqueda.vue'
+import TipoBusqueda from './tipoBusqueda.vue';
+import filtro from './filtro/filtro.vue'
 
 export default {
     components: {
         Skeleton,
-        TipoBusqueda
+        TipoBusqueda,
+        filtro
     },
     data() {
         return {
@@ -178,6 +184,9 @@ export default {
             primera: 0,
             ultima: 0,
             tiempoConsulta : 0,
+            filtradoGradoAsignatura: false,
+            gradoFiltro: '',
+            asignaturaFiltro: ''
         };
     },
     mounted() {
@@ -224,17 +233,29 @@ export default {
             if (this.pagina < this.paginacion.paginas_consulta) {
                 this.pagina++;
             }
-            this.BuscarResultadoPaginado();
+            if(this.filtradoGradoAsignatura){
+                this.buscarResultadosFiltrados(this.asignaturaFiltro, this.gradoFiltro, this.pagina);
+            }else{
+                this.BuscarResultadoPaginado();
+            }
         },
         decrementarPagina() {
             if (this.pagina > 1) {
                 this.pagina--;
             }
-            this.BuscarResultadoPaginado();
+            if(this.filtradoGradoAsignatura){
+                this.buscarResultadosFiltrados(this.asignaturaFiltro, this.gradoFiltro, this.pagina);
+            }else{
+                this.BuscarResultadoPaginado();
+            }
         },
         irAPagina(pagina) {
             this.pagina = pagina;
-            this.BuscarResultadoPaginado();
+            if(this.filtradoGradoAsignatura){
+                this.buscarResultadosFiltrados(this.asignaturaFiltro, this.gradoFiltro, this.pagina);
+            }else{
+                this.BuscarResultadoPaginado();
+            }
         },
         async BuscarResultadoPaginado () {
             this.loading = true;
@@ -298,6 +319,63 @@ export default {
                 console.log(response);
             });
         },
+        mostrarFiltros() {
+            var todoNewTasksidebar = $(".todo-new-task-sidebar"),
+            appContentOverlay = $(".app-content-overlay-filtro");
+
+            todoNewTasksidebar.addClass('show');
+            appContentOverlay.addClass('show');
+
+            var self = this;
+            $('.cerrar-filtros').on('click', function () {
+                appContentOverlay.removeClass('show');
+                todoNewTasksidebar.removeClass('show');
+            });
+
+            $('.aplicar-filtros-ok').on('click', function () {
+                appContentOverlay.removeClass('show');
+                todoNewTasksidebar.removeClass('show');
+                self.pagina = 1;
+                self.$router.replace({ path: '/resultado-videos/' + self.texto + '/' + self.tipo + '/' + self.pagina });
+                self.filtradoGradoAsignatura = true;
+                self.gradoFiltro = $('#gradoFiltro').val();
+                self.asignaturaFiltro = $('#asignaturaFiltro').val();
+                self.buscarResultadosFiltrados(self.asignaturaFiltro, self.gradoFiltro, 1);
+            });
+
+            $('.limpiar-filtros-ok').on('click', function () {
+                appContentOverlay.removeClass('show');
+                todoNewTasksidebar.removeClass('show');
+                self.gradoFiltro = 'no';
+                self.asignaturaFiltro = 'no';
+                self.BuscarResultadoNuevamente();
+            });
+        },
+        async buscarResultadosFiltrados(asignatura, grado, paginaP){
+            this.loading = true;
+            this.datos = [];
+            const inicio = Date.now(); 
+
+            try {
+                await busquedaService.busqueda(this.texto, this.tipo, paginaP, grado, asignatura).then(respuesta => {
+                    this.datos = respuesta.data;
+                });
+
+                await busquedaService.paginacionMultimedia(this.texto, this.tipo, this.pagina, grado, asignatura).then(respuesta => {
+                    this.paginacion = respuesta.data;
+                    this.pagina = parseInt(this.pagina);
+                    this.primera = this.pagina - 4 > 1 ? this.pagina - 4 : 1;
+                    this.ultima = this.pagina + 4 < this.paginacion.paginas_consulta ? this.pagina + 4 : this.paginacion.paginas_consulta;
+
+                    const finalizacion = Date.now(); 
+                    const tiempoTranscurrido = (finalizacion - inicio) / 1000; 
+                    this.tiempoConsulta = tiempoTranscurrido;
+                    this.loading = false;
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
     }
 }
 </script>
@@ -320,5 +398,11 @@ export default {
         padding-right: 5%;
         overflow: scroll !important;
         width: 100%;
+    }
+
+    #boton_filtro_video {
+        position: absolute;
+        right: -179px;
+        top: -17px;
     }
 </style>

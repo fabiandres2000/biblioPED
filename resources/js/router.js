@@ -19,6 +19,7 @@ import listaContenido from './components/contenido/listaContenido.vue'
 import agregarContenido from './components/contenido/agregarContenido.vue'
 import editarContenido from './components/contenido/editarContenido.vue'
 import ResultadoMetafactos from './components/resultadoMetafactos.vue'
+import miComunidad from './components/miComunidad/miComunidad.vue'
 
 const routes = [
   {
@@ -121,6 +122,11 @@ const routes = [
     path: '/editar-contenido',
     name: 'editarContenido',
     component: editarContenido
+  },
+  {
+    path: '/mi-comunidad',
+    name: 'miComunidad',
+    component: miComunidad
   },
 ]
 

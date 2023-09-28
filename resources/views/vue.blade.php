@@ -37,12 +37,13 @@
    
 
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/font.css.css') }}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/5.14/css/all.css') }}" />   
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-email.css') }}">
     
-  
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/fonts/font-awesome/css/font-awesome.min.css') }}">
+
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/colors/palette-tooltip.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
 
@@ -53,6 +54,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
     
     <style>
+        body {
+            overflow-x: hidden
+        }
+
         .img_avatar_sel{
             height: 84px;
             cursor: pointer;
@@ -131,6 +136,9 @@
                     </ul>
                     <ul class="nav navbar-nav float-right">
                         @if (Session::has('logueado'))
+                            <li class="nav-item" style="display: flex; justify-content: center; align-items: center;">
+                                <a style="padding: 0.6rem 0.8rem 0.6rem 0.9rem" class="nav-link nav-link-label btn btn-primary" href="/mi-comunidad"><i class="fas fa-school"></i> Mi Comunidad</a>
+                            </li>
                             <li class="dropdown dropdown-notification nav-item"><a class="nav-link nav-link-label" href="#" data-toggle="dropdown"><i class="ficon feather icon-bell"></i><span class="badge badge-pill badge-danger badge-up" id="numero_notificaciones">0</span></a>
                                 <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
                                     <li class="dropdown-menu-header">

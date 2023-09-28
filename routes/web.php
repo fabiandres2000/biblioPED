@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ForosController;
 use App\Http\Controllers\DatosController;
 use App\Http\Controllers\ExportarController;
+use App\Http\Controllers\ComunidadController;
 
 use Illuminate\Http\Request;
 
@@ -99,6 +100,9 @@ Route::prefix('api')->group(function () {
     Route::post('/eliminar-contenido', [AdminController::class, 'eliminarContenido'])->name('eliminarContenido');
 
     Route::post('/pdf-apuntes', [ExportarController::class, 'generateApuntesPDF'])->name('generateApuntesPDF');
+    
+    Route::post('/guardar-publicacion', [ComunidadController::class, 'guardarPublicacion'])->name('guardarPublicacion');
+    Route::get('/listar-publicaciones', [ComunidadController::class, 'listarPublicaciones'])->name('listarPublicaciones');
 });
 
 Route::get('/{any}', function () {

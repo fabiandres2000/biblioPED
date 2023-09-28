@@ -33,12 +33,7 @@
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
-                                    <li>
-                                        <a data-action="reload"><i class="feather icon-rotate-cw"></i></a>
-                                    </li>
-                                    <li>
-                                        <a data-action="expand"><i class="feather icon-maximize"></i></a>
-                                    </li>
+                                   
                                 </ul>
                             </div>
                         </div>
@@ -108,18 +103,19 @@
         </div>
         <div class="modal fade text-left" id="modImagen" tabindex="-1" role="dialog" aria-labelledby="myModalLabel15"
             aria-hidden="true">
-            <div class="modal-dialog  modal-lg" role="document" style="margin-top: 9%;">
+            <div class="modal-dialog  modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-success white">
                         <h4 class="modal-title" style="text-transform: capitalize;"><span>{{ tituloImagen }}</span></h4>
                     </div>
                     <div class="modal-body">
-                        <div id='ListEval' style="height: 400px; overflow: auto;text-align: center;display: flex;justify-content: center;align-items: center;">
-                            <img style="height: 85%;" :src="imagenSeleccionada" alt="">
+                        <div id='ListEval' style="width: 100%; height: 650px;overflow: auto;text-align: center;display: flex;justify-content: center;align-items: center;">
+                            <inner-image-zoom style="height: 650px;" zoomScale="1.8" :src="imagenSeleccionada" />
                         </div>
-                        
-                        <button @click.prevent="descargarImagen"  type="button" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i> Descargar</button>
-                        <button style="margin-left: 20px;" type="button" id="btn_salir" class="btn btn-danger" data-dismiss="modal"><i class="ft-corner-up-left position-right"></i><i class="fas fa-times"></i> Cancelar</button>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button @click.prevent="descargarImagen"  type="button" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i> Descargar</button>
+                            <button style="margin-left: 20px;" type="button" id="btn_salir" class="btn btn-danger" data-dismiss="modal"><i class="ft-corner-up-left position-right"></i><i class="fas fa-times"></i> Cancelar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,12 +126,15 @@
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeletonImagen.vue';
 import cheerio from 'cheerio';
-import TipoBusqueda from './tipoBusqueda.vue'
+import TipoBusqueda from './tipoBusqueda.vue';
+import 'vue-inner-image-zoom/lib/vue-inner-image-zoom.css';
+import InnerImageZoom from 'vue-inner-image-zoom'
 
 export default {
     components: {
         Skeleton,
-        TipoBusqueda
+        TipoBusqueda,
+        InnerImageZoom
     },
     data() {
         return {
@@ -176,6 +175,7 @@ export default {
                         this.images.push(element);
                     });
 
+                    this.numero_registros_imagenes = this.images.length;
                     const finalizacion = Date.now();
                     const tiempoTranscurrido = (finalizacion - inicio) / 1000;
                     this.tiempoConsulta = tiempoTranscurrido;
@@ -221,7 +221,7 @@ export default {
         },
         seleccionarImagen(rutaSeleccionada, tituloImagenS) {
             this.imagenSeleccionada = '/metafactos/'+rutaSeleccionada;
-            this.temaImagen = tituloImagenS;
+            this.tituloImagen = tituloImagenS;
             $("#modImagen").modal("show");
         },
         descargarImagen() {
@@ -270,5 +270,9 @@ export default {
 
 .espacio{
     margin-bottom: 30px;
+}
+
+.iiz__img{
+    height: 650px !important;
 }
 </style>
