@@ -103,6 +103,9 @@ Route::prefix('api')->group(function () {
     
     Route::post('/guardar-publicacion', [ComunidadController::class, 'guardarPublicacion'])->name('guardarPublicacion');
     Route::get('/listar-publicaciones', [ComunidadController::class, 'listarPublicaciones'])->name('listarPublicaciones');
+    Route::post('/guardar-comentario-post', [ComunidadController::class, 'registrarComentarioPost'])->name('registrarComentarioPost');
+    Route::get('/eliminar-comentario-post', [ComunidadController::class, 'eliminarComentarioPost'])->name('eliminarComentarioPost');
+
 });
 
 Route::get('/{any}', function () {
