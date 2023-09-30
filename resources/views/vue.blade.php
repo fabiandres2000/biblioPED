@@ -82,7 +82,7 @@
             height: 0;
             overflow: hidden;
             z-index: -1;
-            content: url("/img/fondo_inicio.png") url("/img/fondo_resultados.png") url("/img/logo_1_2.png") url("/img/fondo_imagen.png") url("/img/fondo_video.png") url("/img/no_results.gif");
+            content: url("/img/fondo_inicio.png") url("/img/fondo_resultados.png") url("/img/logo_1_2.png") url("/img/fondo_imagen.png") url("/img/fondo_video.png") url("/img/no_results.gif") url('/img/fondo_social.png');
         }
 
         .breadcrumb-item{
@@ -91,22 +91,21 @@
 
         /* scrollbar */
         ::-webkit-scrollbar {
-            width: 15px;
+            width: 8px;
         }
 
-        /* scrollbar track */
-        ::-webkit-scrollbar-track {
-            background-color: #e4e4e4;
-            border-radius: 100px;
-        }
-        
-        /* scrollbar thumb */
+
         ::-webkit-scrollbar-thumb {
             border-radius: 200px !important;
             background: #a6a3b6 !important;
-            border: 6px solid rgba(0, 0, 0, 0.2) !important;
+            border: none !important;
             border-left: 0 !important;
             border-right: 0 !important;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: rgba(255, 255, 255, 0);
+            border-radius: 100px;
         }
         
     </style>

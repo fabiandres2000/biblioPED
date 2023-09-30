@@ -105,6 +105,7 @@ Route::prefix('api')->group(function () {
     Route::get('/listar-publicaciones', [ComunidadController::class, 'listarPublicaciones'])->name('listarPublicaciones');
     Route::post('/guardar-comentario-post', [ComunidadController::class, 'registrarComentarioPost'])->name('registrarComentarioPost');
     Route::get('/eliminar-comentario-post', [ComunidadController::class, 'eliminarComentarioPost'])->name('eliminarComentarioPost');
+    Route::get('/listar-usuarios-comunidad', [ComunidadController::class, 'listarUsuariosComunidad'])->name('listarUsuariosComunidad');
 
 });
 

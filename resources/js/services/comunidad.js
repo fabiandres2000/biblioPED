@@ -32,3 +32,19 @@ export function registrarComentarioPost($data) {
 export function eliminarRespuestaComentario(id_publicacion, id_comentario) {
     return http().get('/api/eliminar-comentario-post?id_publicacion='+id_publicacion+'&id_comentario='+id_comentario);
 }
+
+export function listarUsuariosComunidad() {
+    return http().get('/api/listar-usuarios-comunidad');
+}
+
+export function editarPublicacion($data) {
+    return http().post(
+        '/api/editar-publicacion', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}

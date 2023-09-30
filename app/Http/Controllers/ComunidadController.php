@@ -68,8 +68,6 @@ class ComunidadController extends Controller
         $publicaciones = $collection->find([], ['sort' => ['_id' => -1]])->toArray();
 
 
-        
-        
         foreach ($publicaciones as $publicacion) {
             $publicacion->usuario = $collection2->findOne([
                 '_id' => new \MongoDB\BSON\ObjectID($publicacion->id_usuario),
@@ -133,6 +131,7 @@ class ComunidadController extends Controller
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
         $collection = $mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
         $idPost = $request->input('idPost');
@@ -156,6 +155,10 @@ class ComunidadController extends Controller
             ['$push' => ['comentarios' => $elemento_ingresar]]
         );
         if ($resultado->getModifiedCount() > 0) {
+            $collectionUsuarios->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectId($idUsuario)],
+                ['$inc' => ['numero_comentarios' => 1]]
+            );
             return response()->json(["¡Se ha registrado su comentario correctamente!", 1], 200);
         }else{
             return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
@@ -166,6 +169,9 @@ class ComunidadController extends Controller
         $mongoClient = new Client('mongodb://localhost:27017');
         $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
         $collection = $mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+
+        $idUsuario = Session::get('id');
 
         $id_publicacion = $request->input('id_publicacion');
         $id_comentario = $request->input('id_comentario');
@@ -176,9 +182,40 @@ class ComunidadController extends Controller
         );
         
         if ($result->getModifiedCount() > 0) {
+            $collectionUsuarios->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectId($idUsuario)],
+                ['$inc' => ['numero_comentarios' => -1]]
+            );
             return response()->json(["¡Se ha eliminado su comentario correctamente!", 1], 200);
         } else {
             return response()->json(["¡ No se encontró la publicación o el comentario no existe!", 0], 200);
         }
+    }
+
+    public function listarUsuariosComunidad(){
+
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        $collection = $mongoDB->selectCollection('usuarios');
+        $collection2 = $mongoDB->selectCollection('publicaciones');
+
+        $usuarios = $collection->find()->toArray();
+        $publicaciones = $collection2->find()->toArray();
+        
+        foreach ($usuarios as $usuario) {
+            $usuario->numeroDePublicaciones = $collection2->count(
+                ['id_usuario' => $usuario->_id]
+            );
+
+            if (property_exists($usuario, 'numero_comentarios')) {
+                $usuario->numeroIteraciones = $usuario->numeroDePublicaciones + $usuario->numero_comentarios;
+            } else {
+                $usuario->numeroIteraciones = $usuario->numeroDePublicaciones;
+            }
+        }
+
+        $usuarios = collect($usuarios)->sortByDesc('numeroIteraciones')->values()->take(6)->all();
+
+        return $usuarios;
     }
 }
