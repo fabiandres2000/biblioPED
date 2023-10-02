@@ -15,16 +15,16 @@
                                     <div class="card profile-with-cover">
                                         <div class="card-img-top img-fluid bg-cover height-300" style="background: url('/img/comunidad/upc_baner.png') 50%;"></div>
                                         <div class="media profil-cover-details w-100">
-                                            <div class="media-left pl-2 pt-2">
+                                            <div class="media-left pl-2 pt-2" style="margin-top: 20px">
                                                 <a href="#" class="profile-image">
                                                     <img src="/img/comunidad/logo.png" class="rounded-circle img-border height-100" alt="Card image">
                                                 </a>
                                             </div>
                                             <div class="media-body pt-4 px-2">
                                                 <div class="row">
-                                                    <div class="col">
-                                                        <h3 style="margin-bottom: 10px; font-size: 1.6rem;" class="card-title">Universidad Popular del Cesar</h3>
-                                                        <h3 style="font-size: 1.6rem;" class="card-title">Sede - Principal</h3>
+                                                    <div class="col" style="padding-top: 35px;">
+                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title">Universidad Popular del Cesar</h3>
+                                                        <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title">Sede - Principal</h3>
                                                     </div>
                                                     <div class="col text-right">
                                                         
@@ -38,10 +38,10 @@
                                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                                     <ul class="navbar-nav mr-auto">
                                                         <li style="margin-right: 15px" class="nav-item">
-                                                            <button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> Seguir</button>
+                                                            <button type="button" class="btn btn-primary"><i class="feather icon-star"></i> Publicaciones Destacadas</button>
                                                         </li>
                                                         <li class="nav-item active">
-                                                            <button type="button" class="btn btn-warning"  data-toggle="modal" data-target="#modalNewPublicacion"><i class="fa  fa-dashcube"></i> Realizar una publicación <span class="sr-only"></span></button>
+                                                            <button type="button" class="btn btn-warning"  data-toggle="modal" data-target="#modalNewPublicacion"><i class="feather icon-edit"></i> Realizar una publicación <span class="sr-only"></span></button>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -92,17 +92,17 @@
                                                 <li v-for="(item, index) in datos" :key="index" class="timeline-item" style="border-radius: 20px; position: relative">
                                                     <div class="opciones_comentario">
                                                         <div class="btn-group mr-1 mb-1">
-                                                        <button v-if="datosLogin._id.$oid == item.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 18.5rem;" class="btn btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <button v-if="datosLogin._id.$oid == item.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 18.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i style="font-size: 28px; color: #404e67" class="feather icon-more-horizontal"></i>
                                                         </button>
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
                                                             <a class="dropdown-item" data-toggle="modal" data-target="#modalEditarPublicacion" href="" @click.prevent="verModalEditar(item)"><i class="feather icon-edit-2"></i> Editar</a>
-                                                            <a class="dropdown-item" href="#"><i class="feather icon-trash-2"></i> Eliminar</a>
+                                                            <a class="dropdown-item" @click="eliminarPostPreguntar(item._id.$oid)" href="#"><i class="feather icon-trash-2"></i> Eliminar</a>
                                                         </div>
                                                     </div>
                                                     </div>
                                                     <div class="timeline-card card border-grey border-lighten-2">
-                                                        <div class="card-header" style="background-color: #a8dbc4">
+                                                        <div class="card-header" style="background-color: #bdedf3">
                                                             <div class="media">
                                                                 <div class="media-left mr-1">
                                                                     <a href="#">
@@ -113,7 +113,8 @@
                                                                 <div class="media-body">
                                                                     <h4 class="card-title"><a href="#">{{ item.usuario.nombre }} - <strong v-if="item.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ item.usuario.grado }}° grado</strong><strong v-if="item.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
                                                                     <p class="card-subtitle text-muted mb-0 pt-1">
-                                                                        <span class="font-small-3">{{ item.fecha_formateada }}</span>
+                                                                        <span v-if="item.editado" class="font-small-3">{{ item.fecha_formateada_edicion }} <strong>(editada)</strong></span>
+                                                                        <span v-else class="font-small-3">{{ item.fecha_formateada }}</span>
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -124,7 +125,8 @@
                                                                     <p class="card-text" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
                                                                     <img style="margin-bottom: 20px" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
                                                                     <ul class="list-inline">
-                                                                        <li class="pr-1"><a href="#" class=""><span class="fa fa-thumbs-o-up"></span> Me gusta</a></li>
+                                                                        <li v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
+                                                                        <li v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
                                                                         <li class="pr-1"><a href="#" class=""><span class="fa fa-commenting-o"></span> ({{item.comentarios.length}}) Comentarios</a></li>
                                                                     </ul>
                                                                 </div>
@@ -245,7 +247,7 @@
                                                 <p class="text-bold-600 mb-0"><a href="#">{{ item2.usuario.nombre }}</a></p>
                                                 <p style="margin-bottom: 5px">{{ item2.comentarioTexto }}</p>
                                             </div>
-                                            <i style="right: 4px;" v-if="datosLogin._id.$oid == item2.usuario._id.$oid" @click="eliminarRespuestaComentarioPregunta(publiSeleccionada._id.$oid, item2._id.$oid)" class="fas fa-trash-alt eliminarcomemntario"></i>
+                                            <i style="right: 32px;" v-if="datosLogin._id.$oid == item2.usuario._id.$oid" @click="eliminarRespuestaComentarioPregunta(publiSeleccionada._id.$oid, item2._id.$oid)" class="fas fa-trash-alt eliminarcomemntario"></i>
                                             <ul class="list-inline" style="margin-left: 20px">
                                                 <li class="pr-1"><a href="#" class=""><span class="fa fa-thumbs-o-up"></span> Like</a></li>
                                                 <li class="pr-1"><strong> {{ item2.fechaFormateada }}</strong></li>
@@ -408,14 +410,18 @@ export default {
             detallePublicacionEditar: '',
             selectedImageEditar: null,
             imageFileEditar: null,
+            intervalId: null
         }
     },
     mounted() {
+        this.verificarLogin();
         window.addEventListener("scroll", this.actualizarPixelesDesplazados);
         this.misDatos();
         this.listarUsuariosComunidad();
+        this.intervalId = setInterval(this.listarPublicaciones2, 60000);
     },
     beforeDestroy() {
+        clearInterval(this.intervalId);
         window.removeEventListener("scroll", this.actualizarPixelesDesplazados);
     },
     methods: {
@@ -423,6 +429,14 @@ export default {
             await usuarioService.misDatos().then(respuesta => {
                 this.datosLogin = respuesta.data;
                 this.listarPublicaciones();
+            });
+        },
+        async verificarLogin(){
+            var navigate = this.$router;
+            await usuarioService.verificarLogin().then(respuesta => {
+                if(respuesta.data == 0){
+                    navigate.push({ name: 'paginaBusqueda'})
+                }
             });
         },
         openFileInputPublicacion() {
@@ -448,7 +462,8 @@ export default {
                 const respuesta_ok = response.data;
                 if (respuesta_ok[1] === 1) {
                     toastr.success(respuesta_ok[0]);
-                    this.listarPublicaciones();
+                    this.listarPublicaciones2();
+                    this.listarUsuariosComunidad();
                 } else {
                     toastr.error(respuesta_ok[0]);
                 }
@@ -487,6 +502,11 @@ export default {
                 this.loading = false;
             });
         },
+        async listarPublicaciones2() {
+            await comunidadService.listarPublicaciones().then(respuesta => {
+                this.datos = respuesta.data;
+            });
+        },
         onSelectEmoji(emoji) {
             var valorExistente = $("#inputComentario" + this.indexComentario).val();
             var nuevoValor = valorExistente + " " + emoji.i;
@@ -522,9 +542,8 @@ export default {
                             miDiv.css("display", "none");
                         }
                         toastr.success(respuesta_ok[0]);
-                        comunidadService.listarPublicaciones().then(respuesta => {
-                            this.datos = respuesta.data;
-                        });
+                        this.listarPublicaciones2();
+                        this.listarUsuariosComunidad();
                     } else {
                         toastr.error(respuesta_ok[0]);
                     }
@@ -592,6 +611,7 @@ export default {
                             this.publiSeleccionada = this.datos[this.indexpubliSeleccionada];
                         }
                     });
+                    this.listarUsuariosComunidad();
                 } else {
                     toastr.error(respuesta_ok[0]);
                 }
@@ -655,7 +675,7 @@ export default {
                 const respuesta_ok = response.data;
                 if (respuesta_ok[1] === 1) {
                     toastr.success(respuesta_ok[0]);
-                    this.listarPublicaciones();
+                    this.listarPublicaciones2();
                 } else {
                     toastr.error(respuesta_ok[0]);
                 }
@@ -663,11 +683,53 @@ export default {
                 this.detallePublicacion = '';
                 this.selectedImage = null;
                 this.imageFile = null;
-                $("#modalNewPublicacion").modal('hide');
+                $("#modalEditarPublicacion").modal('hide');
             } else {
                 toastr.error('¡El campo detalle de la publicación es obligatorio!');
             }
         },
+        eliminarPostPreguntar(id) {
+            Swal.fire({
+                title: '¿Estas seguro de eliminar esta publicación?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, borrar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.EliminarPost(id);
+                }
+            })
+        },
+        async EliminarPost(id_publicacion){
+            await comunidadService.EliminarPost(id_publicacion).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    toastr.success(respuesta_ok[0]);
+                    this.listarPublicaciones2();
+                    this.listarUsuariosComunidad();
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        },
+        async meGustaPost(id_publicacion){
+            var datos = {
+                id_usuario: this.datosLogin._id.$oid,
+                id_publicacion: id_publicacion
+            }
+            await comunidadService.meGustaPost(datos).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    this.listarPublicaciones2();
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        }
     }
 };
 </script>
@@ -881,7 +943,7 @@ export default {
     cursor: pointer;
 }
 
-.dropdown-toggle::after {
+.menu_editar_eliminar::after {
     font-family: "FontAwesome";
     content: "" !important;
     border: none !important;

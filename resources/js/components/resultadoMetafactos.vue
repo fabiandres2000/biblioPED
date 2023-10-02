@@ -51,7 +51,7 @@
                                         </fieldset>
                                     </div>
                                     <div class="col-1">
-                                        <button @click.prevent="BuscarResultadoNuevamente" style="width: 100%" class="btn btn-primary btn-md">
+                                        <button @click.prevent="BuscarResultadoNuevamente(0)" style="width: 100%" class="btn btn-primary btn-md">
                                             <i class="feather icon-search"></i>
                                         </button>
                                     </div>
@@ -155,11 +155,16 @@ export default {
         this.tipo = this.$route.params.tipo;
 
         this.verificarConexion();
-        this.BuscarResultadoNuevamente(); 
+        this.BuscarResultadoNuevamente(0); 
         document.title = 'Resultados - '+this.texto;
     },
     methods: {
-        async BuscarResultadoNuevamente() {
+        async BuscarResultadoNuevamente(mode) {
+            if(mode == 0){
+                this.images = [];
+                this.pagina = 1;
+                this.mostrado_todo = false;
+            }
             const inicio = Date.now();
             this.$router.replace({ path: '/resultado-metafactos/' + this.texto + '/' + this.tipo + '/' + this.pagina});
             try {
@@ -201,7 +206,7 @@ export default {
 
                 if (resultadovoz != "") {
                     self.texto = resultadovoz;
-                    self.BuscarResultadoNuevamente();
+                    self.BuscarResultadoNuevamente(0);
                 }
 
             }
@@ -217,7 +222,7 @@ export default {
         async  AumentarPaginaImagen(){
             this.pagina +=1;
             this.loading = true; 
-            this.BuscarResultadoNuevamente();
+            this.BuscarResultadoNuevamente(1);
         },
         seleccionarImagen(rutaSeleccionada, tituloImagenS) {
             this.imagenSeleccionada = '/metafactos/'+rutaSeleccionada;

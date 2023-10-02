@@ -16,7 +16,6 @@ export function listarPublicaciones() {
     return http().get('/api/listar-publicaciones');
 }
 
-
 export function registrarComentarioPost($data) {
     return http().post(
         '/api/guardar-comentario-post', 
@@ -44,6 +43,22 @@ export function editarPublicacion($data) {
         {
             headers: {
                 'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}
+
+export function EliminarPost(id_publicacion) {
+    return http().get('/api/eliminar-post?id_publicacion='+id_publicacion);
+}
+
+export function meGustaPost($data) {
+    return http().post(
+        '/api/me-gusta', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
             }
         }
     );

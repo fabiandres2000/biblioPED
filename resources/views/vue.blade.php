@@ -107,6 +107,12 @@
             background-color: rgba(255, 255, 255, 0);
             border-radius: 100px;
         }
+
+        .btn-warning {
+            border-color: #fc4f00 !important;
+            background-color: #fc4f00 !important;
+            color: #FFFFFF;
+        }
         
     </style>
 </head>
@@ -146,7 +152,7 @@
                                     <li class="scrollable-container media-list" id="lista_notificaciones">
                                          
                                     </li>
-                                    <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center" href="javascript:void(0)">Read all notifications</a></li>
+                                    <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center" href="javascript:void(0)">Leer todas las notificaciones</a></li>
                                 </ul>
                             </li>
                         @endif
@@ -711,48 +717,67 @@
                     div.innerHTML = "";
                     response.forEach(element => {
                         var estilo = "";
-
                         var clase = "";
 
                         if(element.estado == 'cerrado'){
-                            if(element.tipo == 0){
-                                estilo = "style='background-color: #16d39a38'";
-                                clase = "feather icon-file icon-bg-circle bg-teal";
-                            }else{
-                                estilo = "style='background-color: #f9a8252e'";
-                                clase = "feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
-                            }
+                            estilo = "style='background-color: #f9a8252e'";
                             count ++;
-                        }else{
-                            if(element.tipo == 0){
-                                clase = "feather icon-file icon-bg-circle bg-teal";
-                            }else{
-                                clase = "feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
-                            }
                         }
 
+
                         if(element.tipo == 0){
+                            clase = "feather icon-share-2 icon-bg-circle bg-yellow bg-darken-3";
                             div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\""+element._id.$oid+"\", \""+element.ruta+"\")' type='button'>"+
                                                 "<div "+estilo+" class='media'>"+
                                                     "<div class='media-left align-self-center'><i class='"+clase+"'></i></div>"+
                                                     "<div class='media-body'>"+
-                                                        "<h6 class='media-heading'>Nueva Recomendación!</h6>"+
+                                                        "<h6 class='media-heading'><strong>Nueva Recomendación!</strong></h6>"+
                                                         "<p class='notification-text font-small-3 text-muted'>El docente <strong>"+element.profesor.nombre+"</strong> te recomendado un contenido.</p><small>"+
                                                             "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>"+element.fecha+" | "+element.horas+"</strong></time></small>"+
                                                     "</div>"+
                                                 "</div>"+
                                             "</a>"
                         }else{
-                            div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\""+element._id.$oid+"\", \""+element.ruta+"\")' type='button'>"+
-                                                "<div "+estilo+" class='media'>"+
-                                                    "<div class='media-left align-self-center'><i class='"+clase+"'></i></div>"+
-                                                    "<div class='media-body'>"+
-                                                        "<h6 class='media-heading'>Nueva invitación a foro!</h6>"+
-                                                        "<p class='notification-text font-small-3 text-muted'>El docente <strong>"+element.profesor.nombre+"</strong> te invito a un foro.</p><small>"+
-                                                            "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>"+element.fecha+" | "+element.horas+"</strong></time></small>"+
+                            if(element.tipo == 1){
+                                clase = "feather icon-users icon-bg-circle bg-yellow bg-darken-3";
+                                div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\""+element._id.$oid+"\", \""+element.ruta+"\")' type='button'>"+
+                                                    "<div "+estilo+" class='media'>"+
+                                                        "<div class='media-left align-self-center'><i class='"+clase+"'></i></div>"+
+                                                        "<div class='media-body'>"+
+                                                            "<h6 class='media-heading'><strong>Nueva invitación a foro!</strong></h6>"+
+                                                            "<p class='notification-text font-small-3 text-muted'>El docente <strong>"+element.profesor.nombre+"</strong> te invito a un foro.</p><small>"+
+                                                                "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>"+element.fecha+" | "+element.horas+"</strong></time></small>"+
+                                                        "</div>"+
                                                     "</div>"+
-                                                "</div>"+
-                                            "</a>"
+                                                "</a>"
+                            }else{
+                                if(element.tipo == 2){
+                                    clase = "feather icon-thumbs-up icon-bg-circle bg-yellow bg-darken-3";
+                                    div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\""+element._id.$oid+"\", \""+element.ruta+"\")' type='button'>"+
+                                                        "<div "+estilo+" class='media'>"+
+                                                            "<div class='media-left align-self-center'><i class='"+clase+"'></i></div>"+
+                                                            "<div class='media-body'>"+
+                                                                "<h6 class='media-heading'><strong>Nueva reacción!</strong></h6>"+
+                                                                "<p class='notification-text font-small-3 text-muted' style='text-transform: capitalize'>"+element.tema+".</p><small>"+
+                                                                    "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>"+element.fecha+" | "+element.horas+"</strong></time></small>"+
+                                                            "</div>"+
+                                                        "</div>"+
+                                                    "</a>"
+                                }else{
+                                    clase = "feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
+                                    div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\""+element._id.$oid+"\", \""+element.ruta+"\")' type='button'>"+
+                                                        "<div "+estilo+" class='media'>"+
+                                                            "<div class='media-left align-self-center'><i class='"+clase+"'></i></div>"+
+                                                            "<div class='media-body'>"+
+                                                                "<h6 class='media-heading'><strong>Nuevo comentario!</strong></h6>"+
+                                                                "<p class='notification-text font-small-3 text-muted' style='text-transform: capitalize'>"+element.tema+".</p><small>"+
+                                                                    "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>"+element.fecha+" | "+element.horas+"</strong></time></small>"+
+                                                            "</div>"+
+                                                        "</div>"+
+                                                    "</a>"
+                                }
+                            }
+                            
                         }
                     });
 

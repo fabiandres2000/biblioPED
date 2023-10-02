@@ -67,8 +67,15 @@ class ComunidadController extends Controller
 
         $publicaciones = $collection->find([], ['sort' => ['_id' => -1]])->toArray();
 
+        $idUsuario = (string) Session::get('id');
 
         foreach ($publicaciones as $publicacion) {
+            if(in_array($idUsuario, json_decode(json_encode($publicacion->likes)))){
+                $publicacion->like = true;
+            }else{
+                $publicacion->like = false;
+            }
+
             $publicacion->usuario = $collection2->findOne([
                 '_id' => new \MongoDB\BSON\ObjectID($publicacion->id_usuario),
             ]);
@@ -88,6 +95,11 @@ class ComunidadController extends Controller
             $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha'] . ' ' . $publicacion['horas'], new \DateTimeZone('America/Bogota'));
 
             $publicacion->fecha_formateada = $dateTimeA->format('d M, Y \a\ \l\a\s g.i A');
+
+            if (property_exists($publicacion, 'editado')){
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha_edicion'] . ' ' . $publicacion['horas_edicion'], new \DateTimeZone('America/Bogota'));
+                $publicacion->fecha_formateada_edicion = $dateTimeB->format('d M, Y \a\ \l\a\s g.i A');
+            }
 
             foreach ($publicacion->comentarios as $comentario){
                 $comentario->usuario = $collection2->findOne([
@@ -154,11 +166,20 @@ class ComunidadController extends Controller
             ['_id' => new \MongoDB\BSON\ObjectID($idPost)],
             ['$push' => ['comentarios' => $elemento_ingresar]]
         );
+
+       
+
         if ($resultado->getModifiedCount() > 0) {
             $collectionUsuarios->updateOne(
                 ['_id' => new \MongoDB\BSON\ObjectId($idUsuario)],
                 ['$inc' => ['numero_comentarios' => 1]]
             );
+
+            $publicacion = $collection->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($idPost), 
+            ]);
+            self::guardarNotificacion((string) $publicacion->id_usuario, (string) $publicacion['_id'], 3);
+
             return response()->json(["¡Se ha registrado su comentario correctamente!", 1], 200);
         }else{
             return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
@@ -217,5 +238,147 @@ class ComunidadController extends Controller
         $usuarios = collect($usuarios)->sortByDesc('numeroIteraciones')->values()->take(6)->all();
 
         return $usuarios;
+    }
+
+    public function editarPublicacion(Request $request){
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        $collection = $mongoDB->selectCollection('publicaciones');
+
+        $id_publicacion = $request->input('id_publicacion');
+        $detalle = $request->input('detalle');
+        $multimedia = $request->file('imagen');
+        $nombreArchivo  = "";
+
+        if ($multimedia !== null) {
+            $nombreArchivo = $multimedia->getClientOriginalName();
+            $multimedia->move(public_path('imagenes_comunidad'), $nombreArchivo);
+        }
+
+        $timezone = new \DateTimeZone('America/Bogota');
+
+        $fechaActual = new \DateTime('now', $timezone);
+        $horaActual = new \DateTime('now', $timezone);
+
+        $resultado = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($id_publicacion)], 
+            [            
+                '$set' => [
+                    'detalle' => $detalle,
+                    'imagen' => $nombreArchivo,
+                    'fecha_edicion' => $fechaActual->format('d/m/Y'),
+                    'horas_edicion' => $horaActual->format('H:i:s'),
+                    'editado' => true
+                ]
+            ]
+        );
+
+        if ($resultado->getModifiedCount() === 1) {
+            return response()->json(["¡Su publicación fue editada correctamente!", 1], 200);
+        }else{
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
+        }
+    }
+
+    public function eliminarPost(Request $request){
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        $collection = $mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+
+        $idUsuario = Session::get('id');
+
+        $id_publicacion = $request->input('id_publicacion');
+
+        $result = $collection->deleteOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($id_publicacion)],
+        );
+        
+        if ($result->getDeletedCount() > 0) {
+            return response()->json(["¡Se ha eliminado su publicación correctamente!", 1], 200);
+        } else {
+            return response()->json(["¡ No se encontró la publicación que desea eliminar!", 0], 200);
+        }
+    }
+
+    public function meGusta(Request $request){
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        $collection = $mongoDB->selectCollection('publicaciones');
+
+        $id_usuario = $request->input('id_usuario');
+        $id_publicacion = $request->input('id_publicacion');
+      
+        $documento = $collection->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($id_publicacion), 
+            'likes' => $id_usuario
+        ]);
+
+        $bandera = false;
+
+        if ($documento) {
+            $resultado = $collection->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectID($id_publicacion)],
+                ['$pull' => ['likes' => $id_usuario]]
+            );
+        } else {
+            $bandera = true;
+            $resultado = $collection->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectID($id_publicacion)],
+                ['$addToSet' => ['likes' => $id_usuario]]
+            );
+        }
+
+        if ($resultado->getModifiedCount() > 0) {
+            if($bandera){
+                $publicacion = $collection->findOne([
+                    '_id' => new \MongoDB\BSON\ObjectID($id_publicacion), 
+                ]);
+                self::guardarNotificacion((string) $publicacion->id_usuario, (string) $publicacion['_id'], 2);
+            }
+            return response()->json(["", 1], 200);
+        }else{
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
+        }
+    }
+
+    public function guardarNotificacion($id_usuario_publicacion, $id_notificacion, $tipo){
+        $mongoClient = new Client('mongodb://localhost:27017');
+        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        $collection2 = $mongoDB->selectCollection('notificaciones');
+
+
+        $timezone = new \DateTimeZone('America/Bogota');
+
+        $fechaActual = new \DateTime('now', $timezone);
+        $horaActual = new \DateTime('now', $timezone);
+
+        $idUsuario = (string) Session::get('id');
+        if($id_usuario_publicacion != $idUsuario){
+            if($tipo == 2){
+                $noti = [
+                    'id_usuario' => $id_usuario_publicacion,
+                    'ruta' => 'publicacion/'.$id_notificacion,
+                    'tema' => '<strong>'.Session::get('nombre').'</strong> ha indicado que le gusta tu publiación',
+                    'fecha' => $fechaActual->format('d/m/Y'),
+                    'horas' => $horaActual->format('H:i:s'),
+                    'estado' => 'cerrado',
+                    'tipo' => 2
+                ];
+            }else{
+                $noti = [
+                    'id_usuario' => $id_usuario_publicacion,
+                    'ruta' => 'publicacion/'.$id_notificacion,
+                    'tema' => '<strong>'.Session::get('nombre').'</strong> ha comentado tu publiación',
+                    'fecha' => $fechaActual->format('d/m/Y'),
+                    'horas' => $horaActual->format('H:i:s'),
+                    'estado' => 'cerrado',
+                    'tipo' => 3
+                ];
+            }
+        
+            $collection2->insertOne($noti);
+        }
+       
     }
 }

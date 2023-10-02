@@ -431,28 +431,32 @@ class UsuarioController extends Controller
             $mongoClient = new Client('mongodb://localhost:27017');
             $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
             $collection = $mongoDB->selectCollection('notificaciones');
+            $collectionUsuarios = $mongoDB->selectCollection('usuarios');
     
-            $ide = $idUsuario->__toString();
+            $ide = (string) $idUsuario;
     
             $resultados = $collection->aggregate([
                 ['$match' => [
-                    'id_estudiante' => $ide,
-                ]],
-                ['$lookup' => [
-                    'from' => 'usuarios',
-                    'localField' => 'id_profesor',
-                    'foreignField' => '_id',
-                    'as' => 'profesor',
+                    '$or' => [
+                        ['id_estudiante' => $ide],
+                        ['id_usuario' => $ide],
+                    ],
                 ]],
                 [
                     '$sort' => [
-                        'fecha' => -1,
-                        'horas' => -1,
+                        '_id' => -1,
                     ],
                 ],
-                ['$unwind' => '$profesor'],
                 ['$limit' => 10]
             ])->toArray();
+
+            foreach ($resultados as $item) {
+               if($item->tipo == 1  || $item->tipo == 0){
+                    $item->profesor = $collectionUsuarios->findOne(
+                        ['_id' =>  $item->id_profesor]      
+                    );
+               }
+            }
     
             return response()->json($resultados, 200);
         }else{

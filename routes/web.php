@@ -106,7 +106,9 @@ Route::prefix('api')->group(function () {
     Route::post('/guardar-comentario-post', [ComunidadController::class, 'registrarComentarioPost'])->name('registrarComentarioPost');
     Route::get('/eliminar-comentario-post', [ComunidadController::class, 'eliminarComentarioPost'])->name('eliminarComentarioPost');
     Route::get('/listar-usuarios-comunidad', [ComunidadController::class, 'listarUsuariosComunidad'])->name('listarUsuariosComunidad');
-
+    Route::post('/editar-publicacion', [ComunidadController::class, 'editarPublicacion'])->name('editarPublicacion');
+    Route::get('/eliminar-post', [ComunidadController::class, 'eliminarPost'])->name('eliminarPost');
+    Route::post('/me-gusta', [ComunidadController::class, 'meGusta'])->name('meGusta');
 });
 
 Route::get('/{any}', function () {
