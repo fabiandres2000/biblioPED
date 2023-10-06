@@ -11,13 +11,30 @@ use Jenssegers\Mongodb\Facades\MongoDB;
 
 use Illuminate\Support\Facades\Session;
 
+require 'conexion.php';
+
 class UsuarioController extends Controller
 {
-    public function loginUsuario(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
 
-        $collection = $mongoDB->selectCollection('usuarios');
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
+    public function loginUsuario(Request $request){
+       
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $correo = $request->input('correo');
         $password = $request->input('password');
@@ -58,10 +75,8 @@ class UsuarioController extends Controller
     }
 
     public function registroUsuarioEstudiante(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+       
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $nombre = $request->input('nombre');
         $sexo = $request->input('sexo');
@@ -111,15 +126,11 @@ class UsuarioController extends Controller
 
     public function cerrarSesion(){
         Session::flush();
-
         return 1;
     }
 
     public function misDatos(){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
 
@@ -134,10 +145,7 @@ class UsuarioController extends Controller
     }
 
     public function editarEstudiante(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
 
@@ -194,10 +202,7 @@ class UsuarioController extends Controller
     }
 
     public function cambiarPassword(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
         $password_old = $request->input('password_old');
@@ -240,11 +245,7 @@ class UsuarioController extends Controller
     }
 
     public function estudiantesCompartir(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('usuarios');
-
-        
+        $collection = self::$mongoDB->selectCollection('usuarios');
         $grado = $request->input('grado');
         $grupo = $request->input('grupo');
         $jornada = $request->input('jornada');
@@ -261,10 +262,7 @@ class UsuarioController extends Controller
     }
 
     public function compartirContenido(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('recomendaciones');
+        $collection = self::$mongoDB->selectCollection('recomendaciones');
 
         $idUsuario = Session::get('id');
         $ids = $request->input('ids');
@@ -282,7 +280,7 @@ class UsuarioController extends Controller
 
         $collection->insertOne($usuario);
 
-        $collection2 = $mongoDB->selectCollection('notificaciones');
+        $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
 
         foreach ($ids as $key) {
@@ -304,9 +302,7 @@ class UsuarioController extends Controller
     }
 
     public function recomendacionesDocente(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('recomendaciones');
+        $collection = self::$mongoDB->selectCollection('recomendaciones');
 
         $idUsuario = Session::get('id');
         $texto = $request->input('texto');
@@ -328,7 +324,7 @@ class UsuarioController extends Controller
 
             $datos_agrupados = $datos_agrupados->toArray();
 
-            $collection2 = $mongoDB->selectCollection('usuarios');
+            $collection2 = self::$mongoDB->selectCollection('usuarios');
             foreach ($datos_agrupados as $dato){
                 $dato->alumnos_recomendados = [];
                 foreach($dato->estudiantes as $dato2){
@@ -355,7 +351,7 @@ class UsuarioController extends Controller
 
             $datos_agrupados = $datos_agrupados->toArray();
 
-            $collection2 = $mongoDB->selectCollection('usuarios');
+            $collection2 = self::$mongoDB->selectCollection('usuarios');
             foreach ($datos_agrupados as $dato){
                 $dato->alumnos_recomendados = [];
                 foreach($dato->estudiantes as $dato2){
@@ -369,9 +365,7 @@ class UsuarioController extends Controller
     }
 
     public function recomendacionesEstudiante(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('recomendaciones');
+        $collection = self::$mongoDB->selectCollection('recomendaciones');
 
         $idUsuario = Session::get('id');
         $texto = $request->input('texto');
@@ -393,7 +387,7 @@ class UsuarioController extends Controller
 
             $datos_agrupados = $datos_agrupados->toArray();
 
-            $collection2 = $mongoDB->selectCollection('usuarios');
+            $collection2 = self::$mongoDB->selectCollection('usuarios');
             foreach ($datos_agrupados as $dato){
                 $dato->profesor = $collection2->findOne([
                     '_id' => new \MongoDB\BSON\ObjectID($dato->id_profesor),
@@ -428,10 +422,9 @@ class UsuarioController extends Controller
     public function notificaciones(){
         if(Session::has('logueado')){
             $idUsuario = Session::get('id');
-            $mongoClient = new Client('mongodb://localhost:27017');
-            $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-            $collection = $mongoDB->selectCollection('notificaciones');
-            $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+            
+            $collection = self::$mongoDB->selectCollection('notificaciones');
+            $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
     
             $ide = (string) $idUsuario;
     
@@ -465,9 +458,7 @@ class UsuarioController extends Controller
     }
 
     public function cambiarestadoNotificacion(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('notificaciones');
+        $collection = self::$mongoDB->selectCollection('notificaciones');
 
         $id = $request->input('id');
 
@@ -492,9 +483,7 @@ class UsuarioController extends Controller
     }
 
     public function crearForo(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
+        $collection = self::$mongoDB->selectCollection('foros');
 
         $idUsuario = Session::get('id');
         $ids = $request->input('ids');
@@ -520,7 +509,7 @@ class UsuarioController extends Controller
 
         $collection->insertOne($usuario);
 
-        $collection2 = $mongoDB->selectCollection('notificaciones');
+        $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
 
         foreach ($ids as $key) {
@@ -542,9 +531,7 @@ class UsuarioController extends Controller
     }
 
     public function guardarSeleccion(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('apuntes');
+        $collection = self::$mongoDB->selectCollection('apuntes');
 
         $id_usuario = Session::get('id');
         $id_contenido = $request->input('id_contenido');
@@ -594,13 +581,10 @@ class UsuarioController extends Controller
     }
 
     public function listarApuntes(Request $request){
-
         $variable1 = $request->input('id');
         $variable2 = $request->input('tipo');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('apuntes');
+        $collection = self::$mongoDB->selectCollection('apuntes');
 
         $idUsuario = Session::get('id');
             
@@ -616,9 +600,7 @@ class UsuarioController extends Controller
     } 
 
     public function eliminarApunte(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('apuntes');
+        $collection = self::$mongoDB->selectCollection('apuntes');
 
         $id_apunte = $request->input('id');
 

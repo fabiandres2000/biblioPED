@@ -20,6 +20,8 @@ import agregarContenido from './components/contenido/agregarContenido.vue'
 import editarContenido from './components/contenido/editarContenido.vue'
 import ResultadoMetafactos from './components/resultadoMetafactos.vue'
 import miComunidad from './components/miComunidad/miComunidad.vue'
+import publicacion from './components/miComunidad/publicacion.vue'
+
 
 const routes = [
   {
@@ -127,6 +129,11 @@ const routes = [
     path: '/mi-comunidad',
     name: 'miComunidad',
     component: miComunidad
+  },
+  {
+    path: '/publicacion/:id',
+    name: 'publicacion',
+    component: publicacion
   },
 ]
 

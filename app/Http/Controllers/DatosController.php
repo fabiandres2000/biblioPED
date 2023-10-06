@@ -14,13 +14,29 @@ use HTMLPurifier_Config;
 
 use Illuminate\Support\Str;
 
+require 'conexion.php';
+
 class DatosController extends Controller
 {
-    public function crearContenidoBusqueda(){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+    protected static $mongoClient;
+    protected static $mongoDB;
 
-        $collection = $mongoDB->selectCollection('contenido_busqueda');
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
+    public function crearContenidoBusqueda(){
+
+        $collection = self::$mongoDB->selectCollection('contenido_busqueda');
 
         $datos = DB::connection('mysql')->table('cont_documento_modulos') 
         ->join('contenido_modulo', 'contenido_modulo.id', 'cont_documento_modulos.contenido')
@@ -91,10 +107,6 @@ class DatosController extends Controller
 
     public function migrartablasCont()
     {
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        
         $resultados = DB::table('cont_documento_modulos')
         ->select('cont_documento_modulos.*')
         ->get();
@@ -110,7 +122,7 @@ class DatosController extends Controller
                 'updated_at' => $resultado->updated_at,
             ];
 
-            $collection = $mongoDB->selectCollection('cont_documento_modulos');
+            $collection = self::$mongoDB->selectCollection('cont_documento_modulos');
 
             $collection->insertOne($dato);
         }
@@ -120,9 +132,7 @@ class DatosController extends Controller
 
     public function migrarVideos()
     {
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
+        
         /*
         $resultados = DB::connection('mysql')
         ->table('cont_didactico as cd')
@@ -156,7 +166,7 @@ class DatosController extends Controller
                 'horas' => date('H:i:s'),
             ];
 
-            $collection = $mongoDB->selectCollection('multimedia');
+            $collection = self::$mongoDB->selectCollection('multimedia');
 
             $collection->insertOne($dato);
         }
@@ -166,8 +176,7 @@ class DatosController extends Controller
 
     public function migrarMetafactos()
     {
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
+        
 
         $resultados = DB::table('imagenes_moduloe as ime')
         ->select('ime.id', 'ime.imagen', 'tme.titulo', 'ame.nombre', 'ame.grado')
@@ -189,7 +198,7 @@ class DatosController extends Controller
                 'horas' => date('H:i:s'),
             ];
 
-            $collection = $mongoDB->selectCollection('multimedia');
+            $collection = self::$mongoDB->selectCollection('multimedia');
 
             $collection->insertOne($dato);
         }

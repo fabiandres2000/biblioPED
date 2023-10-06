@@ -109,6 +109,7 @@ Route::prefix('api')->group(function () {
     Route::post('/editar-publicacion', [ComunidadController::class, 'editarPublicacion'])->name('editarPublicacion');
     Route::get('/eliminar-post', [ComunidadController::class, 'eliminarPost'])->name('eliminarPost');
     Route::post('/me-gusta', [ComunidadController::class, 'meGusta'])->name('meGusta');
+    Route::get('/publicacion-get', [ComunidadController::class, 'publicacionGet'])->name('publicacionGet');
 });
 
 Route::get('/{any}', function () {

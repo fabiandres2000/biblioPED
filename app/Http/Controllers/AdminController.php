@@ -16,14 +16,29 @@ use HTMLPurifier_Config;
 
 use Illuminate\Support\Str;
 
+require 'conexion.php';
+
 class AdminController extends Controller
 {
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
 
     public function RegistroDocente(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+       
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $correo = $request->input('correo');
         $direccion = $request->input('direccion');
@@ -67,10 +82,8 @@ class AdminController extends Controller
     }
 
     public function listarDocentes(){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+        
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $usuarios = $collection->find(
             [
@@ -82,10 +95,7 @@ class AdminController extends Controller
     }
 
     public function editarDocente(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('usuarios');
 
         $correo = $request->input('correo');
         $direccion = $request->input('direccion');
@@ -119,9 +129,7 @@ class AdminController extends Controller
     }
 
     public function guardarContenido(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
+     
         $tipo_subida = $request->input('tipo_subida');
         $tipo_contenido = $request->input('tipo_contenido');
         $asignatura = $request->input('asignatura');
@@ -141,7 +149,7 @@ class AdminController extends Controller
                 $nombreArchivo = $multimedia->getClientOriginalName();
                 $multimedia->move(public_path('metafactos'), $nombreArchivo);
 
-                $collection = $mongoDB->selectCollection('multimedia');
+                $collection = self::$mongoDB->selectCollection('multimedia');
 
                 $dato = [
                     'tipo_multimedia' => $tipo_contenido,
@@ -166,7 +174,7 @@ class AdminController extends Controller
                 $nombreArchivo = $multimedia->getClientOriginalName();
                 $multimedia->move(public_path('videos'), $nombreArchivo);
 
-                $collection = $mongoDB->selectCollection('multimedia');
+                $collection = self::$mongoDB->selectCollection('multimedia');
                 
                 $dato = [
                     'tipo_multimedia' => $tipo_contenido,
@@ -214,16 +222,13 @@ class AdminController extends Controller
     }
 
     function tomar_ultimo_id($tipo_tabla){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        
         if($tipo_tabla == 'asignatura'){
-            $collection = $mongoDB->selectCollection('cont_documento');
+            $collection = self::$mongoDB->selectCollection('cont_documento');
             $latestDocument = $collection->find([], ['sort' => ['_id' => -1], 'limit' => 1])->toArray()[0];
         
             
         }else{
-            $collection = $mongoDB->selectCollection('cont_documento_modulos');
+            $collection = self::$mongoDB->selectCollection('cont_documento_modulos');
             $latestDocument = $collection->find([], ['sort' => ['_id' => -1], 'limit' => 1])->toArray()[0];
         }
 
@@ -236,15 +241,12 @@ class AdminController extends Controller
     }
 
     function guardarContenidoHTML($request, $consecutivo){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        
         $idUsuario = Session::get('id');
 
         if($request->input('tipo_subida') == 'asignatura'){
-            $collection = $mongoDB->selectCollection('cont_documento');
+            $collection = self::$mongoDB->selectCollection('cont_documento');
         }else{
-            $collection = $mongoDB->selectCollection('cont_documento_modulos');
+            $collection = self::$mongoDB->selectCollection('cont_documento_modulos');
         }
 
         $dato = [
@@ -263,9 +265,6 @@ class AdminController extends Controller
     }
 
     function guardarContenidoBusqueda($request, $consecutivo){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        
         $idUsuario = Session::get('id');
 
         if($request->input('tipo_subida') == 'asignatura'){
@@ -274,7 +273,7 @@ class AdminController extends Controller
             $tipo_contenido = "T";
         }
 
-        $collection = $mongoDB->selectCollection('contenido_busqueda');
+        $collection = self::$mongoDB->selectCollection('contenido_busqueda');
         $latestDocument = $collection->find([], ['sort' => ['_id' => -1], 'limit' => 1])->toArray()[0];
 
         $ultimo_id = $latestDocument->id + 1;
@@ -329,11 +328,9 @@ class AdminController extends Controller
     }
 
     function consultarContenidoRegistrado(){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('multimedia');
-        $collection2 = $mongoDB->selectCollection('cont_documento');
-        $collection3 = $mongoDB->selectCollection('cont_documento_modulos');
+        $collection = self::$mongoDB->selectCollection('multimedia');
+        $collection2 = self::$mongoDB->selectCollection('cont_documento');
+        $collection3 = self::$mongoDB->selectCollection('cont_documento_modulos');
 
         $idUsuario = Session::get('id');
 
@@ -397,9 +394,6 @@ class AdminController extends Controller
     }
 
     public function editarContenido(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
         $tipo_subida = $request->input('tipo_subida');
         $tipo_contenido = $request->input('tipo_contenido');
        
@@ -413,10 +407,10 @@ class AdminController extends Controller
         $tipo_subida_anterior = $request->input('tipo_subida_anterior');
         $tipo_contenido_anterior = $request->input('tipo_contenido_anterior');
 
-        $collection_m = $mongoDB->selectCollection('multimedia');
-        $collection_cd = $mongoDB->selectCollection('cont_documento');
-        $collection_cdm = $mongoDB->selectCollection('cont_documento_modulos');
-        $collection_cb = $mongoDB->selectCollection('contenido_busqueda');
+        $collection_m = self::$mongoDB->selectCollection('multimedia');
+        $collection_cd = self::$mongoDB->selectCollection('cont_documento');
+        $collection_cdm = self::$mongoDB->selectCollection('cont_documento_modulos');
+        $collection_cb = self::$mongoDB->selectCollection('contenido_busqueda');
        
         //dd($tipo_subida_anterior." - ".$tipo_contenido_anterior." - ".$oid);
         self::eliminarContenidoEditar($tipo_subida_anterior, $tipo_contenido_anterior, $oid);
@@ -427,7 +421,7 @@ class AdminController extends Controller
                 $nombreArchivo = $multimedia->getClientOriginalName();
                 $multimedia->move(public_path('metafactos'), $nombreArchivo);
 
-                $collection = $mongoDB->selectCollection('multimedia');
+                $collection = self::$mongoDB->selectCollection('multimedia');
 
                 $dato = [
                     'tipo_multimedia' => $tipo_contenido,
@@ -456,7 +450,7 @@ class AdminController extends Controller
                 $nombreArchivo = $multimedia->getClientOriginalName();
                 $multimedia->move(public_path('videos'), $nombreArchivo);
 
-                $collection = $mongoDB->selectCollection('multimedia');
+                $collection = self::$mongoDB->selectCollection('multimedia');
                 
                 $dato = [
                     'tipo_multimedia' => $tipo_contenido,
@@ -487,18 +481,14 @@ class AdminController extends Controller
     }
 
     public function eliminarContenido(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-
         $tipo_contenido = $request->input('tipo_contenido');
         $tipo_multimedia = $request->input('tipo_multimedia');
         $oid = $request->input('oid');
         
-        $collection_m = $mongoDB->selectCollection('multimedia');
-        $collection_cd = $mongoDB->selectCollection('cont_documento');
-        $collection_cdm = $mongoDB->selectCollection('cont_documento_modulos');
-        $collection_cb = $mongoDB->selectCollection('contenido_busqueda');
+        $collection_m = self::$mongoDB->selectCollection('multimedia');
+        $collection_cd = self::$mongoDB->selectCollection('cont_documento');
+        $collection_cdm = self::$mongoDB->selectCollection('cont_documento_modulos');
+        $collection_cb = self::$mongoDB->selectCollection('contenido_busqueda');
        
         switch ($tipo_multimedia) {
             case 'metafacto':
@@ -573,13 +563,10 @@ class AdminController extends Controller
     }
 
     public function eliminarContenidoEditar($tipo_contenido, $tipo_multimedia, $oid){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        
-        $collection_m = $mongoDB->selectCollection('multimedia');
-        $collection_cd = $mongoDB->selectCollection('cont_documento');
-        $collection_cdm = $mongoDB->selectCollection('cont_documento_modulos');
-        $collection_cb = $mongoDB->selectCollection('contenido_busqueda');
+        $collection_m = self::$mongoDB->selectCollection('multimedia');
+        $collection_cd = self::$mongoDB->selectCollection('cont_documento');
+        $collection_cdm = self::$mongoDB->selectCollection('cont_documento_modulos');
+        $collection_cb = self::$mongoDB->selectCollection('contenido_busqueda');
        
         switch ($tipo_multimedia) {
             case 'metafacto':

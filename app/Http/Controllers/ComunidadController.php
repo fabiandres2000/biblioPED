@@ -15,12 +15,32 @@ use HTMLPurifier_Config;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 
+require 'conexion.php';
+
 class ComunidadController extends Controller
 {
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
     public function guardarPublicacion(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
+        
+        //$uri = "mongodb+srv://fabian:cuentafalsa17@cluster0.5dxsgxo.mongodb.net/?retryWrites=true&w=majority";
+        //$mongoClient = new Client($uri);
+
+        $collection = self::$mongoDB->selectCollection('publicaciones');
 
         $idUsuario = Session::get('id');
         $detalle = $request->input('detalle');
@@ -60,10 +80,8 @@ class ComunidadController extends Controller
 
     public function listarPublicaciones(){
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
-        $collection2 = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
 
         $publicaciones = $collection->find([], ['sort' => ['_id' => -1]])->toArray();
 
@@ -140,10 +158,9 @@ class ComunidadController extends Controller
     }
 
     public function registrarComentarioPost(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
-        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+      
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
         $idPost = $request->input('idPost');
@@ -187,10 +204,8 @@ class ComunidadController extends Controller
     }
 
     public function eliminarComentarioPost(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
-        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
 
@@ -215,10 +230,8 @@ class ComunidadController extends Controller
 
     public function listarUsuariosComunidad(){
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('usuarios');
-        $collection2 = $mongoDB->selectCollection('publicaciones');
+        $collection = self::$mongoDB->selectCollection('usuarios');
+        $collection2 = self::$mongoDB->selectCollection('publicaciones');
 
         $usuarios = $collection->find()->toArray();
         $publicaciones = $collection2->find()->toArray();
@@ -241,9 +254,8 @@ class ComunidadController extends Controller
     }
 
     public function editarPublicacion(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
+       
+        $collection = self::$mongoDB->selectCollection('publicaciones');
 
         $id_publicacion = $request->input('id_publicacion');
         $detalle = $request->input('detalle');
@@ -281,10 +293,9 @@ class ComunidadController extends Controller
     }
 
     public function eliminarPost(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
-        $collectionUsuarios = $mongoDB->selectCollection('usuarios');
+       
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
 
         $idUsuario = Session::get('id');
 
@@ -302,9 +313,8 @@ class ComunidadController extends Controller
     }
 
     public function meGusta(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('publicaciones');
+       
+        $collection = self::$mongoDB->selectCollection('publicaciones');
 
         $id_usuario = $request->input('id_usuario');
         $id_publicacion = $request->input('id_publicacion');
@@ -343,9 +353,8 @@ class ComunidadController extends Controller
     }
 
     public function guardarNotificacion($id_usuario_publicacion, $id_notificacion, $tipo){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection2 = $mongoDB->selectCollection('notificaciones');
+        
+        $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
 
         $timezone = new \DateTimeZone('America/Bogota');
@@ -380,5 +389,84 @@ class ComunidadController extends Controller
             $collection2->insertOne($noti);
         }
        
+    }
+
+    public function publicacionGet(Request $request){
+
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
+
+        $idUsuario = (string) Session::get('id');
+        $id_publicacion = $request->input('id_publicacion');
+
+        $publicacion = $collection->findOne([
+            '_id' =>  new \MongoDB\BSON\ObjectID($id_publicacion)
+        ]);
+
+       
+        if(in_array($idUsuario, json_decode(json_encode($publicacion->likes)))){
+            $publicacion->like = true;
+        }else{
+            $publicacion->like = false;
+        }
+
+        $publicacion->usuario = $collection2->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($publicacion->id_usuario),
+        ]);
+
+        $comentarios = $publicacion->comentarios;
+        if(count($comentarios) > 0){
+            $comentarios = iterator_to_array($publicacion['comentarios']);
+            usort($comentarios, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });  
+            
+            $publicacion->comentarios = $comentarios;
+        }
+
+        $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha'] . ' ' . $publicacion['horas'], new \DateTimeZone('America/Bogota'));
+
+        $publicacion->fecha_formateada = $dateTimeA->format('d M, Y \a\ \l\a\s g.i A');
+
+        if (property_exists($publicacion, 'editado')){
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha_edicion'] . ' ' . $publicacion['horas_edicion'], new \DateTimeZone('America/Bogota'));
+            $publicacion->fecha_formateada_edicion = $dateTimeB->format('d M, Y \a\ \l\a\s g.i A');
+        }
+
+        foreach ($publicacion->comentarios as $comentario){
+            $comentario->usuario = $collection2->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($comentario->id_usuario),
+            ]);
+
+            $fechaHora = $comentario['fecha'] . ' ' . $comentario['horas'];
+            $timezone = new \DateTimeZone('America/Bogota');
+
+            $fechaActual = new \DateTime('now', $timezone);
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $fechaHora, $timezone);
+
+            $diferencia =(int)$fechaActual->getTimestamp() - (int)$dateTimeA->getTimestamp();
+
+            $fechaFormateada = '';
+            if ($diferencia < 60) {
+                $fechaFormateada = "Hace un momento";
+            } elseif ($diferencia < 3600) {
+                $minutos = round($diferencia / 60);
+                $fechaFormateada = "Hace {$minutos} minuto(s)";
+            } elseif ($diferencia < 86400) {
+                $horas = round($diferencia / 3600);
+                $fechaFormateada = "Hace {$horas} horas";
+            } elseif ($diferencia < 1296000) { 
+                $dias = round($diferencia / 86400);
+                $fechaFormateada = "Hace {$dias} días";
+            } else {
+                $fechaFormateada = $dateTimeA->format('d M, Y \a \l\a\s h:i A');
+            }
+
+            $comentario->fechaFormateada = $fechaFormateada;
+        }
+
+        return $publicacion;
     }
 }

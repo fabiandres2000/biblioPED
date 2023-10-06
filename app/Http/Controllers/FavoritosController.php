@@ -10,13 +10,31 @@ use Jenssegers\Mongodb\Facades\MongoDB;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
+require 'conexion.php';
+
 class FavoritosController extends Controller
 {
+
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
     public function agregarFavorito(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('favoritos');
+        
+        $collection = self::$mongoDB->selectCollection('favoritos');
 
         $idUsuario = Session::get('id');
 
@@ -43,9 +61,8 @@ class FavoritosController extends Controller
 
     public function BuscarFavorito(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('favoritos');
+        
+        $collection = self::$mongoDB->selectCollection('favoritos');
 
         $idUsuario = Session::get('id');
 
@@ -74,9 +91,8 @@ class FavoritosController extends Controller
 
     public function EliminarFavorito(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('favoritos');
+        
+        $collection = self::$mongoDB->selectCollection('favoritos');
 
         $idUsuario = Session::get('id');
 
@@ -97,9 +113,8 @@ class FavoritosController extends Controller
     }
 
     public function MisFavoritos(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('favoritos');
+        
+        $collection = self::$mongoDB->selectCollection('favoritos');
 
         $idUsuario = Session::get('id');
 

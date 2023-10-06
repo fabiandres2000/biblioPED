@@ -194,10 +194,12 @@ export default {
                 id: item._id.$oid
             }
 
-            await usuarioService.exportarApuntesPDF(data).then(respuesta => {
-                const blob = new Blob([respuesta.data], { type: 'application/pdf' });
-                this.pdfUrl = URL.createObjectURL(blob);
+            await usuarioService.exportarApuntesPDF(data).then(respuesta => {        
+                this.pdfUrl = "";
                 $("#modalPDF").modal('show');
+                setTimeout(() => {
+                    this.pdfUrl = "/pdfgenerados/"+respuesta.data;
+                }, 1000)
                 this.isLoading = false;
             });
         },

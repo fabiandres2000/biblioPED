@@ -50,8 +50,3 @@ export default {
     }
 }
 </script>
-<style>
-    .active {
-        color: #009c9f !important;
-    }
-</style>

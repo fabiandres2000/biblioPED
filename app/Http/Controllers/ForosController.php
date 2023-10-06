@@ -11,14 +11,30 @@ use Jenssegers\Mongodb\Facades\MongoDB;
 
 use Illuminate\Support\Facades\Session;
 
+require 'conexion.php';
 
 class ForosController extends Controller
 {
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
     public function foros(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
+        
+        $collection = self::$mongoDB->selectCollection('foros');
 
         $idUsuario = Session::get('id');
 
@@ -33,14 +49,13 @@ class ForosController extends Controller
                 ],
                 [
                     '$sort' => [
-                        'fecha' => -1,
-                        'horas' => -1,
+                        '_id' => -1,
                     ],
                 ],
             ])->toArray();
             
 
-            $collection2 = $mongoDB->selectCollection('usuarios');
+            $collection2 = self::$mongoDB->selectCollection('usuarios');
             foreach ($result as $dato){
                 $dato->profesor = $collection2->findOne([
                     '_id' => new \MongoDB\BSON\ObjectID($dato->id_profesor),
@@ -55,13 +70,12 @@ class ForosController extends Controller
                 ],
                 [
                     '$sort' => [
-                        'fecha' => -1,
-                        'horas' => -1,
+                        '_id' => -1,
                     ],
                 ],
             ])->toArray();
             
-            $collection2 = $mongoDB->selectCollection('usuarios');
+            $collection2 = self::$mongoDB->selectCollection('usuarios');
             
 
             foreach ($result as $dato){
@@ -87,9 +101,8 @@ class ForosController extends Controller
 
     public function foro(Request $request){
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
+        
+        $collection = self::$mongoDB->selectCollection('foros');
 
         $id = $request->input('id');
 
@@ -97,8 +110,8 @@ class ForosController extends Controller
             '_id' => new \MongoDB\BSON\ObjectID($id),
         ]);
 
-        $collection2 = $mongoDB->selectCollection('usuarios');
-        $collection3 = $mongoDB->selectCollection('respuestas_comentarios');
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
+        $collection3 = self::$mongoDB->selectCollection('respuestas_comentarios');
 
         $foro->profesor = $collection2->findOne([
             '_id' => new \MongoDB\BSON\ObjectID($foro->id_profesor),
@@ -143,11 +156,11 @@ class ForosController extends Controller
         $parametros = explode('/',$foro->ruta);
 
         if($parametros[2] == 'N'){
-            $foro->contenido_html = $mongoDB->selectCollection('cont_documento')->findOne([
+            $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento')->findOne([
                 'id' => (int) $parametros[1],
             ]);
         }else{
-            $foro->contenido_html = $mongoDB->selectCollection('cont_documento_modulos')->findOne([
+            $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento_modulos')->findOne([
                 'id' => (int) $parametros[1],
             ]);
         }
@@ -155,11 +168,9 @@ class ForosController extends Controller
         return $foro;
     }
 
-
     public function guardarRespuesta(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
+        
+        $collection = self::$mongoDB->selectCollection('foros');
 
         $idUsuario = Session::get('id');
         $idForo = $request->input('id_foro');
@@ -184,9 +195,8 @@ class ForosController extends Controller
     }
 
     public function guardarRespuestaComentario(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('respuestas_comentarios');
+        
+        $collection = self::$mongoDB->selectCollection('respuestas_comentarios');
 
         $id_comentario = $request->input('id_comentario');
         $respuesta = $request->input('respuesta');
@@ -203,9 +213,8 @@ class ForosController extends Controller
     }
 
     public function eliminarRespuesta(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('respuestas_comentarios');
+        
+        $collection = self::$mongoDB->selectCollection('respuestas_comentarios');
 
         $id_respuesta = $request->input('id');
 
@@ -217,10 +226,9 @@ class ForosController extends Controller
     }
 
     public function editarForo(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
-        $collection2 = $mongoDB->selectCollection('notificaciones');
+        
+        $collection = self::$mongoDB->selectCollection('foros');
+        $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
         $ids = $request->input('ids');
         $id_foro = $request->input('id_foro');
@@ -248,7 +256,7 @@ class ForosController extends Controller
                     ['$push' => ['estudiantes' => $key["id"]]]
                 );
 
-                $collection2 = $mongoDB->selectCollection('notificaciones');
+                $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
                 $noti = [
                     'id_profesor' => Session::get('id'),
@@ -271,9 +279,8 @@ class ForosController extends Controller
     }
 
     public function cambiarEstado(Request $request){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('foros');
+        
+        $collection = self::$mongoDB->selectCollection('foros');
 
         $id = $request->input('id');
         $estado_actual = $request->input('estado_actual');

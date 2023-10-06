@@ -302,7 +302,6 @@ export default {
         this.id = this.$route.params.id;
         this.tipo = this.$route.params.tipo;
         this.BuscarContenido();
-        this.buscarApuntes();
         this.getSessionData();
         var VueAppContenido = this;
 
@@ -399,6 +398,7 @@ export default {
                     this.contenido_html = this.datos.cont_documento;
                     this.loading = false;
                     this.verificarFavorito();
+                    this.buscarApuntes();
                 });
             } catch (error) {
                 console.log(error);

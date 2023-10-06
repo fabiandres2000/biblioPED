@@ -135,7 +135,9 @@ export function exportarApuntesPDF($data) {
         '/api/pdf-apuntes',  
         $data, 
         {
-            responseType: 'arraybuffer',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         }
     );
 }

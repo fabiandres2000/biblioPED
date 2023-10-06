@@ -13,16 +13,32 @@ use Illuminate\Support\Facades\Session;
 use PDF;
 use Illuminate\Http\Response;
 
+require 'conexion.php';
+
 class ExportarController extends Controller
 {
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
     public function generateApuntesPDF(Request $request){
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('apuntes');
+        $collection = self::$mongoDB->selectCollection('apuntes');
 
         $id = $request->input('id');
+        $idUsuario = Session::get('id');
 
         $apunte = $collection->findOne(
             [
@@ -37,11 +53,16 @@ class ExportarController extends Controller
         
         $pdf = PDF::loadView('pdf.apuntes', $data, ['size' => 'A1']);
     
-        $pdfContent = $pdf->stream();
+        $fileName = 'apunte_usuario' . $idUsuario . '.pdf';
 
-        return new Response($pdfContent, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="ejemplo.pdf"',
-        ]);
+        $filePath = public_path('pdfgenerados/'.$fileName);
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        
+        $pdf->save($filePath);
+
+        return response()->json($fileName, 200);
     } 
 }

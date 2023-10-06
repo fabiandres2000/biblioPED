@@ -15,8 +15,27 @@ use HTMLPurifier_Config;
 
 use Illuminate\Support\Str;
 
+require 'conexion.php';
+
 class MongoController extends Controller
 {
+
+    protected static $mongoClient;
+    protected static $mongoDB;
+
+    public function __construct()
+    {
+        $instanciaConexion = new ClaseConexion();
+
+        if (!isset(self::$mongoClient)) {
+            self::$mongoClient = $instanciaConexion::$mongoClient;
+        }
+
+        if (!isset(self::$mongoDB)) {
+            self::$mongoDB = $instanciaConexion::$mongoDB;
+        }
+    }
+
     public function busquedaMongo(Request $request){
         $variable1 = $request->input('textoBusqueda');
         $variable2 = $request->input('tipoBusqueda');
@@ -40,9 +59,7 @@ class MongoController extends Controller
         }
 
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('contenido_busqueda');
+        $collection = self::$mongoDB->selectCollection('contenido_busqueda');
 
        
         $resultados = [];
@@ -217,9 +234,9 @@ class MongoController extends Controller
 
                 foreach($resultados as $item){
                     if($item->datos->tipo_contenido =="N"){
-                        $item->datos->cont_documento = $mongoDB->selectCollection('cont_documento')->findOne(['id' => $item->datos->id_contenido])->cont_documento;
+                        $item->datos->cont_documento = self::$mongoDB->selectCollection('cont_documento')->findOne(['id' => $item->datos->id_contenido])->cont_documento;
                     }else{
-                        $item->datos->cont_documento = $mongoDB->selectCollection('cont_documento_modulos')->findOne(['id' => $item->datos->id_contenido])->cont_documento;
+                        $item->datos->cont_documento = self::$mongoDB->selectCollection('cont_documento_modulos')->findOne(['id' => $item->datos->id_contenido])->cont_documento;
                     }
                 }
                 
@@ -230,7 +247,7 @@ class MongoController extends Controller
                     $resultados = self::buscarVideos($variable1, $variable2, $request->input('pagina'), $grado, $asignatura);
                     return response()->json($resultados, 200);
                 }else{
-                    $collection2 = $mongoDB->selectCollection('multimedia');
+                    $collection2 = self::$mongoDB->selectCollection('multimedia');
                     $resultados = $collection2->aggregate([
                         ['$match' => 
                         [
@@ -257,11 +274,9 @@ class MongoController extends Controller
     }
 
     public function buscarVideos($variable1, $variable2, $pagina, $grado, $asignatura){
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('multimedia');
+       
+        $collection = self::$mongoDB->selectCollection('multimedia');
 
-        
         $limit = 10;
 
         if ($pagina == null || $pagina == "") {
@@ -286,7 +301,6 @@ class MongoController extends Controller
             ]
         ]];
         
-           
         if ($asignatura != 'no') {
             $match['$match']['$and'][] = ['asignatura' => $asignatura];
         }
@@ -295,7 +309,6 @@ class MongoController extends Controller
             $match['$match']['$and'][] = ['grado' => $grado];
         }
        
-
         $resultados = $collection->aggregate([
             $match,
             ['$project' => [
@@ -313,9 +326,8 @@ class MongoController extends Controller
         foreach ($resultados as $key) {
             if ($key->contenido_busqueda->tipo_contenido == "asignatura") {
                 
-                $collection2 = $mongoDB->selectCollection('cont_documento');
+                $collection2 = self::$mongoDB->selectCollection('cont_documento');
 
-                
                 $contenido_doc = $collection2->findOne(
                     [
                         'contenido' => intval($key->contenido_busqueda->id_contenido),
@@ -326,9 +338,8 @@ class MongoController extends Controller
                 $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo($contenido_doc->cont_documento);
             }else{
                 
-                $collection2 = $mongoDB->selectCollection('cont_documento_modulos');
+                $collection2 = self::$mongoDB->selectCollection('cont_documento_modulos');
 
-                
                 $contenido_doc = $collection2->findOne(
                     [
                         'contenido' => intval($key->contenido_busqueda->id_contenido),
@@ -367,10 +378,7 @@ class MongoController extends Controller
         $variable2 = $request->input('tipoBusqueda');
         $pagina = $request->input('pagina');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-
-        $collection = $mongoDB->selectCollection('busquedas');
+        $collection = self::$mongoDB->selectCollection('busquedas');
 
         if($pagina == 1){
             if (Session::has('id')) {
@@ -424,10 +432,7 @@ class MongoController extends Controller
         $asignatura = $request->input('asignatura');
         $grado = $request->input('grado');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        
-        $collection = $mongoDB->selectCollection('contenido_busqueda');
+        $collection = self::$mongoDB->selectCollection('contenido_busqueda');
 
         $array_id = [];
 
@@ -554,17 +559,13 @@ class MongoController extends Controller
         $variable1 = $request->input('id');
         $variable2 = $request->input('tipo');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-       
-
         $resultados = [];
 
         if ($variable2 == "N") {
-            $collection = $mongoDB->selectCollection('cont_documento');
+            $collection = self::$mongoDB->selectCollection('cont_documento');
             $resultados = $collection->find(['id' => intval($variable1)]);
         }else{
-            $collection = $mongoDB->selectCollection('cont_documento_modulos');
+            $collection = self::$mongoDB->selectCollection('cont_documento_modulos');
             $resultados = $collection->find(['id' => intval($variable1)]);
         }
 
@@ -578,9 +579,7 @@ class MongoController extends Controller
 
     public function historial(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('busquedas');
+        $collection = self::$mongoDB->selectCollection('busquedas');
 
         $idUsuario = Session::get('id');
 
@@ -675,9 +674,7 @@ class MongoController extends Controller
 
     public function eliminar_historial(Request $request){
         
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('busquedas');
+        $collection = self::$mongoDB->selectCollection('busquedas');
 
         $idUsuario = Session::get('id');
 
@@ -716,9 +713,7 @@ class MongoController extends Controller
         $variable1 = $request->input('id');
         $variable2 = $request->input('tipo');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('apuntes');
+        $collection = self::$mongoDB->selectCollection('apuntes');
 
         $idUsuario = Session::get('id');
             
@@ -746,9 +741,7 @@ class MongoController extends Controller
         $asignatura = $request->input('asignatura');
         $grado = $request->input('grado');
 
-        $mongoClient = new Client('mongodb://localhost:27017');
-        $mongoDB = $mongoClient->selectDatabase('ped_biblioteca');
-        $collection = $mongoDB->selectCollection('multimedia');
+        $collection = self::$mongoDB->selectCollection('multimedia');
 
        
         $match = ['$match' => [

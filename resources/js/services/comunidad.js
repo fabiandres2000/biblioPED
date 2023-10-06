@@ -63,3 +63,7 @@ export function meGustaPost($data) {
         }
     );
 }
+
+export function listarPublicacionPorID(id_publicacion) {
+    return http().get('/api/publicacion-get?id_publicacion='+id_publicacion);
+}
