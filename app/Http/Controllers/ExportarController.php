@@ -51,7 +51,7 @@ class ExportarController extends Controller
             'html' => $apunte->data
         ];
         
-        $pdf = PDF::loadView('pdf.apuntes', $data, ['size' => 'A1']);
+        $pdf = PDF::loadView('pdf.apuntes', $data);
     
         $fileName = 'apunte_usuario' . $idUsuario . '.pdf';
 
