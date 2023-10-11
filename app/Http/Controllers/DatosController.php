@@ -38,6 +38,20 @@ class DatosController extends Controller
 
         $collection = self::$mongoDB->selectCollection('contenido_busqueda');
 
+        /*
+        $datos = DB::connection('mysql')->table('cont_documento') 
+        ->join('contenido', 'contenido.id', 'cont_documento.contenido')
+        ->join('modulos', 'modulos.id', 'contenido.modulo')
+        ->join('asignaturas', 'asignaturas.id', 'modulos.asignatura')
+        ->select(
+        "cont_documento.*", 
+        "contenido.modulo", 
+        "cont_documento.titulo", 
+        "modulos.grado_modulo", 
+        "asignaturas.nombre as asignatura"
+        )->get();
+        */
+        
         $datos = DB::connection('mysql')->table('cont_documento_modulos') 
         ->join('contenido_modulo', 'contenido_modulo.id', 'cont_documento_modulos.contenido')
         ->join('grados_modulos', 'grados_modulos.id', 'contenido_modulo.modulo')
@@ -49,8 +63,9 @@ class DatosController extends Controller
         "grados_modulos.grado_modulo", 
         "modulos_transversales.nombre as asignatura"
         )->get();
+        
 
-        $cont = 2015;
+        $cont = 2016;
         foreach ($datos as $dato) {
             $contenido_texto = self::convertirHtmlATexto($dato->cont_documento);
             $imagen = self::obtenerPrimeraImagen($dato->cont_documento);
@@ -60,9 +75,11 @@ class DatosController extends Controller
                 'id_contenido' => $dato->id,
                 'tipo_contenido' => 'T',
                 'contenido_texto' => $contenido_texto,
+                'contenido_texto_sin_tilde' => self::removeAccents($contenido_texto),
                 'imagen' => $imagen,
                 'modulo' => intval($dato->modulo),
                 'titulo' => $dato->titulo,
+                'titulo_sin_tilde' => self::removeAccents($dato->titulo),
                 'grado' => $dato->grado_modulo,
                 'asignatura' => $dato->asignatura
             ];
@@ -127,7 +144,29 @@ class DatosController extends Controller
             $collection->insertOne($dato);
         }
 
-        return response()->json("guardado", 200);
+
+        $resultados2 = DB::table('cont_documento')
+        ->select('cont_documento.*')
+        ->get();
+        
+        foreach ($resultados2 as $resultado) {
+          
+            $dato2 = [
+                'id' => $resultado->id,
+                'contenido' => $resultado->contenido,
+                'titulo' => $resultado->titulo,
+                'cont_documento' => $resultado->cont_documento,
+                'created_at' => $resultado->created_at,
+                'updated_at' => $resultado->updated_at,
+            ];
+
+            $collection2 = self::$mongoDB->selectCollection('cont_documento');
+
+            $collection2->insertOne($dato2);
+        }
+
+
+        return response()->json("las tablas han sido copiadas... <3", 200);
     }
 
     public function migrarVideos()

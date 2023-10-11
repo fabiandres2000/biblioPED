@@ -23,3 +23,7 @@ export function verificarConexion() {
 export function buscarApuntes($id, $tipo) {
     return http().get('/api/busqueda-apunte?id='+$id+'&tipo='+$tipo);
 }
+
+export function corregirCadena($texto) {
+    return http().get('/api/corregir-cadena?cadena='+$texto);
+}

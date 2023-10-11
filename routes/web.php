@@ -11,6 +11,7 @@ use App\Http\Controllers\ForosController;
 use App\Http\Controllers\DatosController;
 use App\Http\Controllers\ExportarController;
 use App\Http\Controllers\ComunidadController;
+use App\Http\Controllers\DiccionarioController;
 
 use Illuminate\Http\Request;
 
@@ -110,6 +111,13 @@ Route::prefix('api')->group(function () {
     Route::get('/eliminar-post', [ComunidadController::class, 'eliminarPost'])->name('eliminarPost');
     Route::post('/me-gusta', [ComunidadController::class, 'meGusta'])->name('meGusta');
     Route::get('/publicacion-get', [ComunidadController::class, 'publicacionGet'])->name('publicacionGet');
+    
+    
+    Route::get('/diccionario', [DiccionarioController::class, 'leerDiccionario'])->name('palabras_tilde');
+    Route::get('/corregir-cadena', [DiccionarioController::class, 'palabraAproximada'])->name('verificarTildes');
+    Route::get('/limpiar-palabras', [DiccionarioController::class, 'limpiar_palabras'])->name('palabraAproximada');
+    Route::get('/agregar-tildes', [DiccionarioController::class, 'palabras_tilde'])->name('palabraAproximada');
+
 });
 
 Route::get('/{any}', function () {

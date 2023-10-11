@@ -13,7 +13,7 @@
                         
                     </div>
                 </div>
-                <div class="col-9">
+                <div class="col-9" id="html2PdfPrueba">
                     <div class="content-overlay"></div>
                     <div class="content-wrapper">
                         <div class="content-header row">
@@ -58,7 +58,7 @@
                                                         <div>
                                                             <div class="custom-control" style="display: flex; justify-content: center; align-items: center;">
                                                                 <button type="button" class="btn btn-outline-danger" @click="eliminarApunte(item2)"><i class="fas fa-trash"></i></button>
-                                                                <button type="button" class="btn btn-outline-primary" @click="exportarApuntesPDF(item2)" style="margin-left: 10px"><i class="fas fa-file-pdf"></i></button>
+                                                                <button type="button" class="btn btn-outline-primary" @click="convertirHTMLtoPDF(item2)" style="margin-left: 10px"><i class="fas fa-file-pdf"></i></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -81,7 +81,7 @@
                         <h4 class="modal-title" id="myModalLabel17">{{ tituloModal }}</h4>
                     </div>
                     <div class="modal-body">
-                        <embed :src="pdfUrl" type="application/pdf" class="pdf-embed" />
+                        <embed :src="pdfUrl" type="application/pdf" id="pdfEmbed" class="pdf-embed" />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn red btn-outline-danger" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
@@ -144,6 +144,46 @@ export default {
         document.title = 'Mis apuntes - BiblioPED';
     },
     methods: {
+        convertirHTMLtoPDF(item){
+            const $elementoParaConvertir = document.createElement("div");
+            $elementoParaConvertir.innerHTML = item.data;
+            var self = this;
+            self.tituloModal = item.titulo;
+            self.isLoading = true;
+            html2pdf()
+                .set({
+                    margin: 0.4,
+                    filename: item.titulo+'.pdf',
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+                    html2canvas: {
+                        scale: 3,
+                        letterRendering: true,
+                    },
+                    jsPDF: {
+                        unit: "in",
+                        format: "a4",
+                        orientation: 'portrait'
+                    }
+                })
+                .from($elementoParaConvertir)
+                .outputPdf('blob')
+                .then(function(pdfData) {
+                    var pdfDataUrl = URL.createObjectURL(pdfData);
+                    $('#modalPDF').modal('show');
+                    setTimeout(function() {
+                        var embedElement = document.getElementById('pdfEmbed');
+                        embedElement.setAttribute('title', self.tituloModal+".pdf");
+                        self.pdfUrl = pdfDataUrl;
+                        self.isLoading = false;
+                    }, 500);
+                })
+                .catch(err => console.log(err)
+            );
+        },
         async verificarLogin(){
             var navigate = this.$router;
             await usuarioService.verificarLogin().then(respuesta => {

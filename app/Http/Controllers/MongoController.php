@@ -335,7 +335,7 @@ class MongoController extends Controller
                 );
 
                 $key->contenido_busqueda->id_original = $contenido_doc->id;
-                $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo($contenido_doc->cont_documento);
+                $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo2($contenido_doc->cont_documento);
             }else{
                 
                 $collection2 = self::$mongoDB->selectCollection('cont_documento_modulos');
@@ -347,30 +347,35 @@ class MongoController extends Controller
                 );
 
                 $key->contenido_busqueda->id_original = $contenido_doc->id;
-                $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo($contenido_doc->cont_documento);
+                $key->contenido_busqueda->parrafo = self::obtenerPrimerParrafoLargo2($contenido_doc->cont_documento);
             }
         }
 
         return $resultados;
     }
 
-    public function obtenerPrimerParrafoLargo($html) {
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', '');
-        $purifier = new HTMLPurifier($config);
-        
-        $texto = $purifier->purify($html);
-        
-        $parrafos = explode("\n", strip_tags($texto));
-
+    public function obtenerPrimerParrafoLargo2($html) {
+        $dom = new \DOMDocument();
+    
+        $dom->loadHTML($html);
+    
+        $parrafos = $dom->getElementsByTagName('p');
+    
         foreach ($parrafos as $parrafo) {
-            $palabras = str_word_count($parrafo);
-            if ($palabras >= 10) {
-                return $parrafo;
+            $contenido = $parrafo->textContent;
+
+            if (strpos($contenido, 'data:image') !== false) {
+                continue; 
+            }
+
+            $palabras = str_word_count($contenido);
+
+            if ($palabras > 10) {
+                return $contenido;
             }
         }
-        
-        return $parrafos[1];
+    
+        return "No se encontró ningún párrafo largo.";
     }
 
     public function guardarBusqueda(Request $request){

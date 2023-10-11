@@ -65,6 +65,7 @@
                                             <button @click="mostrarFiltros" id="boton_filtro" class="add-task-btn btn btn-blue btn-darken-4">
                                                 <i class="fas fa-filter"></i>
                                             </button>
+                                            <h4 style="padding-left: 18px; text-decoration: underline; font-style: italic;" v-if="corregidoTexto">Quizás querías decir: <strong>{{ texto }}</strong></h4>
                                             <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ paginacion.numero_registros }} resultados ({{ tiempoConsulta  }} segundos) </p>
                                             <li v-for="(item, index) in datos" class="media" style="display: flex; justify-content: center; align-items: center;">
                                                 <div class="media-body media-search" style="max-width: 75%;">
@@ -188,20 +189,28 @@ export default {
             tiempoConsulta : 0,
             filtradoGradoAsignatura: false,
             gradoFiltro: '',
-            asignaturaFiltro: ''
+            asignaturaFiltro: '',
+            corregidoTexto: false
         };
     },
     mounted() {
         this.texto = this.$route.params.texto;
         this.tipo = this.$route.params.tipo;
         this.pagina = this.$route.params.pagina;
-        this.BuscarResultado();
+        this.corregirCadena();
         this.verificarConexion();
         document.title = 'Resultados - '+this.texto;
     },
     methods: {
         scrollToTop() {
             document.documentElement.scrollTop = 0;
+        },
+        async corregirCadena(){
+            await busquedaService.corregirCadena(this.texto).then(respuesta => {
+                this.texto = respuesta.data.cadena;
+                this.corregidoTexto = respuesta.data.corregido;
+                this.BuscarResultado();
+            });
         },
         BuscarResultado: async function () {
             this.loading = true;
@@ -284,12 +293,16 @@ export default {
             this.datos = [];
             this.$router.replace({ path: '/resultado-busqueda/' + this.texto + '/' + this.tipo + '/' + this.pagina });
             try {
-                await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
-                    this.datos = respuesta.data;
-                    this.resaltaPalabra();
-                });
+                await busquedaService.corregirCadena(this.texto).then(respuesta => {
+                    this.texto = respuesta.data.cadena;
+                    this.corregidoTexto = respuesta.data.corregido;
+                    busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
+                        this.datos = respuesta.data;
+                        this.resaltaPalabra();
+                    });
 
-                this.paginador();
+                    this.paginador();
+                });
             } catch (error) {
                 console.log(error);
             }

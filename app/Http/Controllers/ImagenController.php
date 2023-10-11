@@ -19,26 +19,27 @@ class ImagenController extends Controller
 {
     public function ConvertirImagen(Request $request)
     {
-        $resultados = DB::connection('mysql')->table('cont_documento_modulos')
-        ->select("cont_documento_modulos.*")
+        $resultados = DB::connection('mysql')->table('cont_documento')
+        ->select("cont_documento.*")
         ->get();
 
         foreach ($resultados as $resultado) {
             $valor_nuevo = self::reducirImagenesBase64($resultado->cont_documento);
-            DB::connection('mysql')->table('cont_documento_modulos')
-            ->where('cont_documento_modulos.id', '=', $resultado->id)
+            DB::connection('mysql')->table('cont_documento')
+            ->where('cont_documento.id', '=', $resultado->id)
             ->update(['cont_documento' => $valor_nuevo]);
         }
 
-        return response()->json("guardado", 200);
+        return response()->json("guardado_ok", 200);
     }
 
     function reducirImagenesBase64($html) {
         if(strlen($html) > 0){
+
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($html);
-    
+            $dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'. $html);
+
             $images = $dom->getElementsByTagName('img');
             if(count($images) > 0){
                 foreach ($images as $image) {
@@ -59,8 +60,6 @@ class ImagenController extends Controller
                     }
                 
                 }
-    
-                $dom->encoding = 'UTF-8';
 
                 $cleanHTML = $dom->saveHTML();
 

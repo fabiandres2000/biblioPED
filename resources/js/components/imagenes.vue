@@ -62,6 +62,7 @@
                             <!--/ Search Navbar-->
                             <!--Search Result-->
                             <div id="search-results" class="card-body">
+                                <h4 style="padding-left: 18px; text-decoration: underline; font-style: italic;" v-if="corregidoTexto">Quizás querías decir: <strong>{{ texto }}</strong></h4>
                                 <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ numero_registros_imagenes }} resultados ({{ tiempoConsulta  }} segundos) </p>
                                 <br>
                                 <div class="row">
@@ -74,7 +75,7 @@
                                             <Skeleton></Skeleton>
                                         </div>
                                     </div>
-                                    <div v-if="images.length == 0 && !loading" style="padding-left: 20px;">
+                                    <div v-if="images.length == 0 && consultadoPrimeraVez == true" style="padding-left: 20px;">
                                         <p>No se han encontrado resultados para tu búsqueda <strong> ({{ texto }})</strong></p>
                                         <p>Sugerencias: </p>
                                         <ul>
@@ -138,31 +139,37 @@ export default {
             imagenSeleccionada: '',
             tituloImagen: '',
             tiempoConsulta : 0,
-            numero_registros_imagenes: 0
+            numero_registros_imagenes: 0,
+            corregidoTexto: false,
+            consultadoPrimeraVez: false
         };
     },
     mounted() {
         this.texto = this.$route.params.texto;
         this.tipo = this.$route.params.tipo;
-
         this.verificarConexion();
-        this.BuscarResultadoNuevamente(); 
-        document.title = 'Resultados - '+this.texto;
+        this.BuscarResultadoNuevamente();
     },
     methods: {
         async BuscarResultadoNuevamente() {
+            this.loading = true; 
             const inicio = Date.now();
             this.images = [];
             this.$router.replace({ path: '/resultado-imagenes/' + this.texto + '/' + this.tipo  });
             try {
-                this.loading = true; 
-                await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
-                    var html_array = respuesta.data;
-                    this.obtenerImagenesDesdeHTML(html_array);
-                    const finalizacion = Date.now();
-                    const tiempoTranscurrido = (finalizacion - inicio) / 1000;
-                  
-                    this.tiempoConsulta = tiempoTranscurrido;
+                await busquedaService.corregirCadena(this.texto).then(respuesta => {
+                    this.texto = respuesta.data.cadena;
+                    document.title = 'Resultados - '+this.texto;
+                    this.corregidoTexto = respuesta.data.corregido;
+                    busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
+                        var html_array = respuesta.data;
+                        this.obtenerImagenesDesdeHTML(html_array);
+                        const finalizacion = Date.now();
+                        const tiempoTranscurrido = (finalizacion - inicio) / 1000;
+                    
+                        this.tiempoConsulta = tiempoTranscurrido;
+                        this.consultadoPrimeraVez = true;
+                    });
                 });
             } catch (error) {
                 console.error(error);
@@ -218,10 +225,14 @@ export default {
         async  AumentarPaginaImagen(){
             this.pagina +=1;
             this.loading = true; 
-            await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
-                var html_array = respuesta.data;
-                this.obtenerImagenesDesdeHTML(html_array);
-                this.loading = false;
+            await busquedaService.corregirCadena(this.texto).then(respuesta => {
+                this.texto = respuesta.data.cadena;
+                this.corregidoTexto = respuesta.data.corregido;
+                busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
+                    var html_array = respuesta.data;
+                    this.obtenerImagenesDesdeHTML(html_array);
+                    this.loading = false;
+                });
             });
         },
         seleccionarImagen(rutaSeleccionada, tituloImagenS) {
