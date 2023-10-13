@@ -69,14 +69,14 @@
                                             </button>
                                             <li style="padding-left: 15px; margin-top: 20px;"  v-for="(item, index) in datos" :key="index" class="row item_lista">
                                                 <p class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
-                                                <div class="col-md-3 col-sm-12">
+                                                <div class="col-md-4 col-sm-12">
                                                     <video :key="'video'+index" width="270" height="200" controls>
                                                         <source :src="'/videos/'+item.contenido_busqueda.ruta" type="video/mp4">
                                                         <source :src="'/videos/'+(item.contenido_busqueda.ruta.split('.')[0])+'.ogg'" type="video/ogg">
                                                     </video>
 
                                                 </div>
-                                                <div style="padding-top: 20px;" class="col-md-9 col-sm-12">
+                                                <div style="padding-top: 20px;" class="col-md-8 col-sm-12">
                                                     <p class="mb-0"><a :href="'/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido ==  'asignatura' ? 'N' : 'T')" class="teal darken-1">{{ '/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido == "asignatura" ? 'N' : 'T')  }}<span class="text-bold-600"></span> <i class="fa fa-angle-down" aria-hidden="true"></i></a></p>
                                                     <ul class="list-inline list-inline-pipe text-muted">
                                                         <li><strong>{{ item.contenido_busqueda.asignatura }}</strong></li>

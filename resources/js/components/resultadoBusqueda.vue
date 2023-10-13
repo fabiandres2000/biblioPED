@@ -89,7 +89,7 @@
                                                     </a>
                                                 </div>
                                             </li>
-                                            <div v-if="datos.length == 0 && !loading" style="padding-left: 20px;">
+                                            <div v-if="datos.length == 0 && consultadoPrimeraVez == true" style="padding-left: 20px;">
                                                 <p>No se han encontrado resultados para tu búsqueda <strong> ({{ texto }})</strong></p>
                                                 <p>Sugerencias: </p>
                                                 <ul>
@@ -190,7 +190,8 @@ export default {
             filtradoGradoAsignatura: false,
             gradoFiltro: '',
             asignaturaFiltro: '',
-            corregidoTexto: false
+            corregidoTexto: false,
+            consultadoPrimeraVez: false
         };
     },
     mounted() {
@@ -217,6 +218,9 @@ export default {
             try {
                 await busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
                     this.datos = respuesta.data;
+                    if (this.datos.length == 0) {
+                        this.consultadoPrimeraVez = true;
+                    }
                     this.resaltaPalabra();
                 });
 
@@ -289,6 +293,7 @@ export default {
         async BuscarResultadoNuevamente () {
             this.filtradoGradoAsignatura = false;
             this.loading = true;
+            this.consultadoPrimeraVez = false;
             this.pagina = 1;
             this.datos = [];
             this.$router.replace({ path: '/resultado-busqueda/' + this.texto + '/' + this.tipo + '/' + this.pagina });
@@ -298,6 +303,9 @@ export default {
                     this.corregidoTexto = respuesta.data.corregido;
                     busquedaService.busqueda(this.texto, this.tipo, this.pagina).then(respuesta => {
                         this.datos = respuesta.data;
+                        if (this.datos.length == 0) {
+                            this.consultadoPrimeraVez = true;
+                        }
                         this.resaltaPalabra();
                     });
 
@@ -391,10 +399,14 @@ export default {
             this.loading = true;
             this.datos = [];
             const inicio = Date.now(); 
+            this.consultadoPrimeraVez = false;
 
             try {
                 await busquedaService.busqueda(this.texto, this.tipo, paginaP, grado, asignatura).then(respuesta => {
                     this.datos = respuesta.data;
+                    if (this.datos.length == 0) {
+                        this.consultadoPrimeraVez = true;
+                    }
                     this.resaltaPalabra();
                 });
 

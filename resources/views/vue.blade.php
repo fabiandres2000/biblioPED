@@ -118,7 +118,7 @@
 </head>
 
 <body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click"
-    data-menu="vertical-menu" data-col="content-left-sidebar"data-col="2-columns" style="background-color: #f5f7fa;">
+    data-menu="vertical-menu" data-col="content-left-sidebar"data-col="2-columns" style="background-color: #f5f7fa; overflow-y: hidden">
     <!-- BEGIN: Header-->
     <nav
         class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-dark navbar-border navbar-brand-center">
@@ -140,6 +140,9 @@
                         <a href="/"><img class="brand-logo" alt="stack admin logo" src="{{ asset('img/letras.png') }}" height="40"></a>
                     </ul>
                     <ul class="nav navbar-nav float-right">
+                        <li class="nav-item" style="display: flex; justify-content: center; align-items: center; margin-right: 20px">
+                            <a data-toggle="modal" data-target="#modal_diccionario" style="padding: 0.6rem 0.8rem 0.6rem 0.9rem" class="nav-link nav-link-label btn btn-warning" href="/mi-comunidad"><i class="fas fa-book"></i> Diccionario</a>
+                        </li>
                         @if (Session::has('logueado'))
                             <li class="nav-item" style="display: flex; justify-content: center; align-items: center;">
                                 <a style="padding: 0.6rem 0.8rem 0.6rem 0.9rem" class="nav-link nav-link-label btn btn-primary" href="/mi-comunidad"><i class="fas fa-school"></i> Mi Comunidad</a>
@@ -181,7 +184,7 @@
                                     <hr>
                                         <a  class="dropdown-item" href="/apuntes">
                                             <i class="fas fa-edit"></i>
-                                            Apuntes
+                                            Mis Apuntes
                                         </a>
                                         <a  class="dropdown-item" href="/lista-contenido">
                                             <i class="fas fa-book"></i>
@@ -200,7 +203,7 @@
                                     <hr>
                                         <a  class="dropdown-item" href="/apuntes">
                                             <i class="fas fa-edit"></i>
-                                            Apuntes
+                                            Mis Apuntes
                                         </a>
                                         <a  class="dropdown-item" href="/recomendaciones-estudiante">
                                             <i class="fas fa-share-alt"></i>
@@ -312,7 +315,7 @@
     </div>
 
     <div class="modal fade text-left" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document" style="margin-top: 8%;">
+        <div class="modal-dialog modal-lg" role="document" style="margin-top: 4%;">
             <div class="modal-content">
                 <div class="modal-body">
                     <section class="row flexbox-container">
@@ -543,6 +546,37 @@
         </div>
     </div>
 
+    <div class="modal fade text-left" id="modal_diccionario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel17">Diccionario <strong>BiblioPED</strong></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 25px">
+                    <h3 style="font-size: 20px; color: #009199; font-weight: bold">Escribe una palabra en la caja de texto para encontrar su definición.</h3>
+                    <br>
+                    <div class="row">
+                        <div class="col-4">
+                            <input type="text" id="palabra_buscar" class="form-control" placeholder="Ingresa una palabra...">
+                        </div>
+                        <div class="col-1" style="display: flex; justify-content: center; align-items: center">
+                            <button onclick="buscarPablabraDiccionario()" class="btn btn-success"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <br>
+                    <p style="font-size: 20px; color: #009199; font-style: italic;" id="mensaje_opcional"></p>
+                    <p style="font-size: 20px" id="definicion"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cerrar modal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="app"></div>
     <!-- BEGIN: Footer-->
     <footer class="footer fixed-bottom footer-dark navbar-shadow">
@@ -670,7 +704,7 @@
                     type: 'GET', 
                     success: function(response) {
                         setTimeout(() => {
-                            window.location.reload();
+                            location.href = "/";
                         }, 1000);
                     },
                     error: function(error) {
@@ -787,6 +821,61 @@
                     toastr.warning(error);
                 }
             });
+        }
+
+        function buscarPablabraDiccionario(){
+            const abreviaturas = [
+                {"abreviatura": "adj. ", "color": "#FF0000"},
+                {"abreviatura": "adv. ", "color": "#00FF00"},
+                {"abreviatura": "s. ", "color": "#0000FF"},
+                {"abreviatura": "v. ", "color": "#FFFF00"},
+                {"abreviatura": "pl. ", "color": "#FF00FF"},
+                {"abreviatura": "sing. ", "color": "#00FFFF"},
+                {"abreviatura": "f. ", "color": "#FFA500"},   
+                {"abreviatura": "m. ", "color": "#800080"},   
+                {"abreviatura": "n. ", "color": "#008000"},   
+                {"abreviatura": "prep. ", "color": "#008080"}, 
+                {"abreviatura": "conj. ", "color": "#800000"}, 
+                {"abreviatura": "pron. ", "color": "#808000"}, 
+                {"abreviatura": "interj. ", "color": "#FF1493"}, 
+                {"abreviatura": "refl. ", "color": "#FFD700"},   
+                {"abreviatura": "fig. ", "color": "#A0522D"},   
+                {"abreviatura": "lit. ", "color": "#006400"},   
+                {"abreviatura": "obs. ", "color": "#8B0000"},  
+                {"abreviatura": "esp. ", "color": "#FF4500"},   
+                {"abreviatura": "etc. ", "color": "#2E8B57"},   
+                {"abreviatura": "pág. ", "color": "#4B0082"},   
+                {"abreviatura": "ed. ", "color": "#9932CC"},    
+                {"abreviatura": "sig. ", "color": "#DC143C"},  
+                {"abreviatura": "gr. ", "color": "#000080"},   
+                {"abreviatura": "fam. ", "color": "#4B0082"},  
+                {"abreviatura": "orig. ", "color": "#00BFFF"},  
+                {"abreviatura": "tech. ", "color": "#800000"}, 
+                {"abreviatura": "p. ej. ", "color": "#008B8B"},  
+                {"abreviatura": "c. ", "color": "#8B4513"},     
+                {"abreviatura": "apr. ", "color": "#556B2F"}, 
+                {"abreviatura": "fig. ret. ", "color": "#FF69B4"},
+                {"abreviatura": "tr. ", "color": "#FFA500"}
+            ];
+            const textoBuscar = document.getElementById("palabra_buscar").value;
+            $.ajax({
+                url: '/api/buscar-palabra-diccionario?palabra='+textoBuscar,
+                type: 'GET', 
+                success: function(response) {
+                    for (const item of abreviaturas) {
+                        if (response.significado.indexOf(item.abreviatura) !== -1) {
+                            response.significado = response.significado.replace(item.abreviatura, "<span style='color:"+item.color+"; font-weight: bold'>"+item.abreviatura+"</span>");
+                        }
+                    }
+
+                    document.getElementById("definicion").innerHTML = "<strong style='font-style: italic; font-size: 20px'>Definición</strong><br>"+response.significado;
+                    document.getElementById("mensaje_opcional").innerHTML = response.mensaje_opcional;
+                },
+                error: function(error) {
+                    toastr.warning(error);
+                }
+            });
+
         }
 
         function cambiarEstadoNotificacion(elemento, ruta){

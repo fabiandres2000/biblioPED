@@ -155,6 +155,7 @@ export default {
             this.loading = true; 
             const inicio = Date.now();
             this.images = [];
+            this.consultadoPrimeraVez = false;
             this.$router.replace({ path: '/resultado-imagenes/' + this.texto + '/' + this.tipo  });
             try {
                 await busquedaService.corregirCadena(this.texto).then(respuesta => {
@@ -168,7 +169,9 @@ export default {
                         const tiempoTranscurrido = (finalizacion - inicio) / 1000;
                     
                         this.tiempoConsulta = tiempoTranscurrido;
-                        this.consultadoPrimeraVez = true;
+                        if (html_array.length == 0) {
+                            this.consultadoPrimeraVez = true;
+                        }
                     });
                 });
             } catch (error) {

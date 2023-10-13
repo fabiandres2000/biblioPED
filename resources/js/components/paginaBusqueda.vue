@@ -11,8 +11,8 @@
                         <form id="form-data" style="width: 100%; top: -36px; position: relative;" class="d-flex align-items-center justify-content-center"
                             action="{{ route('busqueda') }}" method="GET">
                             <div class="col-lg-6 col-10">
-                                <img class="mx-auto d-block pb-3 pt-4 width-65-per"
-                                :src="`img/logo_1_2.png`" alt="Stack Search" style="width: 750px !important; position: relative; left: -2%; width: 740px !important;">
+                                <img class="mx-auto d-block pb-3 pt-4 width-65-per" id="img_logo_biblioped"
+                                :src="`img/logo_1_2.png`" alt="Stack Search">
                                 <fieldset class="form-group position-relative">
                                     <input id="speechToText" name="textoBusqueda" type="text"
                                         class="form-control form-control-lg input-lg round" 
@@ -156,5 +156,17 @@ export default {
     }
     .pb-3, .py-3 {
         padding-bottom: 1rem !important;
+    }
+
+    #img_logo_biblioped {
+        position: relative; 
+        left: -2%;
+        width: 740px !important;
+    }
+
+    @media (max-width: 1370px) {
+        #img_logo_biblioped {
+           width: 100% !important;
+        }  
     }
 </style>
