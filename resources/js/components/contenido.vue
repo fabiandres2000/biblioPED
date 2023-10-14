@@ -21,11 +21,11 @@
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
-                                    <li><a @click="goBack"><i class="fas fa-arrow-left"></i></a></li>
-                                    <li v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalCompartir"><i class="fas fa-share-alt"></i></a></li>
-                                    <li v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalForo"><i class="fas fa-comments"></i></a></li>
-                                    <li><a @click="agregarFavorito"><i :class="favorito == true ? 'fas fa-star' : 'far fa-star'" :style="favorito ? 'color: #009c9f' : 'color: #404e67'"></i></a></li>
-                                    <li><a data-action="expand"><i class="fas fa-compress"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Retroceder"><a @click="goBack"><i class="fas fa-arrow-left"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Compartir"  v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalCompartir"><i class="fas fa-share-alt"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Crear Foro" v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalForo"><i class="fas fa-comments"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Marcar como favorito"><a @click="agregarFavorito"><i :class="favorito == true ? 'fas fa-star' : 'far fa-star'" :style="favorito ? 'color: #009c9f' : 'color: #404e67'"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Maximizar"><a data-action="expand"><i class="fas fa-compress"></i></a></li>
                                 </ul>
                             </div>
                         </div>

@@ -119,6 +119,7 @@ Route::prefix('api')->group(function () {
     Route::get('/agregar-tildes', [DiccionarioController::class, 'palabras_tilde'])->name('palabraAproximada');
     Route::get('/buscar-palabra-diccionario', [DiccionarioController::class, 'buscarPalabraDiccionario'])->name('buscarPalabraDiccionario');
     Route::get('/insertar-palabras', [DiccionarioController::class, 'insertarPalabras'])->name('insertarPalabras');
+    Route::get('/insertar-imagenes', [DiccionarioController::class, 'insertarImagenes'])->name('insertarImagenes');
 
 });
 

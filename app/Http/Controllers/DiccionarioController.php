@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
 
 use Smalot\PdfParser\Parser;
 
+use Goutte\Client as GoutteClient;
+
 require 'conexion.php';
 
 
@@ -200,6 +202,7 @@ class DiccionarioController extends Controller{
         $string_resultante = [];
 
         foreach ($palabras as $palabra) {
+            $palabra = mb_strtolower($palabra, 'UTF-8');
             // Comprobar si ya hemos buscado esta palabra antes
             if (isset($cache[$palabra])) {
                 $palabraMasSimilar = $cache[$palabra];
@@ -317,7 +320,8 @@ class DiccionarioController extends Controller{
         return [
             "mensaje_opcional" => $mensaje_opcional,
             "significado" => $significado,
-            "bandera" => $bandera
+            "bandera" => $bandera,
+            "imagenes" => $palabra_encontrada->imagenes,
         ];
     }
 
@@ -373,5 +377,65 @@ class DiccionarioController extends Controller{
         $bandera = true;
        
         return $concatenado;
+    }
+
+    public function insertarImagenes(){
+
+        $collection_diccionario = self::$mongoDB->selectCollection('diccionario');
+
+        $palabra_encontrada = $collection_diccionario->find([], [ 'limit' => 1000 ]);
+
+        foreach ($palabra_encontrada as $documento) {
+            $query = $documento->palabra;
+
+            $client = new GoutteClient();
+    
+            $crawler = $client->request('GET', 'https://www.google.com/search?q=' . $query . '&tbm=isch&tbs=isz:ex,iszw:400,iszh:400');
+    
+            $htmlContent = $crawler->html();
+          
+            $dom = new \DOMDocument();
+            $dom->loadHTML($htmlContent);
+    
+            $imageElements = $dom->getElementsByTagName('img');
+
+            $element = $imageElements[2];
+            $element2 = $imageElements[3];
+            $element3 = $imageElements[4];
+           
+            
+            if ($element) {
+                $imageUrl =  $element->getAttribute('src');
+                $imageData = base64_encode(file_get_contents($imageUrl));
+            }else{
+                $imageData = "";
+            }
+
+            if ($element2) {
+                $imageUrl2 =  $element2->getAttribute('src');
+                $imageData2 = base64_encode(file_get_contents($imageUrl2));
+            }else{
+                $imageData2 = "";
+            }
+
+            if ($element3) {
+                $imageUrl3 =  $element3->getAttribute('src');
+                $imageData3 = base64_encode(file_get_contents($imageUrl3));
+            }else{
+                $imageData3 = "";
+            }
+
+
+            $images = [
+                ['url' => $imageData],
+                ['url' => $imageData2],
+                ['url' => $imageData3]
+            ];
+
+            $collection_diccionario->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectID($documento->_id)],
+                ['$set' => ['imagenes' => $images]]
+            );
+        }
     }
 }

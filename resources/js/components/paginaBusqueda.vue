@@ -146,7 +146,7 @@ export default {
 
     #pagina_busqueda {
         max-width: 100%; 
-        height: 92vh; 
+        height: 90vh; 
         margin-top: 0.5rem !important;
         backdrop-filter: blur(4px);
     }
