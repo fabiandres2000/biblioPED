@@ -69,3 +69,35 @@ export function eliminarDatosContenido($data) {
         }
     );
 }
+
+export function listarEstudiantes() {
+    return http().get('/api/listar-estudiantes');
+}
+
+export function registro_estudiante($data) {
+    return http().post(
+        '/api/registro-estudiante', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export function editar_estudiante($data) {
+    return http().post(
+        '/api/editar-estudiante',  
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export function obtenerdatos() {
+    return http().get('/api/datosDashboard');
+}

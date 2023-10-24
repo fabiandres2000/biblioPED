@@ -60,16 +60,33 @@ class UsuarioController extends Controller
                     return response()->json(["Usuario <strong> Inactivo </strong>, comuníquese con el administrador del sitio web.", 0], 200);
                 }
             }else{
-                Session::flush();
-                Session::start();
-                Session::put('id', $usuario->_id);
-                Session::put('nombre', $usuario->nombre);
-                Session::put('correo', $usuario->correo);
-                Session::put('imagen', $usuario->imagen);
-                Session::put('tipo_registro', $usuario->tipo_registro);
-                Session::put('logueado', 'ok');
+                if(!property_exists($usuario, 'estado')){
+                    Session::flush();
+                    Session::start();
+                    Session::put('id', $usuario->_id);
+                    Session::put('nombre', $usuario->nombre);
+                    Session::put('correo', $usuario->correo);
+                    Session::put('imagen', $usuario->imagen);
+                    Session::put('tipo_registro', $usuario->tipo_registro);
+                    Session::put('logueado', 'ok');
                 
-                return response()->json(["Bienvenido ".$usuario->nombre, 1, $usuario->tipo_registro], 200);
+                    return response()->json(["Bienvenido ".$usuario->nombre, 1, $usuario->tipo_registro], 200);
+                }else{
+                    if($usuario->estado == "Activo"){
+                        Session::flush();
+                        Session::start();
+                        Session::put('id', $usuario->_id);
+                        Session::put('nombre', $usuario->nombre);
+                        Session::put('correo', $usuario->correo);
+                        Session::put('imagen', $usuario->imagen);
+                        Session::put('tipo_registro', $usuario->tipo_registro);
+                        Session::put('logueado', 'ok');
+                    
+                        return response()->json(["Bienvenido ".$usuario->nombre, 1, $usuario->tipo_registro], 200);
+                    }else{
+                        return response()->json(["Usuario <strong> Inactivo </strong>, comuníquese con el administrador del sitio web.", 0], 200);
+                    }
+                }
             }
         }
     }

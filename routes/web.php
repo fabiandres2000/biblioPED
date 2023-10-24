@@ -85,6 +85,11 @@ Route::prefix('api')->group(function () {
     Route::post('/registro-docente', [AdminController::class, 'RegistroDocente'])->name('RegistroDocente');
     Route::get('/listar-docentes', [AdminController::class, 'listarDocentes'])->name('listarDocentes');
     Route::post('/editar-docente', [AdminController::class, 'editarDocente'])->name('editarDocente');
+    Route::get('/listar-estudiantes', [AdminController::class, 'listarEstudiantes'])->name('listarEstudiantes');
+    Route::post('/registro-estudiante', [AdminController::class, 'registroEstudiante'])->name('registroEstudiante');
+    Route::post('/editar-estudiante', [AdminController::class, 'editarEstudiante'])->name('editarEstudiante');
+    Route::get('/datosDashboard', [AdminController::class, 'datosDashboard'])->name('datosDashboard');
+
 
     Route::get('/foros', [ForosController::class, 'foros'])->name('foros');
     Route::get('/foro', [ForosController::class, 'foro'])->name('foro');
@@ -120,7 +125,6 @@ Route::prefix('api')->group(function () {
     Route::get('/buscar-palabra-diccionario', [DiccionarioController::class, 'buscarPalabraDiccionario'])->name('buscarPalabraDiccionario');
     Route::get('/insertar-palabras', [DiccionarioController::class, 'insertarPalabras'])->name('insertarPalabras');
     Route::get('/insertar-imagenes', [DiccionarioController::class, 'insertarImagenes'])->name('insertarImagenes');
-
 });
 
 Route::get('/{any}', function () {

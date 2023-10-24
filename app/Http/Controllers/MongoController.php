@@ -384,6 +384,17 @@ class MongoController extends Controller
         $pagina = $request->input('pagina');
 
         $collection = self::$mongoDB->selectCollection('busquedas');
+        $collection_globales = self::$mongoDB->selectCollection('busquedas_globales');
+
+        date_default_timezone_set('America/Bogota');
+
+        // Configurar el idioma de Carbon a español
+        Carbon::setLocale('es');
+
+        // Obtener la fecha, el día de la semana y la hora actual en Colombia usando Carbon
+        $fecha_actual = Carbon::now()->format('Y-m-d');
+        $dia_de_la_semana_actual = Carbon::now()->isoFormat('dddd, D [de] MMMM [del] Y');
+        $hora_actual = Carbon::now()->format('H:i:s');
 
         if($pagina == 1){
             if (Session::has('id')) {
@@ -402,16 +413,6 @@ class MongoController extends Controller
                     }
                 }
 
-                date_default_timezone_set('America/Bogota');
-
-                // Configurar el idioma de Carbon a español
-                Carbon::setLocale('es');
-
-                // Obtener la fecha, el día de la semana y la hora actual en Colombia usando Carbon
-                $fecha_actual = Carbon::now()->format('Y-m-d');
-                $dia_de_la_semana_actual = Carbon::now()->isoFormat('dddd, D [de] MMMM [del] Y');
-                $hora_actual = Carbon::now()->format('H:i:s');
-
                 $busqueda = [
                     'id_usuario' => Session::get('id'),
                     'texto_busqueda' => $variable1,
@@ -422,11 +423,19 @@ class MongoController extends Controller
                 ];
     
                 $collection->insertOne($busqueda);
-            }  
+            }
         }
-        
 
+        $busqueda_global = [
+            'texto_busqueda' => $variable1,
+            'dia' => $dia_de_la_semana_actual,
+            'fecha' => $fecha_actual,
+            'hora' => $hora_actual
+        ];
+
+        $collection_globales->insertOne($busqueda_global);
     }
+
 
     public function paginacion(Request $request){
 

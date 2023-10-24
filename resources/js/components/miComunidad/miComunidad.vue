@@ -23,7 +23,7 @@
                                             <div class="media-body pt-4 px-2">
                                                 <div class="row">
                                                     <div class="col" style="padding-top: 35px;">
-                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title">Universidad Popular del Cesar</h3>
+                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title">colegio Nacional Loperena</h3>
                                                         <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title">Sede - Principal</h3>
                                                     </div>
                                                     <div class="col text-right">

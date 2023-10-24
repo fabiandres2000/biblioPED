@@ -383,7 +383,11 @@ class DiccionarioController extends Controller{
 
         $collection_diccionario = self::$mongoDB->selectCollection('diccionario');
 
-        $palabra_encontrada = $collection_diccionario->find([], [ 'limit' => 1000 ]);
+        $palabra_encontrada = $collection_diccionario->find(
+            [], 
+            [ 'skip' => 10108 ],
+            [ 'limit' => 1000 ]
+        );
 
         foreach ($palabra_encontrada as $documento) {
             $query = $documento->palabra;

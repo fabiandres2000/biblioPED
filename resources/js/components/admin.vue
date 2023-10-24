@@ -20,6 +20,7 @@
                 <div class="content-body">
                     <Inicio v-if="tipoMostrado == 'Inicio'"></Inicio>
                     <gestionDocente v-if="tipoMostrado == 'GD'"></gestionDocente>
+                    <gestionEstudiante v-if="tipoMostrado == 'GE'"></gestionEstudiante>
                 </div>
             </div>
         </div>
@@ -28,12 +29,14 @@
 <script>
 import Inicio from "./admin/inicio.vue";
 import gestionDocente from "./admin/gestionDocente.vue";
+import gestionEstudiante from "./admin/gestionEstudiante.vue";
 import * as usuarioService from "../services/usuario";
 
 export default {
     components: {
         Inicio,
-        gestionDocente
+        gestionDocente,
+        gestionEstudiante
     },
     data() {
         return {

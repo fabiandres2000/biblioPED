@@ -267,7 +267,10 @@
                                                                     <option value="Inactivo">Inactivo</option>
                                                                 </select>
                                                                 <div class="form-control-position">
-                                                                    <i class="fas fa-toggle-on"></i>
+                                                                    <div class="form-control-position">
+                                                                    <i v-if="datosEditar.estado == 'Activo'" style="color: green" class="fas fa-toggle-on"></i>
+                                                                    <i v-else style="color: red" class="fas fa-toggle-off"></i>
+                                                                </div>
                                                                 </div>
                                                             </fieldset>
                                                         </div>

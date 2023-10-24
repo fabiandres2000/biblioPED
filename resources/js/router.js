@@ -21,6 +21,7 @@ import editarContenido from './components/contenido/editarContenido.vue'
 import ResultadoMetafactos from './components/resultadoMetafactos.vue'
 import miComunidad from './components/miComunidad/miComunidad.vue'
 import publicacion from './components/miComunidad/publicacion.vue'
+import dashboard from './components/admin.vue'
 
 
 const routes = [
@@ -134,6 +135,11 @@ const routes = [
     path: '/publicacion/:id',
     name: 'publicacion',
     component: publicacion
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: dashboard
   },
 ]
 

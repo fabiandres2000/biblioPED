@@ -62,6 +62,8 @@
 
     <script type="text/javascript" src="{{ asset('js/tsparticles.bundle.min.js') }}"></script>
 
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/fonts/simple-line-icons/style.css') }}">
+
     <style>
         body {
             overflow-x: hidden
@@ -199,6 +201,13 @@
                                     </div>
                                     <span class="user-name">{{ session('nombre') }}</span>
                                     <div class="dropdown-menu dropdown-menu-right">
+                                        @if (session('tipo_registro') == 'administrador')
+                                            <a class="dropdown-item" href="/dashboard">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                                Dashboard
+                                            </a>
+                                            <hr>
+                                        @endif
                                         <a class="dropdown-item" href="/historial">
                                             <i class="feather icon-user"></i>
                                             Mis Busquedas
@@ -1106,7 +1115,7 @@
                     "color": "#00FF00"
                 },
                 {
-                    "abreviatura": "s. ",
+                    "abreviatura": " s. ",
                     "color": "#0000FF"
                 },
                 {
@@ -1126,11 +1135,11 @@
                     "color": "#FFA500"
                 },
                 {
-                    "abreviatura": "m. ",
+                    "abreviatura": " m. ",
                     "color": "#800080"
                 },
                 {
-                    "abreviatura": "n. ",
+                    "abreviatura": " n. ",
                     "color": "#008000"
                 },
                 {

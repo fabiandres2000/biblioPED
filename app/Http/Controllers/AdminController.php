@@ -299,11 +299,10 @@ class AdminController extends Controller
     public function convertirHtmlATexto($html){
        
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', '');
+        $config->set('HTML.Allowed', 'p,b,a[href],i');
         $purifier = new HTMLPurifier($config);
         
         $texto = $purifier->purify($html);
-        
         return $texto;
     }
 
@@ -638,5 +637,203 @@ class AdminController extends Controller
                 break;
         }
         return 1;
+    }
+
+
+
+    public function listarEstudiantes(){
+        
+        $collection = self::$mongoDB->selectCollection('usuarios');
+
+        $usuarios = $collection->find(
+            [
+                'tipo_registro' => 'estudiante',
+            ]
+        )->toArray();
+
+        foreach($usuarios as $usuario){
+            if (!property_exists($usuario, 'estado')) {
+                $estado = $usuario->estado = "Activo";
+            } 
+        }
+
+        return response()->json( $usuarios, 200);
+    }
+
+
+    public function registroEstudiante(Request $request){
+       
+        $collection = self::$mongoDB->selectCollection('usuarios');
+
+        $nombre = $request->input('nombre');
+        $sexo = $request->input('sexo');
+        $grado = $request->input('grado');
+        $grupo = $request->input('grupo');
+        $jornada = $request->input('jornada');
+        $correo = $request->input('correo');
+        $password = $request->input('password');
+        $imagen = $request->input('imagen');
+        $tipo_registro = $request->input('tipo_registro');
+       
+        $usuario = $collection->findOne(['correo' => $correo]);
+
+        if (!$usuario) {
+
+            $usuario = [
+                'nombre' => $nombre,
+                'sexo' => $sexo,
+                'grado' => $grado,
+                'grupo' => $grupo,
+                'jornada' => $jornada,
+                'tipo_registro' => $tipo_registro,
+                'imagen' => $imagen,
+                'correo' => $correo,
+                'password' => $password,
+            ];
+
+            $collection->insertOne($usuario);
+
+            return response()->json(["Docente registrado corectamente.", 1, "estudiante"], 200);
+        } else {
+            return response()->json(["Ya hay un usuario registrado con ese nombre de correo.", 0], 200);
+        }
+
+    }
+
+
+    public function editarEstudiante(Request $request){
+        $collection = self::$mongoDB->selectCollection('usuarios');
+
+        $_id = $request->input('_id');
+        $nombre = $request->input('nombre');
+        $sexo = $request->input('sexo');
+        $grado = $request->input('grado');
+        $grupo = $request->input('grupo');
+        $jornada = $request->input('jornada');
+        $correo = $request->input('correo');
+        $password = $request->input('password');
+        $imagen = $request->input('imagen');
+        $tipo_registro = $request->input('tipo_registro');
+        $estado = $request->input('estado');
+
+        $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($_id)], 
+            [            
+                '$set' => [
+                    'nombre' => $nombre,
+                    'sexo' => $sexo,
+                    'grado' => $grado,
+                    'grupo' => $grupo,
+                    'jornada' => $jornada,
+                    'tipo_registro' => $tipo_registro,
+                    'imagen' => $imagen,
+                    'correo' => $correo,
+                    'password' => $password,
+                    'estado' => $estado,
+                ]
+            ]
+        );
+        return response()->json(["Estudiante modificado corectamente.", 1, "estudiante"], 200);
+    }
+
+
+
+    public function datosDashboard(){
+        
+        $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
+        $collectionBusquedas = self::$mongoDB->selectCollection('busquedas_globales');
+        $collectionApuntes = self::$mongoDB->selectCollection('apuntes');
+
+        $estudiantes = $collectionUsuarios->count(
+            [
+                'tipo_registro' => 'estudiante',
+            ]
+        );
+
+        $docentes = $collectionUsuarios->count(
+            [
+                'tipo_registro' => 'docente',
+            ]
+        );
+
+        $busquedas = $collectionBusquedas->find()->toArray();
+
+        $busquedas_agrupadas = $collectionBusquedas->aggregate([
+            [
+                '$group' => [
+                    '_id' => '$dia',
+                    'fecha' => ['$first' => '$fecha'],
+                    'cantidad' => ['$sum' => 1],
+                ],
+            ],
+            [
+                '$sort' => [
+                    'fecha' => 1,
+                ],
+            ],
+        ])->toArray();
+        
+        $labels = [];
+        $data = [];
+       
+        if(count($busquedas_agrupadas) < 15){
+            foreach ($busquedas_agrupadas as $b) {
+                $labels[] = $b->fecha;
+                $data[] = $b->cantidad;
+            }
+        }else{
+            $i = 1;
+            foreach ($busquedas_agrupadas as $b) {
+                if($i > count($busquedas_agrupadas) - 15){
+                    $labels[] = $b->fecha;
+                    $data[] = $b->cantidad;
+                }
+                $i++;
+            }
+        }
+
+       
+        $diasSemana = [0,0,0,0,0,0,0];
+
+        foreach ($busquedas as $b) {
+            $variable = explode(',',$b->dia)[0];
+            switch ($variable) {
+                case 'lunes':
+                    $diasSemana[0] += 1;
+                    break;
+                case 'martes':
+                    $diasSemana[1] += 1;
+                    break;
+                case 'miércoles':
+                    $diasSemana[2] += 1;
+                    break;
+                case 'jueves':
+                    $diasSemana[3] += 1;
+                    break;
+                case 'viernes':
+                    $diasSemana[4] += 1;
+                    break;
+                case 'sábado':
+                    $diasSemana[5] += 1;
+                    break;
+                case 'domingo':
+                    $diasSemana[6] += 1;
+                    break;
+            }
+        }
+       
+        $apuntes = $collectionApuntes->count();
+    
+        $datos = [
+            'numero_estudiantes' => $estudiantes,
+            'numero_docentes' => $docentes,
+            'numero_busquedas' => count($busquedas),
+            'numero_apuntes' => $apuntes,
+            'labels' => $labels,
+            'dataG' => $data,
+            'data_por_dia' => $diasSemana
+        ];
+
+        return response()->json( $datos, 200);
     }
 }

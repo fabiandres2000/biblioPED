@@ -29,6 +29,8 @@ class VerifyCsrfToken extends Middleware
         '/eliminar-contenido',
         '/guardar-publicacion',
         '/editar-publicacion',
-        '/me-gusta'
+        '/me-gusta',
+        '/registro-estudiante',
+        '/editar-estudiante'
     ];
 }

@@ -38,7 +38,7 @@
                                     <div class="col-11">
                                         <fieldset class="form-group position-relative mb-0">
                                             <input type="text" class="form-control form-control-xl input-xl" v-model="texto"
-                                                id="textoBusqueda" placeholder="Explore Stack ...">
+                                                id="textoBusqueda" placeholder="Explore Stack ..." @keyup.enter="BuscarResultadoNuevamente">
                                             <div class="form-control-position">
                                                 <i ref="microfono"  class="feather icon-mic font-medium-4" id="microfono" @click.prevent="BuscarConAudio"></i>
                                             </div>
