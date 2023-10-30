@@ -132,6 +132,19 @@
             padding: 5px;
             border-radius: 4px;
         }
+
+        .badge_sug {
+            cursor: pointer ;
+            color: black; 
+            font-size: 15px; 
+            margin: 10px; 
+            font-weight: bold;
+        }
+
+        .badge_sug:hover {
+           background-color: #009199;
+           color: #FFFFFF
+        }
     </style>
 </head>
 
@@ -700,9 +713,9 @@
         aria-labelledby="myModalLabel17" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="align-items: center;">
                     <h4 class="modal-title" id="myModalLabel17">Diccionario <strong>BiblioPED</strong></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button style="color: red; opacity: 1; font-size: 34px;" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -716,23 +729,22 @@
                                 placeholder="Ingresa una palabra...">
                         </div>
                         <div class="col-1" style="display: flex; justify-content: center; align-items: center">
-                            <button onclick="buscarPablabraDiccionario()" class="btn btn-success"><i
+                            <button onclick="buscarPablabraDiccionario(null)" class="btn btn-success"><i
                                     class="fas fa-search"></i></button>
                         </div>
                     </div>
                     <br>
+                    <div id="sugerencias" style="display: none; width: 100%; flex-wrap: wrap;">
+                        
+                    </div>
                     <p style="font-size: 20px; color: #009199; font-style: italic;" id="mensaje_opcional"></p>
-                    <p style="font-size: 20px" id="definicion"></p>
+                    <p style="font-size: 20px; max-height: 225px;; font-size: 20px;overflow-y: auto;" id="definicion"></p>
                     <hr>
                     <strong style='font-style: italic; font-size: 20px'>Imagenes relacionadas</strong><br>
                     <div id="imagenes_palabra"
                         style="display: flex; justify-content: space-around; align-items: center">
 
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cerrar
-                        modal</button>
                 </div>
             </div>
         </div>
@@ -1105,37 +1117,45 @@
             });
         }
 
-        function buscarPablabraDiccionario() {
+        function buscarPablabraDiccionario(texto_p) {
             const abreviaturas = [{
-                    "abreviatura": "adj. ",
+                    "abreviatura": "adj.",
                     "color": "#FF0000"
                 },
                 {
-                    "abreviatura": "adv. ",
-                    "color": "#00FF00"
+                    "abreviatura": "adv.",
+                    "color": "#1c7a1c"
                 },
                 {
                     "abreviatura": " s. ",
                     "color": "#0000FF"
                 },
                 {
-                    "abreviatura": "v. ",
+                    "abreviatura": " ár. ",
+                    "color": "#0000FF"
+                },
+                {
+                    "abreviatura": " v.",
                     "color": "#FFFF00"
                 },
                 {
-                    "abreviatura": "pl. ",
+                    "abreviatura": "pl.",
                     "color": "#FF00FF"
                 },
                 {
-                    "abreviatura": "sing. ",
-                    "color": "#00FFFF"
+                    "abreviatura": "sing.",
+                    "color": "#0089ff"
                 },
                 {
-                    "abreviatura": "f. ",
+                    "abreviatura": "f.",
                     "color": "#FFA500"
                 },
                 {
-                    "abreviatura": " m. ",
+                    "abreviatura": "p.",
+                    "color": "#FFFF00"
+                },
+                {
+                    "abreviatura": " m.",
                     "color": "#800080"
                 },
                 {
@@ -1144,6 +1164,10 @@
                 },
                 {
                     "abreviatura": "prep. ",
+                    "color": "#008080"
+                },
+                {
+                    "abreviatura": " us. ",
                     "color": "#008080"
                 },
                 {
@@ -1163,11 +1187,19 @@
                     "color": "#FFD700"
                 },
                 {
+                    "abreviatura": "gr. ",
+                    "color": "#FFD700"
+                },
+                {
                     "abreviatura": "fig. ",
                     "color": "#A0522D"
                 },
                 {
                     "abreviatura": "lit. ",
+                    "color": "#006400"
+                },
+                {
+                    "abreviatura": "hisp. ",
                     "color": "#006400"
                 },
                 {
@@ -1199,12 +1231,24 @@
                     "color": "#000080"
                 },
                 {
+                    "abreviatura": "lat. ",
+                    "color": "#2E8B57"
+                },
+                {
+                    "abreviatura": "Mar. ",
+                    "color": "#8B0000"
+                },
+                {
                     "abreviatura": "fam. ",
                     "color": "#4B0082"
                 },
                 {
                     "abreviatura": "orig. ",
                     "color": "#00BFFF"
+                },
+                {
+                    "abreviatura": "tr. ",
+                    "color": "#000080"
                 },
                 {
                     "abreviatura": "tech. ",
@@ -1215,7 +1259,7 @@
                     "color": "#008B8B"
                 },
                 {
-                    "abreviatura": "c. ",
+                    "abreviatura": " c. ",
                     "color": "#8B4513"
                 },
                 {
@@ -1229,23 +1273,99 @@
                 {
                     "abreviatura": "tr. ",
                     "color": "#FFA500"
-                }
+                },
+                {
+                    "abreviatura": "1.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "2.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "3.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "4.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "5.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "6.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "7.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "8.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "9.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "10.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "11.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "12.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "13.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "14.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "15.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "16.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "17.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "18.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "19.",
+                    "color": "#ff0000"
+                },
+                {
+                    "abreviatura": "20.",
+                    "color": "#ff0000"
+                },
             ];
-            const textoBuscar = document.getElementById("palabra_buscar").value;
+            const textoBuscar = texto_p ==null ?  document.getElementById("palabra_buscar").value : texto_p;
             $.ajax({
                 url: '/api/buscar-palabra-diccionario?palabra=' + textoBuscar,
                 type: 'GET',
                 success: function(response) {
                     for (const item of abreviaturas) {
-                        if (response.significado.indexOf(item.abreviatura) !== -1) {
-                            response.significado = response.significado.replace(item.abreviatura,
-                                "<span style='color:" + item.color + "; font-weight: bold'>" + item
-                                .abreviatura + "</span>");
-                        }
+                        response.significado = response.significado.split(item.abreviatura).join("<span style='color:" + item.color + "; font-weight: bold'>" + item.abreviatura + "</span>");
                     }
 
                     document.getElementById("definicion").innerHTML =
-                        "<strong style='font-style: italic; font-size: 20px'>Definición</strong><br>" + response
+                        "<strong style='font-style: italic; font-size: 20px'>Definición de ("+textoBuscar+")</strong><br>" + response
                         .significado;
                     document.getElementById("mensaje_opcional").innerHTML = response.mensaje_opcional;
 
@@ -1257,6 +1377,19 @@
                     });
 
                     document.getElementById("imagenes_palabra").innerHTML = div;
+
+                    if(response.sugerencias.length > 0){
+                        document.getElementById("sugerencias").style.display = "flex";
+                        var div_sug = '<p style="width: 100%;font-size: 20px;color: #009199;font-weight: bold;">Busquedas relacionadas</p><br>';  
+                        response.sugerencias.forEach(element => {
+                            div_sug += '<span onclick="buscarPablabraDiccionario(\'' + element + '\')" class="badge badge_sug badge-warning">'+element+'</span>';
+                        });
+
+                        document.getElementById("sugerencias").innerHTML = div_sug;
+                    }else{
+                        document.getElementById("sugerencias").style.display = "none";
+                    }
+                    
                 },
                 error: function(error) {
                     toastr.warning(error);
