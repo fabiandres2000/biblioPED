@@ -836,4 +836,131 @@ class AdminController extends Controller
 
         return response()->json( $datos, 200);
     }
+
+    public function estadisticaData(){
+        
+        $collectionBusquedas = self::$mongoDB->selectCollection('busquedas_globales');
+
+        $busquedas = $collectionBusquedas->find()->toArray();
+
+        // historial de busqueda
+        $busquedas_agrupadas = $collectionBusquedas->aggregate([
+            [
+                '$group' => [
+                    '_id' => '$dia',
+                    'fecha' => ['$first' => '$fecha'],
+                    'cantidad' => ['$sum' => 1],
+                ],
+            ],
+            [
+                '$sort' => [
+                    'fecha' => 1,
+                ],
+            ],
+        ])->toArray();
+        
+       // busquedas por mes y por dia de la semana
+        $diasSemana = [0,0,0,0,0,0,0];
+        $busquedasMeses = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+        foreach ($busquedas as $b) {
+            $variable = explode(',',$b->dia)[0];
+            $variablemes = explode(' ',$b->dia)[3];
+            switch ($variable) {
+                case 'lunes':
+                    $diasSemana[0] += 1;
+                    break;
+                case 'martes':
+                    $diasSemana[1] += 1;
+                    break;
+                case 'miércoles':
+                    $diasSemana[2] += 1;
+                    break;
+                case 'jueves':
+                    $diasSemana[3] += 1;
+                    break;
+                case 'viernes':
+                    $diasSemana[4] += 1;
+                    break;
+                case 'sábado':
+                    $diasSemana[5] += 1;
+                    break;
+                case 'domingo':
+                    $diasSemana[6] += 1;
+                    break;
+            }
+
+
+            switch ($variablemes) {
+                case 'enero':
+                    $busquedasMeses[0] += 1;
+                    break;
+                case 'febrero':
+                    $busquedasMeses[1] += 1;
+                    break;
+                case 'marzo':
+                    $busquedasMeses[2] += 1;
+                    break;
+                case 'abril':
+                    $busquedasMeses[3] += 1;
+                    break;
+                case 'mayo':
+                    $busquedasMeses[4] += 1;
+                    break;
+                case 'junio':
+                    $busquedasMeses[5] += 1;
+                    break;
+                case 'julio':
+                    $busquedasMeses[6] += 1;
+                    break;
+                case 'agosto':
+                    $busquedasMeses[7] += 1;
+                    break;
+                case 'septiembre':
+                    $busquedasMeses[8] += 1;
+                    break;
+                case 'octubre':
+                    $busquedasMeses[9] += 1;
+                    break;
+                case 'noviembre':
+                    $busquedasMeses[10] += 1;
+                    break;
+                case 'diciembre':
+                    $busquedasMeses[11] += 1;
+                    break;
+            }
+        }
+
+        // palabras mas buscadas
+        $textoCompleto = '';
+
+        foreach ($busquedas as $documento) {
+            $texto = $documento['texto_busqueda'];
+            $textoCompleto .= $texto . ' ';
+        }
+
+        $textoCompleto = mb_strtolower(trim($textoCompleto), 'UTF-8');
+
+        $words = explode(' ', $textoCompleto);
+        
+        $filteredWords = array_filter($words, function ($word) {
+            return strlen($word) > 3 && preg_match('/^[A-Za-z]+$/', $word);
+        });
+
+        $wordCounts = collect($filteredWords)->countBy()->toArray();
+        arsort($wordCounts);
+
+        $wordCountsArray = collect($wordCounts)->map(function ($value, $key) {
+            return ['key' => $key, 'count' => $value];
+        })->values()->take(15)->all();
+        
+        $datos = [
+            'busquedas_agrupadas' => $busquedas_agrupadas,
+            'data_por_dia' => $diasSemana,
+            'data_por_dmes' => $busquedasMeses,
+            'palabras_mas_buscadas' => $wordCountsArray
+        ];
+
+        return response()->json( $datos, 200);
+    }
 }

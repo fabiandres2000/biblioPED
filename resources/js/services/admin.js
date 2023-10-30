@@ -101,3 +101,7 @@ export function editar_estudiante($data) {
 export function obtenerdatos() {
     return http().get('/api/datosDashboard');
 }
+
+export function estadisticaData() {
+    return http().get('/api/estadisticaData');
+}

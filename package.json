@@ -16,6 +16,7 @@
         "vue-loader": "^16.2.0"
     },
     "dependencies": {
+        "@amcharts/amcharts4": "^4.10.38",
         "@vueup/vue-quill": "^1.2.0",
         "axios": "^1.4.0",
         "chart.js": "^4.4.0",

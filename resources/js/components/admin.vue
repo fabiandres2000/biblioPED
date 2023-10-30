@@ -21,6 +21,7 @@
                     <Inicio v-if="tipoMostrado == 'Inicio'"></Inicio>
                     <gestionDocente v-if="tipoMostrado == 'GD'"></gestionDocente>
                     <gestionEstudiante v-if="tipoMostrado == 'GE'"></gestionEstudiante>
+                    <estadistica v-if="tipoMostrado == 'Estadistica'"></estadistica>
                 </div>
             </div>
         </div>
@@ -30,13 +31,16 @@
 import Inicio from "./admin/inicio.vue";
 import gestionDocente from "./admin/gestionDocente.vue";
 import gestionEstudiante from "./admin/gestionEstudiante.vue";
+import estadistica from "./admin/estadistica.vue";
+
 import * as usuarioService from "../services/usuario";
 
 export default {
     components: {
         Inicio,
         gestionDocente,
-        gestionEstudiante
+        gestionEstudiante,
+        estadistica
     },
     data() {
         return {
