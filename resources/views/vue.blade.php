@@ -282,12 +282,12 @@
                                     </div>
                                     <span class="user-name">Opciones</span>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a style="padding: 11px 21px 10px 25px" class="dropdown-item btn btn-info m-2"
+                                        <a style="padding: 11px 21px 10px 25px; color: white; background-color: #009199 !important" class="dropdown-item btn btn-info m-2"
                                             data-toggle="modal" data-target="#modalLoginForm">
                                             <i class="feather icon-unlock"></i>
                                             Iniciar Sesión
                                         </a>
-                                        <a style="padding: 11px 21px 10px 25px"
+                                        <a style="padding: 11px 21px 10px 25px; color: white"
                                             class="dropdown-item btn btn-warning m-2" data-toggle="modal"
                                             data-target="#modalLoginForm2">
                                             <i class="feather icon-user"></i>
@@ -713,10 +713,10 @@
         aria-labelledby="myModalLabel17" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header" style="align-items: center;">
+                <div class="modal-header" style="margin: 15px;align-items: center;background-color: #a1eaee;">
                     <h4 class="modal-title" id="myModalLabel17">Diccionario <strong>BiblioPED</strong></h4>
-                    <button style="color: red; opacity: 1; font-size: 34px;" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button style="color: white;opacity: 1;font-size: 22px;background-color: red;border-radius: 50%;height: 54px;width: 54px;border: 7px solid white;display: flex;justify-content: center;align-items: center;position: absolute;right: 23px;top: 21px;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body" style="padding: 25px">
@@ -1031,7 +1031,7 @@
 
                         if (element.tipo == 0) {
                             clase = "feather icon-share-2 icon-bg-circle bg-yellow bg-darken-3";
-                            div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\"" + element._id
+                            div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" + element._id
                                 .$oid + "\", \"" + element.ruta + "\")' type='button'>" +
                                 "<div " + estilo + " class='media'>" +
                                 "<div class='media-left align-self-center'><i class='" + clase +
@@ -1049,7 +1049,7 @@
                         } else {
                             if (element.tipo == 1) {
                                 clase = "feather icon-users icon-bg-circle bg-yellow bg-darken-3";
-                                div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\"" + element
+                                div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" + element
                                     ._id.$oid + "\", \"" + element.ruta + "\")' type='button'>" +
                                     "<div " + estilo + " class='media'>" +
                                     "<div class='media-left align-self-center'><i class='" + clase +
@@ -1068,7 +1068,7 @@
                                 if (element.tipo == 2) {
                                     clase =
                                         "feather icon-thumbs-up icon-bg-circle bg-yellow bg-darken-3";
-                                    div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\"" +
+                                    div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
                                         element._id.$oid + "\", \"" + element.ruta +
                                         "\")' type='button'>" +
                                         "<div " + estilo + " class='media'>" +
@@ -1087,7 +1087,7 @@
                                 } else {
                                     clase =
                                         "feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
-                                    div.innerHTML += "<a onclick='cambiarEstadoNotificacion(\"" +
+                                    div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
                                         element._id.$oid + "\", \"" + element.ruta +
                                         "\")' type='button'>" +
                                         "<div " + estilo + " class='media'>" +
@@ -1355,7 +1355,13 @@
                     "color": "#ff0000"
                 },
             ];
-            const textoBuscar = texto_p ==null ?  document.getElementById("palabra_buscar").value : texto_p;
+
+            if(texto_p != null){
+                document.getElementById("palabra_buscar").value = texto_p;
+            }
+           
+            const textoBuscar = texto_p == null ?  document.getElementById("palabra_buscar").value : texto_p;
+           
             $.ajax({
                 url: '/api/buscar-palabra-diccionario?palabra=' + textoBuscar,
                 type: 'GET',

@@ -958,9 +958,188 @@ class AdminController extends Controller
             'busquedas_agrupadas' => $busquedas_agrupadas,
             'data_por_dia' => $diasSemana,
             'data_por_dmes' => $busquedasMeses,
-            'palabras_mas_buscadas' => $wordCountsArray
+            'palabras_mas_buscadas' => $wordCountsArray,
+            'mapaCalor' => self::mapaCalor()
         ];
 
         return response()->json( $datos, 200);
+    }
+
+
+    public function mapaCalor(){
+        $collectionBusquedas = self::$mongoDB->selectCollection('busquedas_globales');
+
+        $datos = [];
+        //lunes
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'lunes',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_lunes = self::partir_por_horas('Lunes', $busquedas);
+        $datos = array_merge($datos, $datos_lunes);
+
+        //martes
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'martes',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_martes = self::partir_por_horas('Martes', $busquedas);
+        $datos = array_merge($datos, $datos_martes);
+
+        //miercoles
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'miércoles',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_miercoles = self::partir_por_horas('Miércoles', $busquedas);
+        $datos = array_merge($datos, $datos_miercoles);
+
+        //jueves
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'jueves',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_jueves = self::partir_por_horas('Jueves', $busquedas);
+        $datos = array_merge($datos, $datos_jueves);
+
+        //viernes
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'viernes',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_viernes = self::partir_por_horas('viernes', $busquedas);
+        $datos = array_merge($datos, $datos_viernes);
+
+        //sabado
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'sábado',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_sabado = self::partir_por_horas('Sábado', $busquedas);
+        $datos = array_merge($datos, $datos_sabado);
+
+        //domingo
+        $busquedas = $collectionBusquedas->find([
+            'dia' => [
+                '$regex' => 'domingo',
+                '$options' => 'i', 
+            ]
+        ])->toArray();
+           
+        $datos_domingo = self::partir_por_horas('Domingo', $busquedas);
+        $datos = array_merge($datos, $datos_domingo);
+        return $datos;
+
+    }
+
+
+    public function partir_por_horas($dia, $datos){
+
+        $array = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $array[] = ["hour" => $i . ' AM', "weekday" => $dia, "value" => 0];
+        }
+
+        for ($i = 1; $i <= 12; $i++) {
+            $array[] = ["hour" => $i . ' PM', "weekday" => $dia, "value" => 0];
+        }
+
+        foreach ($datos as $key) {
+            $hora = explode(':', $key->hora)[0];
+            switch ($hora) {
+                case '01':
+                    $array[0]["value"] += 1;
+                    break;
+                case '02':
+                    $array[1]["value"] += 1;
+                    break;
+                case '03':
+                    $array[2]["value"] += 1;
+                    break;
+                case '04':
+                    $array[3]["value"] += 1;
+                    break;
+                case '05':
+                    $array[4]["value"] += 1;
+                    break;
+                case '06':
+                    $array[5]["value"] += 1;
+                    break;
+                case '07':
+                    $array[6]["value"] += 1;
+                    break;
+                case '08':
+                    $array[7]["value"] += 1;
+                    break;
+                case '09':
+                    $array[8]["value"] += 1;
+                    break;
+                case '10':
+                    $array[9]["value"] += 1;
+                    break;
+                case '11':
+                    $array[10]["value"] += 1;
+                    break;
+                case '12':
+                    $array[11]["value"] += 1;
+                    break;
+                case '13':
+                    $array[12]["value"] += 1;
+                    break;
+                case '14':
+                    $array[13]["value"] += 1;
+                    break;
+                case '15':
+                    $array[14]["value"] += 1;
+                    break;
+                case '16':
+                    $array[15]["value"] += 1;
+                    break;
+                case '17':
+                    $array[16]["value"] += 1;
+                    break;
+                case '18':
+                    $array[17]["value"] += 1;
+                    break;
+                case '19':
+                    $array[18]["value"] += 1;
+                    break;
+                case '20':
+                    $array[19]["value"] += 1;
+                    break;
+                case '21':
+                    $array[20]["value"] += 1;
+                    break;
+                case '22':
+                    $array[21]["value"] += 1;
+                    break;
+                case '23':
+                    $array[22]["value"] += 1;
+                    break;
+                case '24':
+                    $array[23]["value"] += 1;
+                    break;
+            }
+        }
+
+        return $array;
     }
 }

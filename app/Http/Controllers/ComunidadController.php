@@ -151,7 +151,15 @@ class ComunidadController extends Controller
                 $comentario->fechaFormateada = $fechaFormateada;
             }
 
-            
+            $publicacion->usuarios_likes = "";
+
+            foreach ($publicacion->likes as $usuario_like_id) {
+                $usuario_like = $collection2->findOne([
+                    '_id' => new \MongoDB\BSON\ObjectID($usuario_like_id),
+                ]);
+
+                $publicacion->usuarios_likes .= '<i style="font-size: 8px" class="fas fa-dot-circle"></i> '.$usuario_like->nombre."<br>";
+            }
         }
 
         return $publicaciones;

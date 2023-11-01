@@ -125,10 +125,13 @@
                                                                     <p class="card-text" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
                                                                     <img style="margin-bottom: 20px" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
                                                                     <ul class="list-inline">
-                                                                        <li v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
-                                                                        <li v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
+                                                                        <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
+                                                                        <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
                                                                         <li class="pr-1"><a href="#" class=""><span class="fa fa-commenting-o"></span> ({{item.comentarios.length}}) Comentarios</a></li>
                                                                     </ul>
+                                                                    <div class="miDivMegusta" :id="'divmegusta'+index">
+                                                                        <p style="font-weight: bold" v-html="item.usuarios_likes"></p>
+                                                                    </div>
                                                                 </div>
                                                             </div>                     
                                                             <div class="card-footer px-0 py-0">
@@ -729,6 +732,14 @@ export default {
                     toastr.error(respuesta_ok[0]);
                 }
             });
+        },
+        mostrarDivMegusta(index){
+            var div = document.getElementById('divmegusta'+index);
+            div.style.display = 'block';
+        },
+        ocultarDivMegusta(index){
+            var div = document.getElementById('divmegusta'+index);
+            div.style.display = 'none';
         }
     }
 };
@@ -953,5 +964,18 @@ export default {
     padding: 0 2px 0 6px;
     margin: 0 0.3em 0 0;
     vertical-align: 0;
+}
+
+.miDivMegusta {
+    display: none;
+    padding: 10px;
+    background-color: rgb(238, 237, 237);
+    border: 1px solid rgb(168, 168, 168);
+    position: absolute;
+    width: 200px;
+    height: auto;
+    z-index: 999999999;
+    border-radius: 10px;
+    color: #404e67;
 }
 </style>
