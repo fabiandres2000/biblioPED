@@ -192,7 +192,7 @@ export default {
         },
         generarGraficoDias(data_grafica) {
 
-            let chart2 = am4core.create(this.$refs.chartdivpie, am4charts.PieChart);
+            let chart2 = am4core.create(this.$refs.chartdivpie, am4charts.PieChart3D);
 
             chart2.paddingRight = 50;
 
@@ -221,7 +221,7 @@ export default {
                 },
             ];
 
-            var pieSeries = chart2.series.push(new am4charts.PieSeries());
+            var pieSeries = chart2.series.push(new am4charts.PieSeries3D());
             pieSeries.dataFields.value = "litres";
             pieSeries.dataFields.category = "country";
 
@@ -230,7 +230,7 @@ export default {
             this.loading = false;
         },
         generarGraficoMeses(data_grafica) {
-            let chart = am4core.create(this.$refs.chartdivmeses, am4charts.XYChart);
+            let chart = am4core.create(this.$refs.chartdivmeses, am4charts.XYChart3D);
 
             chart.paddingRight = 20;
 
@@ -248,26 +248,39 @@ export default {
 
             chart.data = data;
 
-            let categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+            let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
             categoryAxis.dataFields.category = "category";
             categoryAxis.renderer.grid.template.location = 0;
             categoryAxis.renderer.minGridDistance = 10;
 
-            let valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+            let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
             valueAxis.tooltip.disabled = true;
             valueAxis.renderer.minWidth = 35;
 
-            let series = chart.series.push(new am4charts.ColumnSeries());
-            series.dataFields.valueX = "value";
-            series.dataFields.categoryY = "category";
+            let series = chart.series.push(new am4charts.ColumnSeries3D());
+            series.dataFields.valueY = "value";
+            series.dataFields.categoryX = "category";
+            series.columns.template.fillOpacity = 0.8;
 
-            series.columns.template.tooltipText = "{valueX.value}";
+            series.columns.template.tooltipText = "{valueY.value}";
             chart.cursor = new am4charts.XYCursor();
 
+            var columnTemplate = series.columns.template;
+            columnTemplate.strokeWidth = 2;
+            columnTemplate.strokeOpacity = 1;
+            columnTemplate.stroke = am4core.color("#FFFFFF");
+
+            columnTemplate.adapter.add("fill", function (fill, target) {
+                return chart.colors.getIndex(target.dataItem.index);
+            })
+
+            columnTemplate.adapter.add("stroke", function (stroke, target) {
+                return chart.colors.getIndex(target.dataItem.index);
+            })
 
             this.chart3 = chart;
-
             this.loading = false;
+
         },
         generarGraficopalabras(data_grafica) {
 

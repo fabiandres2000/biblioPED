@@ -64,6 +64,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/fonts/simple-line-icons/style.css') }}">
 
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/form_login_multi.css') }}">
     <style>
         body {
             overflow-x: hidden
@@ -182,10 +183,91 @@
                         </li>
                         @if (Session::has('logueado'))
                             <li class="nav-item" style="display: flex; justify-content: center; align-items: center;">
-                                <a style="padding: 0.6rem 0.8rem 0.6rem 0.9rem"
-                                    class="nav-link nav-link-label btn btn-primary" href="/mi-comunidad"><i
-                                        class="fas fa-school"></i> Mi Comunidad</a>
+                                <a style="padding: 0.6rem 0.8rem 0.6rem 0.9rem" class="nav-link nav-link-label btn btn-primary" href="/mi-comunidad">
+                                    <i class="fas fa-school"></i> Mi Comunidad
+                                </a>
                             </li>
+                            <li class="dropdown dropdown-user nav-item">
+                                <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
+                                    data-toggle="dropdown">
+                                    @if (Session::has('logueado'))
+                                        <div class="avatar avatar-online">
+                                            <img src="{{ asset(session('imagen')) }}" alt="avatar">
+                                            <i></i>
+                                        </div>
+                                        <span class="user-name">{{ session('nombre') }}</span>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            @if (session('tipo_registro') == 'administrador')
+                                                <a class="dropdown-item" href="/dashboard">
+                                                    <i class="fas fa-chalkboard-teacher"></i>
+                                                    Dashboard
+                                                </a>
+                                                <hr>
+                                            @endif
+                                            <a class="dropdown-item" href="/historial">
+                                                <i class="fas fa-search"></i>
+                                                Mis Busquedas
+                                            </a>
+                                            <a class="dropdown-item" href="/mis-favoritos">
+                                                <i class="feather icon-star"></i>
+                                                Mis Favoritos
+                                            </a>
+                                            <a class="dropdown-item" href="/mi-perfil">
+                                                <i class="far fa-user"></i>
+                                                Mi Perfil
+                                            </a>
+
+                                            @if (session('tipo_registro') == 'docente')
+                                                <hr>
+                                                <a class="dropdown-item" href="/apuntes">
+                                                    <i class="fas fa-edit"></i>
+                                                    Mis Apuntes
+                                                </a>
+                                                <a class="dropdown-item" href="/lista-contenido">
+                                                    <i class="fas fa-book"></i>
+                                                    Gestión de Contenido
+                                                </a>
+                                                <a class="dropdown-item" href="/recomendaciones-docente">
+                                                    <i class="far fa-share-square"></i>
+                                                    Recomendaciones
+                                                </a>
+                                                <a class="dropdown-item" href="/foros-profesor">
+                                                    <i class="far fa-comments"></i>
+                                                    Foros
+                                                </a>
+                                            @endif
+                                            @if (session('tipo_registro') == 'estudiante')
+                                                <hr>
+                                                <a class="dropdown-item" href="/apuntes">
+                                                    <i class="fas fa-edit"></i>
+                                                    Mis Apuntes
+                                                </a>
+                                                <a class="dropdown-item" href="/recomendaciones-estudiante">
+                                                    <i class="far fa-share-square"></i>
+                                                    Recomendaciones
+                                                </a>
+                                                <a class="dropdown-item" href="/foros">
+                                                    <i class="far fa-comments"></i>
+                                                    Foros
+                                                </a>
+                                            @endif
+                                            <div class="dropdown-divider"></div>
+                                            <a style="color: red; font-weight: bold" class="dropdown-item" type="button" id="btnCerrarSesion" href="#">
+                                                <i style="color: red; font-weight: bold" class="feather icon-power"></i>
+                                                Cerrar Sesión
+                                            </a>
+                                        </div>
+                                    @endif
+                                </a>   
+                            </li>
+                        @else
+                            <li class="nav-item" style="display: flex; justify-content: center; align-items: center; margin-right: 20px">
+                                <a data-toggle="modal" data-target="#modalLoginForm" style="padding: 0.6rem 0.8rem 0.6rem 0.9rem" class="nav-link nav-link-label btn btn-primary " href="/mi-comunidad">
+                                    <i class="fas fa-sign-in-alt"></i> Ingresar
+                                </a>
+                            </li>
+                        @endif 
+                        @if (Session::has('logueado'))
                             <li class="dropdown dropdown-notification nav-item"><a class="nav-link nav-link-label"
                                     href="#" data-toggle="dropdown"><i
                                         class="ficon feather icon-bell"></i><span
@@ -203,104 +285,10 @@
                                             href="javascript:void(0)">Leer todas las notificaciones</a></li>
                                 </ul>
                             </li>
-                        @endif
-                        <li class="dropdown dropdown-user nav-item"><a
-                                class="dropdown-toggle nav-link dropdown-user-link" href="#"
-                                data-toggle="dropdown">
-                                @if (Session::has('logueado'))
-                                    <div class="avatar avatar-online">
-                                        <img src="{{ asset(session('imagen')) }}" alt="avatar">
-                                        <i></i>
-                                    </div>
-                                    <span class="user-name">{{ session('nombre') }}</span>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        @if (session('tipo_registro') == 'administrador')
-                                            <a class="dropdown-item" href="/dashboard">
-                                                <i class="fas fa-chalkboard-teacher"></i>
-                                                Dashboard
-                                            </a>
-                                            <hr>
-                                        @endif
-                                        <a class="dropdown-item" href="/historial">
-                                            <i class="feather icon-user"></i>
-                                            Mis Busquedas
-                                        </a>
-                                        <a class="dropdown-item" href="/mis-favoritos">
-                                            <i class="feather icon-star"></i>
-                                            Mis Favoritos
-                                        </a>
-                                        <a class="dropdown-item" href="/mi-perfil">
-                                            <i class="fas fa-user-alt"></i>
-                                            Mi Perfil
-                                        </a>
-
-                                        @if (session('tipo_registro') == 'docente')
-                                            <hr>
-                                            <a class="dropdown-item" href="/apuntes">
-                                                <i class="fas fa-edit"></i>
-                                                Mis Apuntes
-                                            </a>
-                                            <a class="dropdown-item" href="/lista-contenido">
-                                                <i class="fas fa-book"></i>
-                                                Gestión de Contenido
-                                            </a>
-                                            <a class="dropdown-item" href="/recomendaciones-docente">
-                                                <i class="fas fa-share-alt"></i>
-                                                Recomendaciones
-                                            </a>
-                                            <a class="dropdown-item" href="/foros-profesor">
-                                                <i class="fab fa-weixin"></i>
-                                                Foros
-                                            </a>
-                                        @endif
-                                        @if (session('tipo_registro') == 'estudiante')
-                                            <hr>
-                                            <a class="dropdown-item" href="/apuntes">
-                                                <i class="fas fa-edit"></i>
-                                                Mis Apuntes
-                                            </a>
-                                            <a class="dropdown-item" href="/recomendaciones-estudiante">
-                                                <i class="fas fa-share-alt"></i>
-                                                Recomendaciones
-                                            </a>
-                                            <a class="dropdown-item" href="/foros">
-                                                <i class="fab fa-weixin"></i>
-                                                Foros
-                                            </a>
-                                        @endif
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" type="button" id="btnCerrarSesion" href="#">
-                                            <i class="feather icon-power"></i>
-                                            Cerrar Sesión
-                                        </a>
-                                    </div>
-                                @else
-                                    <div class="avatar avatar-offline">
-                                        <img src="{{ asset('app-assets/images/portrait/small/user.png') }}"
-                                            alt="avatar">
-                                        <i></i>
-                                    </div>
-                                    <span class="user-name">Opciones</span>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a style="padding: 11px 21px 10px 25px; color: white; background-color: #009199 !important" class="dropdown-item btn btn-info m-2"
-                                            data-toggle="modal" data-target="#modalLoginForm">
-                                            <i class="feather icon-unlock"></i>
-                                            Iniciar Sesión
-                                        </a>
-                                        <a style="padding: 11px 21px 10px 25px; color: white"
-                                            class="dropdown-item btn btn-warning m-2" data-toggle="modal"
-                                            data-target="#modalLoginForm2">
-                                            <i class="feather icon-user"></i>
-                                            Registrate
-                                        </a>
-                                    </div>
-                                @endif
-                            </a>
-
+                        @endif    
+                        <li class="nav-item d-none d-md-block"><a class="nav-link nav-link-expand" href="#">
+                            <i class="ficon feather icon-maximize"></i></a>
                         </li>
-                        <li class="nav-item d-none d-md-block"><a class="nav-link nav-link-expand" href="#"><i
-                                    class="ficon feather icon-maximize"></i></a></li>
-
                     </ul>
                 </div>
             </div>
@@ -319,7 +307,7 @@
 
     <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document" style="margin-top: 10%;">
+        <div class="modal-dialog modal-lg" role="document" style="margin-top: 1%;">
             <div class="modal-content">
                 <div class="modal-body">
                     <section class="row flexbox-container">
@@ -331,225 +319,189 @@
                                             <img src="{{ asset('img/logo_1.png') }}" style="height: 90px;"
                                                 alt="branding logo">
                                         </div>
-
                                     </div>
                                     <div class="card-content">
-                                        <p
-                                            class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1">
-                                            <span>Ingrese los siguientes datos</span></p>
-                                        <div class="card-body">
-                                            <form class="form-horizontal" id="miFormulario" method="POST" validate>
-                                                @csrf
-                                                <fieldset class="form-group position-relative has-icon-left">
-                                                    <input type="text" class="form-control" name="correo"
-                                                        placeholder="Ingrese un email" required>
-                                                    <div class="form-control-position">
-                                                        <i class="feather icon-mail"></i>
-                                                    </div>
-                                                </fieldset>
-                                                <fieldset class="form-group position-relative has-icon-left">
-                                                    <input type="password" class="form-control" name="password"
-                                                        placeholder="Ingrese su contraseña" required>
-                                                    <div class="form-control-position">
-                                                        <i class="fa fa-key"></i>
-                                                    </div>
-                                                </fieldset>
-                                                <div class="form-group row">
-                                                    <div class="col-sm-6 col-12 text-center text-sm-left pr-0">
-                                                        <fieldset>
-                                                            <input type="checkbox" id="remember-me"
-                                                                class="chk-remember">
-                                                            <label for="remember-me"> Recordar contraseña</label>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div
-                                                        class="col-sm-6 col-12 float-sm-left text-center text-sm-right">
-                                                        <a href="recover-password.html" class="card-link">Has olvidado
-                                                            tu contraseña?</a></div>
+                                        <div class="card-body" style="padding: 0.5rem !important;">
+                                            <div class="form-container">
+                                                <div class="slide-controls">
+                                                    <input type="radio" name="slide" id="login" checked="">
+                                                    <input type="radio" name="slide" id="signup">
+                                                    <label for="login" class="slide login">Inicia sesión</label>
+                                                    <label for="signup" class="slide signup">Registrate</label>
+                                                    <div class="slider-tab"></div>
                                                 </div>
-                                            </form>
-                                        </div>
-                                        <div class="card-body"
-                                            style="display: flex; padding: 0.5rem; justify-content: space-between;">
-                                            <button style="width: 48%" id="btnLogin"
-                                                class="btn btn-outline-success btn-block"><i
-                                                    class="feather icon-user"></i> Iniciar Sesión</button>
-                                            <button data-dismiss="modal" aria-label="Close"
-                                                style="width: 48%; margin: 0"
-                                                class="btn btn-outline-danger btn-block"><i
-                                                    class="feather icon-x"></i> Cancelar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade text-left" id="modalLoginForm2" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel17" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document" style="margin-top: 4%;">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <section class="row flexbox-container">
-                        <div class="col-12 d-flex align-items-center justify-content-center">
-                            <div class="col-lg-12 col-md-8 col-10  p-0">
-                                <div class="card border-grey border-lighten-3 px-1 py-1 m-0" style="box-shadow: none">
-                                    <div class="card-header border-0">
-                                        <div class="card-title text-center">
-                                            <img src="{{ asset('img/logo_1.png') }}" style="height: 90px;"
-                                                alt="branding logo">
-                                        </div>
-
-                                    </div>
-                                    <div class="card-content">
-                                        <p
-                                            class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1">
-                                            <span>Ingrese los siguientes datos</span></p>
-                                        <div class="card-body">
-                                            <form class="form-horizontal" id="miFormulario2" method="POST" validate>
-                                                @csrf
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <input type="text" class="form-control" name="nombre"
-                                                                placeholder="Ingrese su nombre" required>
-                                                            <div class="form-control-position">
-                                                                <i class="feather icon-user"></i>
-                                                            </div>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <select name="sexo" class="form-control">
-                                                                <option value="">Seleccione su sexo</option>
-                                                                <option value="Masculino">Masculino</option>
-                                                                <option value="Femenino">Femenino</option>
-                                                            </select>
-                                                            <div class="form-control-position">
-                                                                <i class="fas fa-user"></i>
-                                                            </div>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div class="col-1" style="padding-top: 4px">
-                                                        <div class="avatar">
-                                                            <img style="width: 155%; max-width: 154%;"
-                                                                data-toggle="modal" data-target="#modal_avatar"
-                                                                id="imagen_avatar"
-                                                                src="{{ asset('avatars/default.png') }}"
-                                                                alt="avatar">
-                                                            <i></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-4">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <select name="grado" class="form-control">
-                                                                <option value="">Seleccione su grado</option>
-                                                                <option value="1">1º</option>
-                                                                <option value="2">2º</option>
-                                                                <option value="3">3º</option>
-                                                                <option value="4">4º</option>
-                                                                <option value="5">5º</option>
-                                                                <option value="6">6º</option>
-                                                                <option value="7">7º</option>
-                                                                <option value="8">8º</option>
-                                                                <option value="9">9º</option>
-                                                                <option value="10">10º</option>
-                                                                <option value="11">11º</option>
-                                                            </select>
-                                                            <div class="form-control-position">
-                                                                <i class="fas fa-graduation-cap"></i>
-                                                            </div>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <select name="grupo" class="form-control">
-                                                                <option value="">Seleccione su grupo</option>
-                                                                <option value="Grupo 1">Grupo 1</option>
-                                                                <option value="Grupo 2">Grupo 2</option>
-                                                                <option value="Grupo 3">Grupo 3</option>
-                                                                <option value="Grupo 4">Grupo 4</option>
-                                                                <option value="Grupo 5">Grupo 5</option>
-                                                                <option value="Grupo 6">Grupo 6</option>
-                                                                <option value="Grupo 7">Grupo 7</option>
-                                                                <option value="Grupo 8">Grupo 8</option>
-                                                                <option value="Grupo 9">Grupo 9</option>
-                                                                <option value="Grupo 10">Grupo 10</option>
-                                                            </select>
-                                                            <div class="form-control-position">
-                                                                <i class="fas fa-users"></i>
-                                                            </div>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <select name="jornada" class="form-control">
-                                                                <option value="">Jornada</option>
-                                                                <option value="Mañana">Mañana</option>
-                                                                <option value="Tarde">Tarde</option>
-                                                                <option value="Continua">Continua</option>
-                                                            </select>
-                                                            <div class="form-control-position">
-                                                                <i class="fas fa-sun"></i>
-                                                            </div>
-                                                        </fieldset>
-
-                                                        <input type="hidden" name="tipo_registro"
-                                                            value="estudiante">
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <fieldset class="form-group position-relative has-icon-left">
+                                                <div class="form-inner">
+                                                    <form action="#" class="login" id="miFormulario" method="POST" validate>
+                                                        @csrf
+                                                        <p style="font-size: 1.2rem !important;" class="card-subtitle line-on-side text-muted text-center mx-2 my-1">
+                                                            <span>Ingrese los siguientes datos</span>
+                                                        </p>
+                                                        <br>
+                                                        <fieldset class="form-group position-relative has-icon-left field">
                                                             <input type="text" class="form-control" name="correo"
                                                                 placeholder="Ingrese un email" required>
-                                                            <div class="form-control-position">
+                                                            <div style="top: 9px !important;" class="form-control-position">
                                                                 <i class="feather icon-mail"></i>
                                                             </div>
                                                         </fieldset>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <fieldset class="form-group position-relative has-icon-left">
-                                                            <input type="password" class="form-control"
-                                                                name="password" placeholder="Ingrese su contraseña"
-                                                                required>
-                                                            <div class="form-control-position">
+                                                        <fieldset class="form-group position-relative has-icon-left field">
+                                                            <input type="password" class="form-control" name="password"
+                                                                placeholder="Ingrese su contraseña" required>
+                                                            <div style="top: 9px !important;" class="form-control-position">
                                                                 <i class="fa fa-key"></i>
                                                             </div>
                                                         </fieldset>
-                                                    </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-sm-6 col-12 text-center text-sm-left pr-0">
+                                                                <fieldset>
+                                                                    <input type="checkbox" id="remember-me"
+                                                                        class="chk-remember">
+                                                                    <label for="remember-me"> Recordar contraseña</label>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-sm-6 col-12 float-sm-left text-center text-sm-right">
+                                                                <a href="recover-password.html" class="card-link">Has olvidado tu contraseña?</a></div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="card-body"
+                                                                style="display: flex; padding: 0.5rem; justify-content: space-between;">
+                                                                <button style="width: 48%" id="btnLogin"
+                                                                    class="btn btn-outline-success btn-block"><i
+                                                                        class="feather icon-user"></i> Iniciar Sesión</button>
+                                                                <button data-dismiss="modal" aria-label="Close"
+                                                                    style="width: 48%; margin: 0"
+                                                                    class="btn btn-outline-danger btn-block"><i
+                                                                        class="feather icon-x"></i> Cancelar</button>
+                                                            </div>
+                                                    </form>
+                                                    <form class="form-horizontal singup" id="miFormulario2" method="POST" validate>
+                                                        <p style="font-size: 1.2rem !important;" class="card-subtitle line-on-side text-muted text-center mx-2 my-1">
+                                                            <span>Ingrese los siguientes datos</span>
+                                                        </p>
+                                                        <br>
+                                                        @csrf
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <input type="text" class="form-control" name="nombre"
+                                                                        placeholder="Ingrese su nombre" required>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="feather icon-user"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <select name="sexo" class="form-control">
+                                                                        <option value="">Seleccione su sexo</option>
+                                                                        <option value="Masculino">Masculino</option>
+                                                                        <option value="Femenino">Femenino</option>
+                                                                    </select>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="fas fa-user"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-1" style="padding-left: 7px; padding-top: 15px;" >
+                                                                <div class="avatar">
+                                                                    <img style="width: 155%; max-width: 154%;"
+                                                                        data-toggle="modal" data-target="#modal_avatar"
+                                                                        id="imagen_avatar"
+                                                                        src="{{ asset('avatars/default.png') }}"
+                                                                        alt="avatar">
+                                                                    <i></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-4">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <select name="grado" class="form-control">
+                                                                        <option value="">Seleccione su grado</option>
+                                                                        <option value="1">1º</option>
+                                                                        <option value="2">2º</option>
+                                                                        <option value="3">3º</option>
+                                                                        <option value="4">4º</option>
+                                                                        <option value="5">5º</option>
+                                                                        <option value="6">6º</option>
+                                                                        <option value="7">7º</option>
+                                                                        <option value="8">8º</option>
+                                                                        <option value="9">9º</option>
+                                                                        <option value="10">10º</option>
+                                                                        <option value="11">11º</option>
+                                                                    </select>
+                                                                    <div class="form-control-position">
+                                                                        <i class="fas fa-graduation-cap"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <select name="grupo" class="form-control">
+                                                                        <option value="">Seleccione su grupo</option>
+                                                                        <option value="Grupo 1">Grupo 1</option>
+                                                                        <option value="Grupo 2">Grupo 2</option>
+                                                                        <option value="Grupo 3">Grupo 3</option>
+                                                                        <option value="Grupo 4">Grupo 4</option>
+                                                                        <option value="Grupo 5">Grupo 5</option>
+                                                                        <option value="Grupo 6">Grupo 6</option>
+                                                                        <option value="Grupo 7">Grupo 7</option>
+                                                                        <option value="Grupo 8">Grupo 8</option>
+                                                                        <option value="Grupo 9">Grupo 9</option>
+                                                                        <option value="Grupo 10">Grupo 10</option>
+                                                                    </select>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="fas fa-users"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <select name="jornada" class="form-control">
+                                                                        <option value="">Jornada</option>
+                                                                        <option value="Mañana">Mañana</option>
+                                                                        <option value="Tarde">Tarde</option>
+                                                                        <option value="Continua">Continua</option>
+                                                                    </select>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="fas fa-sun"></i>
+                                                                    </div>
+                                                                </fieldset>
+        
+                                                                <input type="hidden" name="tipo_registro"
+                                                                    value="estudiante">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <input type="text" class="form-control" name="correo" placeholder="Ingrese un email" required>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="feather icon-mail"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <fieldset class="form-group position-relative has-icon-left field">
+                                                                    <input type="password" class="form-control" name="password" placeholder="Ingrese su contraseña" required>
+                                                                    <div style="top: 8px !important;" class="form-control-position">
+                                                                        <i class="fa fa-key"></i>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="card-body" style="display: flex; padding: 0.5rem; justify-content: space-between;">
+                                                            <button style="width: 48%" id="btnRegistrar" class="btn btn-outline-success btn-block">
+                                                                <i class="feather icon-user"></i> Registrate
+                                                            </button>
+                                                            <button data-dismiss="modal" aria-label="Close" style="width: 48%; margin: 0" class="btn btn-outline-danger btn-block">
+                                                                <i class="feather icon-x"></i> Cancelar
+                                                            </button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <hr>
-                                                <div class="form-group row">
-                                                    <div class="col-sm-6 col-12 text-center text-sm-left pr-0">
-                                                        <fieldset>
-                                                            <input type="checkbox" id="remember-me2"
-                                                                class="chk-remember">
-                                                            <label for="remember-me2"> Recordar contraseña</label>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div
-                                                        class="col-sm-6 col-12 float-sm-left text-center text-sm-right">
-                                                        <a href="recover-password.html" class="card-link">Has olvidado
-                                                            tu contraseña?</a></div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="card-body"
-                                            style="display: flex; padding: 0.5rem; justify-content: space-between;">
-                                            <button style="width: 48%" id="btnRegistrar"
-                                                class="btn btn-outline-success btn-block"><i
-                                                    class="feather icon-user"></i> Registrate</button>
-                                            <button data-dismiss="modal" aria-label="Close"
-                                                style="width: 48%; margin: 0"
-                                                class="btn btn-outline-danger btn-block"><i
-                                                    class="feather icon-x"></i> Cancelar</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -560,6 +512,7 @@
             </div>
         </div>
     </div>
+
 
     <div class="modal fade text-left" id="modal_avatar" tabindex="-1" role="dialog"
         aria-labelledby="myModalLabel17" aria-hidden="true">
@@ -766,7 +719,9 @@
             </div>
         </div>
     </div>
+
     <div id="app"></div>
+    
     <!-- BEGIN: Footer-->
     <footer class="footer fixed-bottom footer-dark navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2 container center-layout"><span
@@ -805,6 +760,20 @@
 
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 
+    <script>
+        const loginBtn = document.querySelector("label.login");
+        const signupBtn = document.querySelector("label.signup");
+        const loginForm = document.querySelector("form.login");
+
+        signupBtn.onclick = (()=>{
+            loginForm.style.marginLeft = "-50%";
+            loginText.style.marginLeft = "-50%";
+        });
+        loginBtn.onclick = (()=>{
+            loginForm.style.marginLeft = "0%";
+            loginText.style.marginLeft = "0%";
+        });
+    </script>
     <script>
         getBrowserInfo();
 
