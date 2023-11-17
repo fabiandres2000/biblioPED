@@ -65,6 +65,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/fonts/simple-line-icons/style.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('css/form_login_multi.css') }}">
+
     <style>
         body {
             overflow-x: hidden
@@ -156,15 +157,107 @@
     <nav
         class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-dark navbar-border navbar-brand-center">
         <div class="navbar-wrapper">
-            <div class="navbar-header">
+            <div class="navbar-header menu_mobil" style="display: none;">
                 <ul class="nav navbar-nav flex-row">
-                    <li class="nav-item mobile-menu d-md-none mr-auto"><a
-                            class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i
-                                class="feather icon-menu font-large-1"></i></a></li>
-                    <li class="nav-item"><a class="navbar-brand" href="index.html"></li>
-                    <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse"
-                            data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
+                    <li style="position: relative; top: 11px; left: 20px;" class="nav-item mobile-menu d-md-none mr-auto">
+                        <a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#">
+                            <i onclick="window.history.back()" style="font-size: 28px" class="fas fa-arrow-left"></i>
+                        </a>
+                    </li>
+                    @if (Session::has('logueado'))
+                        <li class="dropdown dropdown-user nav-item" style="position: fixed; right: 68px; top: 9px; text-align: right;">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
+                                data-toggle="dropdown">
+                                @if (Session::has('logueado'))
+                                    <div class="avatar avatar-online">
+                                        <img src="{{ asset(session('imagen')) }}" alt="avatar">
+                                    </div>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <span style="color: rgb(78, 78, 78); padding-left: 20px; font-weight: bold;" class="user-name">{{ session('nombre') }}</span>
+                                        <hr>
+                                        @if (session('tipo_registro') == 'administrador')
+                                            <a class="dropdown-item" href="/dashboard">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                                Dashboard
+                                            </a>
+                                        <hr>
+                                        @endif
+                                        <a class="dropdown-item" href="/historial">
+                                            <i class="fas fa-search"></i>
+                                            Mis Busquedas
+                                        </a>
+                                        <a class="dropdown-item" href="/mis-favoritos">
+                                            <i class="feather icon-star"></i>
+                                            Mis Favoritos
+                                        </a>
+                                        <a class="dropdown-item" href="/mi-perfil">
+                                            <i class="far fa-user"></i>
+                                            Mi Perfil
+                                        </a>
 
+                                        @if (session('tipo_registro') == 'docente')
+                                            <hr>
+                                            <a class="dropdown-item" href="/apuntes">
+                                                <i class="fas fa-edit"></i>
+                                                Mis Apuntes
+                                            </a>
+                                            <a class="dropdown-item" href="/lista-contenido">
+                                                <i class="fas fa-book"></i>
+                                                Gestión de Contenido
+                                            </a>
+                                            <a class="dropdown-item" href="/recomendaciones-docente">
+                                                <i class="far fa-share-square"></i>
+                                                Recomendaciones
+                                            </a>
+                                            <a class="dropdown-item" href="/foros-profesor">
+                                                <i class="far fa-comments"></i>
+                                                Foros
+                                            </a>
+                                        @endif
+                                        @if (session('tipo_registro') == 'estudiante')
+                                            <hr>
+                                            <a class="dropdown-item" href="/apuntes">
+                                                <i class="fas fa-edit"></i>
+                                                Mis Apuntes
+                                            </a>
+                                            <a class="dropdown-item" href="/recomendaciones-estudiante">
+                                                <i class="far fa-share-square"></i>
+                                                Recomendaciones
+                                            </a>
+                                            <a class="dropdown-item" href="/foros">
+                                                <i class="far fa-comments"></i>
+                                                Foros
+                                            </a>
+                                        @endif
+                                        <div class="dropdown-divider"></div>
+                                        <a style="color: red; font-weight: bold" class="dropdown-item" type="button" id="btnCerrarSesion" href="#">
+                                            <i style="color: red; font-weight: bold" class="feather icon-power"></i>
+                                            Cerrar Sesión
+                                        </a>
+                                    </div>
+                                @endif
+                            </a>   
+                        </li>
+                    @endif
+                    @if (Session::has('logueado'))
+                        <div style="position: fixed; right: 3px; top: 21px; text-align: right;" class="dropdown dropdown-notification nav-item"><a class="nav-link nav-link-label"
+                                href="#" data-toggle="dropdown"><i
+                                    class="ficon feather icon-bell"></i><span
+                                    class="badge badge-pill badge-danger badge-up"
+                                    id="numero_notificaciones">0</span></a>
+                            <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
+                                <li class="dropdown-menu-header">
+                                    <h6 class="dropdown-header m-0"><span
+                                            class="grey darken-2">Notificaciones</span></h6>
+                                </li>
+                                <li class="scrollable-container media-list" id="lista_notificaciones">
+
+                                </li>
+                                <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center"
+                                        href="javascript:void(0)">Leer todas las notificaciones</a></li>
+                            </ul>
+                        </div>
+                    @endif
                 </ul>
             </div>
             <div class="navbar-container container center-layout" style="max-width: 100%;">

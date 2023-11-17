@@ -12,8 +12,8 @@
                         <div id="user-profile">
                             <div v-if="item != null">
                                 <div class="row">
-                                    <div class="col-2"></div>
-                                    <div class="col-8">
+                                    <div class="col-lg-2 col-xs-1"></div>
+                                    <div class="col-lg-8 col-sx-10">
                                         <section id="timeline" class="timeline-center timeline-wrapper">
                                             <h3 class="page-title text-center">Publicación Original</h3>
                                             <hr>
@@ -116,7 +116,7 @@
                                             </ul>
                                         </section>
                                     </div>   
-                                    <div class="col-2"></div> 
+                                    <div class="col-lg-2 col-xs-1"></div> 
                                 </div> 
                             </div>
                              

@@ -693,7 +693,7 @@ class AdminController extends Controller
 
             $collection->insertOne($usuario);
 
-            return response()->json(["Docente registrado corectamente.", 1, "estudiante"], 200);
+            return response()->json(["Estudiante registrado corectamente.", 1, "estudiante"], 200);
         } else {
             return response()->json(["Ya hay un usuario registrado con ese nombre de correo.", 0], 200);
         }

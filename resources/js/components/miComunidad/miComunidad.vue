@@ -23,8 +23,8 @@
                                             <div class="media-body pt-4 px-2">
                                                 <div class="row">
                                                     <div class="col" style="padding-top: 35px;">
-                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title">colegio Nacional Loperena</h3>
-                                                        <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title">Sede - Principal</h3>
+                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">colegio Nacional Loperena</h3>
+                                                        <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">Sede - Principal</h3>
                                                     </div>
                                                     <div class="col text-right">
                                                         
@@ -56,7 +56,7 @@
                                     <h4 style="font-weight: bold; color: #323d51">Usuarios destacados <br> en tu comunidad </h4>
                                     <hr>
                                     <div class="row"  style="margin: 10px;">
-                                        <div v-for="(item, index) in usuariosComunidad" :key="index" class="col-xl-4 col-md-6 col-12" style="margin-top: 25px; cursor: pointer">
+                                        <div v-for="(item, index) in usuariosComunidad" :key="index" class="col-xl-4 col-md-6 miembro_box" style="margin-top: 25px; cursor: pointer">
                                             <img class="insignia" v-if="index < 3" :src="'/img/medallas/'+index+'.png'" alt="">
                                             <div class="card profile-card-with-stats" style="border-radius: 13px;">
                                                 <div class="text-center">
@@ -84,7 +84,7 @@
                                     <div class="col-4">
 
                                     </div>
-                                    <div class="col-8">
+                                    <div class="col-lg-8">
                                         <section id="timeline" class="timeline-center timeline-wrapper">
                                             <h3 class="page-title text-center">Últimas publicaciones</h3>
                                             <hr>
@@ -111,7 +111,7 @@
                                                                     </a>
                                                                 </div>
                                                                 <div class="media-body">
-                                                                    <h4 class="card-title"><a href="#">{{ item.usuario.nombre }} - <strong v-if="item.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ item.usuario.grado }}° grado</strong><strong v-if="item.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
+                                                                    <h4 class="card-title"><a class="encabezado_movil" href="#">{{ item.usuario.nombre }} - <strong v-if="item.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ item.usuario.grado }}° grado</strong><strong v-if="item.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
                                                                     <p class="card-subtitle text-muted mb-0 pt-1">
                                                                         <span v-if="item.editado" class="font-small-3">{{ item.fecha_formateada_edicion }} <strong>(editada)</strong></span>
                                                                         <span v-else class="font-small-3">{{ item.fecha_formateada }}</span>
@@ -122,7 +122,7 @@
                                                         <div class="card-content">
                                                             <div class="card-content">
                                                                 <div class="card-body">
-                                                                    <p class="card-text" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
+                                                                    <p class="card-text letra_publicacion" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
                                                                     <img style="margin-bottom: 20px" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
                                                                     <ul class="list-inline">
                                                                         <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
@@ -137,7 +137,7 @@
                                                             <div class="card-footer px-0 py-0">
                                                                 <div class="card-body">
                                                                     <div v-for="(item2, index2) in item.comentarios" :key="index2">
-                                                                        <div class="media" v-if="index2 < 3" style="padding-left: 20px; margin-bottom: 15px">
+                                                                        <div class="media media_box_movil" v-if="index2 < 3" style="padding-left: 20px; margin-bottom: 15px">
                                                                             <div class="media-body">
                                                                                 <div class="media" style="position: relative">
                                                                                     <div class="media-left mr-1">
@@ -418,7 +418,9 @@ export default {
     },
     mounted() {
         this.verificarLogin();
-        window.addEventListener("scroll", this.actualizarPixelesDesplazados);
+        if (window.innerWidth > 450) {
+            window.addEventListener("scroll", this.actualizarPixelesDesplazados);
+        }
         this.misDatos();
         this.listarUsuariosComunidad();
         this.intervalId = setInterval(this.listarPublicaciones2, 60000);
@@ -481,7 +483,6 @@ export default {
         },
         actualizarPixelesDesplazados() {
             this.pixelesDesplazados = window.scrollY;
-            console.log(this.pixelesDesplazados);
             if (this.pixelesDesplazados >= 461) {
                 $('#miembros').css({
                     'position': 'fixed',
@@ -977,5 +978,107 @@ export default {
     z-index: 999999999;
     border-radius: 10px;
     color: #404e67;
+}
+
+@media (max-width: 450px) {
+    #user-profile .profile-with-cover .profil-cover-details {
+        position: absolute !important;
+        margin-top: 124px !important;
+    }
+
+    .titulo_principal {
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 0.05rem;
+        font-size: 1.12rem;
+        color: white !important;
+        text-shadow: 2px 0 #000, -1px 0 #000, 0 2px #000, 0 -2px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000 !important;
+    }
+
+    .pt-4, .py-4 {
+        padding-top: 0.5rem !important;
+        padding-left: 21px !important;
+        font-size: 15px !important;
+    }
+
+    #navbarSupportedContent {
+        display: flex;
+    }
+
+    #user-profile .navbar-profile {
+        margin-left: 10px !important; 
+    }
+
+    .nav-item button {
+        width: 100%;
+        margin-bottom: 10px;  
+    } 
+
+    .nav-item {
+        margin: 0px !important;
+    }
+
+    .timeline {
+        padding: 0px !important;
+    }
+
+    .miembrosComunidad {
+        position: initial !important;
+        text-align: center;
+        height: 738px !important;
+        width: 100% !important;
+        margin-bottom: 29px;
+        background-size: cover;
+        background-image: url(/img/podio.png);
+    }
+
+    .miembro_box {
+        width: 50% !important;
+    }
+
+    .letra_publicacion {
+        font-size: 13px !important;
+        font-weight: bold !important;
+        color: rgb(89, 87, 87) !important;
+        line-height: 23px !important;
+    }
+
+    .media_box_movil {
+        padding-left: 0px !important;
+    }
+
+    .pr-1 strong {
+        font-size: 10px !important;
+    }
+
+    .pr-1 {
+        font-size: 13px !important;
+    }
+
+    .eliminarcomemntario {
+        position: absolute !important;
+        top: 12px !important;
+        right: 26px !important;
+        font-size: 12px !important;
+        color: gray !important;
+        cursor: pointer !important;
+    }
+
+    .encabezado_movil {
+        font-size: 13px !important;
+    }
+
+    .menu_mobil {
+        display: block !important;
+    }
+    
+    .opciones_comentario {
+        font-size: 28px;
+        position: absolute;
+        top: -2px !important;
+        z-index: 20;
+        right: -122px;
+        cursor: pointer;
+    }
 }
 </style>

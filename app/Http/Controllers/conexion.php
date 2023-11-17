@@ -1,12 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Mongodb\Connection;
 use MongoDB\Client;
-use Illuminate\Http\Request;
-use DB;
-use Jenssegers\Mongodb\Facades\MongoDB;
 
 class ClaseConexion {
     public static $mongoClient;

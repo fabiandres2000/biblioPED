@@ -181,11 +181,12 @@ class DiccionarioController extends Controller{
     
                     foreach ($resultado as $documento) {
                         $palabraEnColeccion = $documento->palabra;
-                        $distanciaEdicion = levenshtein($palabra, $palabraEnColeccion);
-    
-                        if ($distanciaEdicion < $distanciaEdicionMinima && strlen($palabra) == strlen($palabraEnColeccion)) {
-                            $distanciaEdicionMinima = $distanciaEdicion;
-                            $palabraMasSimilar = $palabraEnColeccion;
+                        if(mb_strlen($palabra, 'UTF-8') == mb_strlen($palabraEnColeccion, 'UTF-8')){
+                            $distanciaEdicion = levenshtein($palabra, $palabraEnColeccion);
+                            if ($distanciaEdicion < $distanciaEdicionMinima) {
+                                $distanciaEdicionMinima = $distanciaEdicion;
+                                $palabraMasSimilar = $palabraEnColeccion;
+                            }
                         }
                     }
     
