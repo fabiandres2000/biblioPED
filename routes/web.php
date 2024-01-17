@@ -99,6 +99,7 @@ Route::prefix('api')->group(function () {
     Route::get('/eliminar-respuesta', [ForosController::class, 'eliminarRespuesta'])->name('eliminarRespuesta');
     Route::post('/editar-foro', [ForosController::class, 'editarForo'])->name('editarForo');
     Route::get('/cambiar-estado', [ForosController::class, 'cambiarEstado'])->name('cambiarEstado');
+    Route::get('/comentarios-foro', [ForosController::class, 'comentariosForo'])->name('ComentariosForo');
 
     Route::post('/corregir-texto', [AdminController::class, 'corregirTexto'])->name('corregirTexto');
     Route::post('/guardar-contenido', [AdminController::class, 'guardarContenido'])->name('guardarContenido');

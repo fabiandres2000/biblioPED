@@ -266,11 +266,12 @@ class ForosController extends Controller
                     'fecha' => date('d/m/Y'),
                     'horas' => date('H:i:s'),
                     'estado' => 'cerrado',
-                    'tipo' => 1
+                    'tipo' => 1,
+                    'ruta_foro' => "foro/".$id_foro
                 ];
         
                 $collection2->insertOne($noti);
-        
+                
                 $log .= "<p><i class='fas fa-check'></i> El estudiante: ".$key["nombre"]." fue agregado al foro  </p>";
             }
         }
@@ -313,5 +314,58 @@ class ForosController extends Controller
         }
 
         return response()->json($log, 200);
+    }
+
+    public function comentariosForo(Request $request){
+
+        $collection = self::$mongoDB->selectCollection('foros');
+        $id = $request->input('id');
+
+        $foro = $collection->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($id),
+        ]);
+
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
+        $collection3 = self::$mongoDB->selectCollection('respuestas_comentarios');
+
+        $foro->profesor = $collection2->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($foro->id_profesor),
+        ]);
+
+        foreach ($foro->comentarios as $comentario){
+            $comentario->usuario = $collection2->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($comentario->id_usuario),
+            ]);
+            
+            $respuestas = $collection3->find([
+                'id_comentario' => new \MongoDB\BSON\ObjectID($comentario->_id),
+            ])->toArray();
+
+            usort($respuestas, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });
+
+            foreach($respuestas as $respuesta){
+                $respuesta->usuario = $collection2->findOne([
+                    '_id' => new \MongoDB\BSON\ObjectID($respuesta->id_usuario),
+                ]);
+            }
+
+            $comentario->respuestas = $respuestas;
+        }
+
+        $comentarios = $foro->comentarios;
+        if(count($comentarios) > 0){
+            $comentarios = iterator_to_array($foro['comentarios']);
+            usort($comentarios, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });
+        }
+
+        return $comentarios;
     }
 }

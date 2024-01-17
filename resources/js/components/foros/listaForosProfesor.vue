@@ -60,9 +60,9 @@
                                                     <td style="text-align: center">{{ item.comentarios.length }} Comentarios</td>
                                                     <td style="text-align: center">{{ item.fecha }}</td>
                                                     <td style="text-align: center">
-                                                        <a  style="padding: 0.35rem 0.5rem !important;" class="btn btn-success" :href="'foro/'+item._id.$oid"><i class="fas fa-external-link-square-alt"></i></a>
-                                                        <a  @click="idForoEditar = item._id.$oid" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalForoEditar" class="btn btn-warning" type="button"><i style="color: white" class="fas fa-edit"></i></a>
-                                                        <a  @click="cambiarEstado(item)" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  class="btn btn-danger" type="button"><i style="color: white" class="fas fa-sync-alt"></i></a>
+                                                        <a data-toggle="tooltip" data-placement="top" title="Ir al Foro" style="padding: 0.35rem 0.5rem !important;" class="btn btn-success" :href="'foro/'+item._id.$oid"><i class="fas fa-external-link-square-alt"></i></a>
+                                                        <a @click="idForoEditar = item._id.$oid" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  data-toggle="modal" data-target="#modalForoEditar" class="btn btn-warning" type="button"><i data-toggle="tooltip" data-placement="top" title="Editar Foro" style="color: white" class="fas fa-edit"></i></a>
+                                                        <a data-toggle="tooltip" data-placement="top" title="Cambiar Estado" @click="cambiarEstado(item)" style="margin-left: 10px; text-align: center; padding: 0.35rem 0.5rem !important;"  class="btn btn-danger" type="button"><i style="color: white" class="fas fa-sync-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>

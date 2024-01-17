@@ -51,3 +51,7 @@ export function editarForo($data) {
 export function cambiarEstadoForo(id, estado) {
     return http().get('/api/cambiar-estado?id='+id+"&estado_actual="+estado);
 }
+
+export function comentariosForos(id) {
+    return http().get('/api/comentarios-foro?id='+id);
+}

@@ -183,12 +183,17 @@
                 },
                 editorContent: "",
                 sessionData: {},
-                id_usuariosession: ""
+                id_usuariosession: "",
+                intervalId: ""
             };
         },
         mounted() {
             this.verificarLogin();
             this.getSessionData();
+            this.intervalId = setInterval(this.consultarComentariosForo, 5000);
+        },
+        beforeDestroy() {
+            clearInterval(this.intervalId);
         },
         methods: {
             goBack() {
@@ -283,6 +288,11 @@
             async eliminarOK(id){
                 await forosService.eliminarRespuestaComentario(id).then(respuesta => {
                     this.foroData();
+                });
+            },
+            async consultarComentariosForo(){
+                await forosService.comentariosForos(this.id).then(respuesta => {
+                    this.foro.comentarios = respuesta.data;
                 });
             }
         }

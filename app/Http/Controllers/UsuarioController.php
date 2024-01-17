@@ -510,7 +510,7 @@ class UsuarioController extends Controller
         $id_contenido = $request->input('id_contenido');
         $tipo_contenido = $request->input('tipo_contenido');
 
-        $usuario = [
+        $foro = [
             'id_profesor' => Session::get('id'),
             'id_contenido' => $id_contenido,
             'tipo_contenido' => $tipo_contenido,
@@ -524,7 +524,8 @@ class UsuarioController extends Controller
             'estado' => 'Abierto'
         ];
 
-        $collection->insertOne($usuario);
+        $result = $collection->insertOne($foro);
+        $documentoInsertadoId = $result->getInsertedId();
 
         $collection2 = self::$mongoDB->selectCollection('notificaciones');
 
@@ -538,7 +539,8 @@ class UsuarioController extends Controller
                 'fecha' => date('d/m/Y'),
                 'horas' => date('H:i:s'),
                 'estado' => 'cerrado',
-                'tipo' => 1
+                'tipo' => 1,
+                'ruta_foro' => "foro/".$documentoInsertadoId
             ];
     
             $collection2->insertOne($noti);

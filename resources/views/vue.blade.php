@@ -229,34 +229,10 @@
                                                 Foros
                                             </a>
                                         @endif
-                                        <div class="dropdown-divider"></div>
-                                        <a style="color: red; font-weight: bold" class="dropdown-item" type="button" id="btnCerrarSesion" href="#">
-                                            <i style="color: red; font-weight: bold" class="feather icon-power"></i>
-                                            Cerrar Sesión
-                                        </a>
                                     </div>
                                 @endif
                             </a>   
                         </li>
-                    @endif
-                    @if (Session::has('logueado'))
-                        <div style="position: fixed; right: 3px; top: 21px; text-align: right;" class="dropdown dropdown-notification nav-item"><a class="nav-link nav-link-label"
-                                href="#" data-toggle="dropdown"><i
-                                    class="ficon feather icon-bell"></i><span
-                                    class="badge badge-pill badge-danger badge-up"
-                                    id="numero_notificaciones">0</span></a>
-                            <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
-                                <li class="dropdown-menu-header">
-                                    <h6 class="dropdown-header m-0"><span
-                                            class="grey darken-2">Notificaciones</span></h6>
-                                </li>
-                                <li class="scrollable-container media-list" id="lista_notificaciones">
-
-                                </li>
-                                <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center"
-                                        href="javascript:void(0)">Leer todas las notificaciones</a></li>
-                            </ul>
-                        </div>
                     @endif
                 </ul>
             </div>
@@ -432,9 +408,9 @@
                                                         <br>
                                                         <fieldset class="form-group position-relative has-icon-left field">
                                                             <input type="text" class="form-control" name="correo"
-                                                                placeholder="Ingrese un email" required>
+                                                                placeholder="Ingrese su usuario" required>
                                                             <div style="top: 9px !important;" class="form-control-position">
-                                                                <i class="feather icon-mail"></i>
+                                                                <i class="feather icon-user"></i>
                                                             </div>
                                                         </fieldset>
                                                         <fieldset class="form-group position-relative has-icon-left field">
@@ -568,9 +544,9 @@
                                                         <div class="row">
                                                             <div class="col-6">
                                                                 <fieldset class="form-group position-relative has-icon-left field">
-                                                                    <input type="text" class="form-control" name="correo" placeholder="Ingrese un email" required>
+                                                                    <input type="text" class="form-control" name="correo" placeholder="Ingrese un usuario" required>
                                                                     <div style="top: 8px !important;" class="form-control-position">
-                                                                        <i class="feather icon-mail"></i>
+                                                                        <i class="feather icon-user"></i>
                                                                     </div>
                                                                 </fieldset>
                                                             </div>
@@ -1112,7 +1088,7 @@
                             if (element.tipo == 1) {
                                 clase = "feather icon-users icon-bg-circle bg-yellow bg-darken-3";
                                 div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" + element
-                                    ._id.$oid + "\", \"" + element.ruta + "\")' type='button'>" +
+                                    ._id.$oid + "\", \"" + element.ruta_foro + "\")' type='button'>" +
                                     "<div " + estilo + " class='media'>" +
                                     "<div class='media-left align-self-center'><i class='" + clase +
                                     "'></i></div>" +

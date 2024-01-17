@@ -57,7 +57,7 @@
                                                     <td>{{ item.titulo }}</td>
                                                     <td>{{ item.comentarios.length }} Comentarios</td>
                                                     <td>{{ item.fecha }} - {{ item.horas }}</td>
-                                                    <td><a class="btn btn-success" :href="'foro/'+item._id.$oid"><i class="fas fa-external-link-square-alt"></i></a></td>
+                                                    <td><a data-toggle="tooltip" data-placement="top" title="Ir al Foro" class="btn btn-success" :href="'foro/'+item._id.$oid"><i class="fas fa-external-link-square-alt"></i></a></td>
                                                 </tr>
                                             </tbody>
                                         </table>
