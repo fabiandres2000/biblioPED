@@ -44,8 +44,7 @@ Route::prefix('api')->group(function () {
     Route::get('/historial', [MongoController::class, 'historial'])->name('historial');
     Route::get('/eliminar-historial', [MongoController::class, 'eliminar_historial'])->name('eliminar_historial');
     Route::get('/busqueda-apunte', [MongoController::class, 'busquedaApunte'])->name('busquedaApunte');
-
-    // BUSQUEDA DE VIDEOS Y METAFACTOS
+    Route::post('/borrar-busquedas-seleccionadas', [MongoController::class, 'borrarBusquedasSeleccionadas'])->name('borrarBusquedasSeleccionadas');
     Route::get('/paginacion-multimedia', [MongoController::class, 'paginacion_multimedia'])->name('paginacion_multimedia');
 
    
@@ -73,6 +72,7 @@ Route::prefix('api')->group(function () {
     Route::get('/verificar-favorito', [FavoritosController::class, 'BuscarFavorito'])->name('BuscarFavorito');
     Route::get('/eliminar-favorito', [FavoritosController::class, 'EliminarFavorito'])->name('EliminarFavorito');
     Route::get('/mis-favoritos', [FavoritosController::class, 'MisFavoritos'])->name('MisFavoritos');
+    Route::post('/eliminar-favoritos', [FavoritosController::class, 'eliminarFavoritos'])->name('eliminarFavoritos');
 
 
     //para cargar el contenido en mongo
@@ -82,6 +82,7 @@ Route::prefix('api')->group(function () {
     Route::get('/migrar-videos', [DatosController::class, 'migrarVideos'])->name('migrarVideos');
     Route::get('/migrar-metafactos', [DatosController::class, 'migrarMetafactos'])->name('migrarMetafactos');
 
+    
     Route::post('/registro-docente', [AdminController::class, 'RegistroDocente'])->name('RegistroDocente');
     Route::get('/listar-docentes', [AdminController::class, 'listarDocentes'])->name('listarDocentes');
     Route::post('/editar-docente', [AdminController::class, 'editarDocente'])->name('editarDocente');
@@ -100,6 +101,7 @@ Route::prefix('api')->group(function () {
     Route::post('/editar-foro', [ForosController::class, 'editarForo'])->name('editarForo');
     Route::get('/cambiar-estado', [ForosController::class, 'cambiarEstado'])->name('cambiarEstado');
     Route::get('/comentarios-foro', [ForosController::class, 'comentariosForo'])->name('ComentariosForo');
+    Route::post('/editar-info-foro', [ForosController::class, 'editarInfoForo'])->name('editarInfoForo');
 
     Route::post('/corregir-texto', [AdminController::class, 'corregirTexto'])->name('corregirTexto');
     Route::post('/guardar-contenido', [AdminController::class, 'guardarContenido'])->name('guardarContenido');

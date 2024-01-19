@@ -7,10 +7,6 @@
                     <div class="content-wrapper">
                         <h1>Recomendaciones</h1>
                         <hr>
-                        <div style="display: flex; align-items: center">
-                            <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a style="padding-left: 25px" href="#" data-toggle="modal" data-target="#defaultSize" type="button"><strong> Borrar Recomendaciones</strong></a> 
-                        </div>
-                        
                     </div>
                 </div>
                 <div class="col-9">
@@ -49,7 +45,7 @@
                                                             <td>{{ item.titulo }}</td>
                                                             <td>{{ item.fecha }}</td>
                                                             <td>{{ item.horas }}</td>
-                                                            <td><a type="button" class="btn btn-success" style="color: white"><router-link style="color: white; font-weight: bold" :to="'/'+item.ruta">ir <i class="fas fa-external-link-alt"></i></router-link></a></td>
+                                                            <td><a  data-toggle="tooltip" data-placement="top" title="Abrir Contenido" type="button" class="btn btn-success" style="color: white"><router-link style="color: white; font-weight: bold" :to="'/'+item.ruta">ir <i class="fas fa-external-link-alt"></i></router-link></a></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

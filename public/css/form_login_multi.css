@@ -54,9 +54,11 @@ title{
   background-image: linear-gradient(to right, #fe7700, #fe6e00, #fd6400, #fd5a00, #fc4f00);
   transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
 }
-input[type="radio"]{
+
+.radio_login{
   display: none;
 }
+
 #signup:checked ~ .slider-tab{
   left: 50%;
 }

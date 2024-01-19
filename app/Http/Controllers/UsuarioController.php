@@ -331,12 +331,6 @@ class UsuarioController extends Controller
                         'id_profesor' => new \MongoDB\BSON\ObjectID($idUsuario),
                     ],
                 ],
-                [
-                    '$sort' => [
-                        'fecha' => -1,
-                        'hora' => -1,
-                    ],
-                ],
             ]);
 
             $datos_agrupados = $datos_agrupados->toArray();
@@ -358,12 +352,6 @@ class UsuarioController extends Controller
                         'titulo' => ['$regex' => $texto, '$options' => 'i']
                     ],
                 ],
-                [
-                    '$sort' => [
-                        'fecha' => -1,
-                        'hora' => -1,
-                    ],
-                ],
             ]);
 
             $datos_agrupados = $datos_agrupados->toArray();
@@ -378,6 +366,13 @@ class UsuarioController extends Controller
                 }
             }
         }
+
+        usort($datos_agrupados, function($a, $b) {
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+            return $dateTimeB <=> $dateTimeA; 
+        });  
+
         return response()->json($datos_agrupados, 200);
     }
 
@@ -392,12 +387,6 @@ class UsuarioController extends Controller
                 [
                     '$match' => [
                         'estudiantes' =>  new \MongoDB\BSON\Regex($idUsuario)
-                    ],
-                ],
-                [
-                    '$sort' => [
-                        'fecha' => -1,
-                        'horas' => -1,
                     ],
                 ],
             ]);
@@ -421,18 +410,17 @@ class UsuarioController extends Controller
                         'titulo' => ['$regex' => $texto, '$options' => 'i']
                     ],
                 ],
-                [
-                    '$sort' => [
-                        'fecha' => -1,
-                    ],
-                    '$sort' => [
-                        'horas' => -1,
-                    ],
-                ],
             ]);
 
             $datos_agrupados = $datos_agrupados->toArray();
         }
+
+        usort($datos_agrupados, function($a, $b) {
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+            return $dateTimeB <=> $dateTimeA; 
+        });  
+        
         return response()->json($datos_agrupados, 200);
     }
 

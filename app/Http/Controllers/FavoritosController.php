@@ -139,4 +139,34 @@ class FavoritosController extends Controller
             return response()->json([], 200);
         }
     }
+
+    public function eliminarFavoritos(Request $request){
+        $collection = self::$mongoDB->selectCollection('favoritos');
+
+        $tipo_borrado = $request->input('tipo_borrado');
+        $ids_eliminar = $request->input('ids_eliminar');
+        $idUsuario = Session::get('id');
+
+        if($tipo_borrado == "todo"){
+            $condiciones = [
+                'id_usuario' => new \MongoDB\BSON\ObjectID($idUsuario),
+            ];
+
+            $conteo = $collection->deleteMany($condiciones);
+
+            return response()->json("¡Todos los registros de favoritos fueron eliminados correctamente!", 200);
+        }else{
+            $ids_eliminar = array_map(function ($id) {
+                return new \MongoDB\BSON\ObjectID($id);
+            }, $ids_eliminar);
+            
+            $condiciones = [
+                '_id' => ['$in' => $ids_eliminar]
+            ];
+              
+            $result = $collection->deleteMany($condiciones);
+
+            return response()->json("Se eliminaron ".$result->getDeletedCount()." favoritos.", 200);
+        }
+    }
 }

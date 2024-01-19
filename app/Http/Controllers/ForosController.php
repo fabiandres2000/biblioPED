@@ -47,13 +47,13 @@ class ForosController extends Controller
                         'estudiantes' =>  new \MongoDB\BSON\Regex($idUsuario)
                     ],
                 ],
-                [
-                    '$sort' => [
-                        '_id' => -1,
-                    ],
-                ],
             ])->toArray();
             
+            usort($result, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });  
 
             $collection2 = self::$mongoDB->selectCollection('usuarios');
             foreach ($result as $dato){
@@ -68,12 +68,14 @@ class ForosController extends Controller
                         'id_profesor' =>  new \MongoDB\BSON\ObjectID($idUsuario),
                     ],
                 ],
-                [
-                    '$sort' => [
-                        '_id' => -1,
-                    ],
-                ],
             ])->toArray();
+
+            usort($result, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });  
+
             
             $collection2 = self::$mongoDB->selectCollection('usuarios');
             
@@ -153,18 +155,20 @@ class ForosController extends Controller
             $foro['comentarios'] = $comentarios;
         }
 
-        $parametros = explode('/',$foro->ruta);
+        if($foro->ruta != null){
+            $parametros = explode('/',$foro->ruta);
 
-        if($parametros[2] == 'N'){
-            $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento')->findOne([
-                'id' => (int) $parametros[1],
-            ]);
-        }else{
-            $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento_modulos')->findOne([
-                'id' => (int) $parametros[1],
-            ]);
+            if($parametros[2] == 'N'){
+                $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento')->findOne([
+                    'id' => (int) $parametros[1],
+                ]);
+            }else{
+                $foro->contenido_html = self::$mongoDB->selectCollection('cont_documento_modulos')->findOne([
+                    'id' => (int) $parametros[1],
+                ]);
+            }
         }
-
+        
         return $foro;
     }
 
@@ -191,7 +195,36 @@ class ForosController extends Controller
             ['$push' => ['comentarios' => $elemento_ingresar]]
         );
 
+        $foro_not = $collection->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($idForo),
+        ]);
+
+        self::guardarNotificacion($foro_not->titulo, "foro/".$idForo, 20, $foro_not->id_profesor);
+
         return response()->json("¡Se ha registrado su respuesta correctamente!", 200);
+    
+    }
+
+    public function guardarNotificacion($titulo, $ruta, $tipo, $id_profesor){
+        $collection2 = self::$mongoDB->selectCollection('notificaciones');
+        $timezone = new \DateTimeZone('America/Bogota');
+        $fechaActual = new \DateTime('now', $timezone);
+        $horaActual = new \DateTime('now', $timezone);
+        $idUsuario = (string) Session::get('id');
+      
+        $noti = [
+            'id_profesor' => $id_profesor,
+            'id_usuario' => (string) $id_profesor,
+            'ruta' => "",
+            'tema' => '<strong>'.Session::get('nombre').'</strong> ha publicado una respuesta en el foro '.'<strong>'.$titulo.'</strong>',
+            'fecha' => $fechaActual->format('d/m/Y'),
+            'horas' => $horaActual->format('H:i:s'),
+            'estado' => 'cerrado',
+            'tipo' => $tipo,
+            'ruta_foro' => $ruta
+        ];
+
+        $collection2->insertOne($noti);
     }
 
     public function guardarRespuestaComentario(Request $request){
@@ -367,5 +400,26 @@ class ForosController extends Controller
         }
 
         return $comentarios;
+    }
+
+
+    public function editarInfoForo(Request $request){
+        $collection = self::$mongoDB->selectCollection('foros');
+
+        $info_foro = $request->input('info_foro');
+        $id_foro_editar = $request->input('id_foro_editar');
+
+        $result = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($id_foro_editar)], 
+            [            
+                '$set' => $info_foro
+            ]
+        );
+
+        if ($result->getModifiedCount() > 0) {
+            return response()->json(["La información del foro ha sido modificada correctamente", 1], 200);
+        } else {
+            return response()->json(["Ocurrió un error, intente nuevamente", 1], 200);
+        }
     }
 }

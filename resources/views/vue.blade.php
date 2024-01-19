@@ -393,8 +393,8 @@
                                         <div class="card-body" style="padding: 0.5rem !important;">
                                             <div class="form-container">
                                                 <div class="slide-controls">
-                                                    <input type="radio" name="slide" id="login" checked="">
-                                                    <input type="radio" name="slide" id="signup">
+                                                    <input type="radio" class="radio_login" name="slide" id="login" checked="">
+                                                    <input type="radio" class="radio_login" name="slide" id="signup">
                                                     <label for="login" class="slide login">Inicia sesión</label>
                                                     <label for="signup" class="slide signup">Registrate</label>
                                                     <div class="slider-tab"></div>
@@ -1104,8 +1104,7 @@
                                     "</a>"
                             } else {
                                 if (element.tipo == 2) {
-                                    clase =
-                                        "feather icon-thumbs-up icon-bg-circle bg-yellow bg-darken-3";
+                                    clase = "feather icon-thumbs-up icon-bg-circle bg-yellow bg-darken-3";
                                     div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
                                         element._id.$oid + "\", \"" + element.ruta +
                                         "\")' type='button'>" +
@@ -1123,9 +1122,27 @@
                                         "</div>" +
                                         "</a>"
                                 } else {
-                                    clase =
-                                        "feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
-                                    div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
+                                    if(element.tipo == 20){
+                                        clase ="feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
+                                        div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
+                                        element._id.$oid + "\", \"" + element.ruta_foro +
+                                        "\")' type='button'>" +
+                                        "<div " + estilo + " class='media'>" +
+                                        "<div class='media-left align-self-center'><i class='" + clase +
+                                        "'></i></div>" +
+                                        "<div class='media-body'>" +
+                                        "<h6 class='media-heading'><strong>Nuevo comentario en foro!</strong></h6>" +
+                                        "<p class='notification-text font-small-3 text-muted' style='text-transform: capitalize'>" +
+                                        element.tema + ".</p><small>" +
+                                        "<time class='media-meta text-muted' datetime='2015-06-11T18:29:20+08:00'><strong>" +
+                                        element.fecha + " | " + element.horas +
+                                        "</strong></time></small>" +
+                                        "</div>" +
+                                        "</div>" +
+                                        "</a>"
+                                    }else{
+                                        clase ="feather icon-message-circle icon-bg-circle bg-yellow bg-darken-3";
+                                        div.innerHTML += "<a style='width: 100%' onclick='cambiarEstadoNotificacion(\"" +
                                         element._id.$oid + "\", \"" + element.ruta +
                                         "\")' type='button'>" +
                                         "<div " + estilo + " class='media'>" +
@@ -1141,6 +1158,8 @@
                                         "</div>" +
                                         "</div>" +
                                         "</a>"
+                                    }
+                                    
                                 }
                             }
 

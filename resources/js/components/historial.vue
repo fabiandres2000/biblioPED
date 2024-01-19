@@ -10,7 +10,10 @@
                         <div style="display: flex; align-items: center">
                             <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a style="padding-left: 25px; text-align: left" href="#" data-toggle="modal" data-target="#defaultSize" type="button"><strong> Borrar datos de <br> navegacion</strong></a> 
                         </div>
-                        
+                        <br>
+                        <div v-if="checkboxValues.length > 0" style="display: flex; align-items: center">
+                            <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a style="padding-left: 25px; text-align: left" href="#" @click="borrarBusquedasSeleccionadas" type="button"><strong> Borrar busquedas <br> seleccionadas</strong></a> 
+                        </div>
                     </div>
                 </div>
                 <div class="col-9">
@@ -53,8 +56,8 @@
                                                     <div class="user-action">
                                                         <div class="checkbox-con ">
                                                             <div class="custom-control custom-checkbox" style="display: flex; justify-content: center; align-items: center;">
-                                                                <input type="checkbox" class="custom-control-input" id="checkboxsmall1">
-                                                                <label class="custom-control-label" for="checkboxsmall1">{{ item2.hora }}</label>
+                                                                <input @change="agregarValores()" type="checkbox" class="custom-control-input checkbox-eliminar" :value="item2._id.$oid" :id="'checkboxsmall'+index+index2">
+                                                                <label class="custom-control-label" :for="'checkboxsmall'+index+index2">{{ item2.hora }}</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -122,12 +125,15 @@
 </template>
 <script>
 import * as usuarioService from "../services/usuario";
+import Swal from 'sweetalert2';
+
 export default {
     data() {
         return {
             datos: [],
             inputValue: "todo",
-            tipo_borrado: ""
+            tipo_borrado: "",
+            checkboxValues: []
         };
     },
     mounted() {
@@ -168,6 +174,41 @@ export default {
                     this.obtenerHistorial();
                 }, 1000)
             });
+        },
+        agregarValores() {
+            const checkboxesMarcados = document.querySelectorAll('.checkbox-eliminar:checked');
+            this.checkboxValues = Array.from(checkboxesMarcados).map(checkbox => checkbox.value);
+        },
+        borrarBusquedasSeleccionadas(){
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, borrar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.borrarBusquedasSeleccionadasOk();
+                }
+            })
+        },
+        async borrarBusquedasSeleccionadasOk(){
+            var data = {
+                "ids_eliminar": this.checkboxValues
+            };
+
+            await usuarioService.borrar_busquedas_seleccionadas(data).then(respuesta => {
+                var respuesta = respuesta.data;
+                toastr.success("Se hán eliminado "+respuesta+ " busquedas.");
+                setTimeout(()=>{
+                    const checkboxesMarcados = $('.checkbox-eliminar:checked');
+                    checkboxesMarcados.prop('checked', false);
+                    this.obtenerHistorial();
+                }, 1000)
+            }); 
         }
     }
 }

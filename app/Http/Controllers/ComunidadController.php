@@ -83,7 +83,13 @@ class ComunidadController extends Controller
         $collection = self::$mongoDB->selectCollection('publicaciones');
         $collection2 = self::$mongoDB->selectCollection('usuarios');
 
-        $publicaciones = $collection->find([], ['sort' => ['_id' => -1]])->toArray();
+        $publicaciones = $collection->find([])->toArray();
+
+        usort($publicaciones, function($a, $b) {
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+            return $dateTimeB <=> $dateTimeA; 
+        });  
 
         $idUsuario = (string) Session::get('id');
 

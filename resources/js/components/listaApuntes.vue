@@ -6,11 +6,7 @@
                     <div class="content-overlay"></div>
                     <div class="content-wrapper">
                         <h1 class="text-left">Mis Apuntes</h1>
-                        <hr>
-                        <div style="display: flex; align-items: center">
-                            <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a style="padding-left: 25px; text-align: left" href="#" data-toggle="modal" data-target="#defaultSize" type="button"><strong> Borrar apuntes</strong></a> 
-                        </div>
-                        
+                        <hr>                        
                     </div>
                 </div>
                 <div class="col-9" id="html2PdfPrueba">
@@ -57,8 +53,8 @@
                                                     <div class="user-action">
                                                         <div>
                                                             <div class="custom-control" style="display: flex; justify-content: center; align-items: center;">
-                                                                <button type="button" class="btn btn-outline-danger" @click="eliminarApunte(item2)"><i class="fas fa-trash"></i></button>
-                                                                <button type="button" class="btn btn-outline-primary" @click="convertirHTMLtoPDF(item2)" style="margin-left: 10px"><i class="fas fa-file-pdf"></i></button>
+                                                                <button data-toggle="tooltip" data-placement="top" title="Eliminar Apunte" type="button" class="btn btn-outline-danger" @click="eliminarApunte(item2)"><i class="fas fa-trash"></i></button>
+                                                                <button data-toggle="tooltip" data-placement="top" title="Generar PDF" type="button" class="btn btn-outline-primary" @click="convertirHTMLtoPDF(item2)" style="margin-left: 10px"><i class="fas fa-file-pdf"></i></button>
                                                             </div>
                                                         </div>
                                                     </div>

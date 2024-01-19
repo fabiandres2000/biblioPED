@@ -141,3 +141,27 @@ export function exportarApuntesPDF($data) {
         }
     );
 }
+
+export function borrar_busquedas_seleccionadas($data) {
+    return http().post(
+        '/api/borrar-busquedas-seleccionadas', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export function eliminarFavoritos($data) {
+    return http().post(
+        '/api/eliminar-favoritos', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}

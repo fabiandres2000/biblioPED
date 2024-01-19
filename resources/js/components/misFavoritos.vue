@@ -8,7 +8,7 @@
                         <h1>Mis Favoritos</h1>
                         <hr>
                         <div style="display: flex; align-items: center">
-                            <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a style="padding-left: 25px; text-align: left" href="#" data-toggle="modal" data-target="#defaultSize" type="button"><strong> Borrar datos de <br> mis favoritos</strong></a> 
+                            <i style="font-size: 1.5rem;" class="feather icon-trash-2"></i><a @click="eliminarTodo" style="padding-left: 25px; text-align: left" href="#" data-toggle="modal" data-target="#defaultSize" type="button"><strong> Borrar datos de <br> mis favoritos</strong></a> 
                         </div>
                         
                     </div>
@@ -56,8 +56,8 @@
                                                     <div class="user-action">
                                                         <div class="checkbox-con ">
                                                             <div class="custom-control custom-checkbox" style="display: flex; justify-content: center; align-items: center;">
-                                                                <input type="checkbox" class="custom-control-input" id="checkboxsmall1">
-                                                                <label class="custom-control-label" for="checkboxsmall1">{{ item2.hora }}</label>
+                                                                <input @change="agregarValores()" type="checkbox" class="custom-control-input checkbox-eliminar-2" :value="item2._id.$oid" :id="'checkboxsmallmf'+index2">
+                                                                <label class="custom-control-label" :for="'checkboxsmallmf'+index2">{{ item2.hora }}</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -98,6 +98,9 @@
 <script>
 import Skeleton from './skeleton/skeletonSmall.vue';
 import * as usuarioService from "../services/usuario";
+import Swal from 'sweetalert2';
+
+
 export default {
     components: {
         Skeleton
@@ -107,6 +110,7 @@ export default {
             datos: {},
             loading: true,
             inputValue: "todo",
+            checkboxValues: []
         };
     },
     mounted() {
@@ -142,6 +146,68 @@ export default {
             }
             this.BuscarFavoritos();
         },
+        eliminarTodo(){
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, borrar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if( this.checkboxValues.length == 0){
+                        this.eliminarTodoOK();
+                    }else{
+                        this.eliminarVariosOK();
+                    }
+                }
+            })
+        },
+        async eliminarTodoOK(){
+            this.tipo_borrado = "todo";
+
+            var data = {
+                "tipo_borrado": this.tipo_borrado,
+                "ids_eliminar": []
+            }
+
+            await usuarioService.eliminarFavoritos(data).then(respuesta => {
+                var respuesta = respuesta.data;
+                toastr.success(respuesta);
+                setTimeout(()=>{
+                    this.checkboxValues = [];
+                    const checkboxesMarcados = $('.checkbox-eliminar-2:checked');
+                    checkboxesMarcados.prop('checked', false);
+                    this.BuscarFavoritos();
+                }, 1000)
+            });
+        },
+        agregarValores() {
+            const checkboxesMarcados = document.querySelectorAll('.checkbox-eliminar-2:checked');
+            this.checkboxValues = Array.from(checkboxesMarcados).map(checkbox => checkbox.value);
+        },
+        async eliminarVariosOK(){
+            this.tipo_borrado = "varios";
+
+            var data = {
+                "tipo_borrado": this.tipo_borrado,
+                "ids_eliminar": this.checkboxValues
+            }
+
+            await usuarioService.eliminarFavoritos(data).then(respuesta => {
+                var respuesta = respuesta.data;
+                toastr.success(respuesta);
+                setTimeout(()=>{
+                    this.checkboxValues = [];
+                    const checkboxesMarcados = $('.checkbox-eliminar-2:checked');
+                    checkboxesMarcados.prop('checked', false);
+                    this.BuscarFavoritos();
+                }, 1000)
+            });
+        }
     }
 }
 </script>

@@ -55,3 +55,15 @@ export function cambiarEstadoForo(id, estado) {
 export function comentariosForos(id) {
     return http().get('/api/comentarios-foro?id='+id);
 }
+
+export function editarInfoForo($data) {
+    return http().post(
+        '/api/editar-info-foro', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}

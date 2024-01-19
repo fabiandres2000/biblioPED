@@ -55,7 +55,7 @@
         <div class="modal fade text-left" id="modalCompartir" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true" data-backdrop="static">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header" style="background-color: #1976d2; color: white;">
                         <h4 class="modal-title" id="myModalLabel17">Selecciona los estudiantes con los que deseas compartir este contenido</h4>
                     </div>
                     <div class="modal-body">
@@ -145,119 +145,128 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" @click="vaciarArray('#modalCompartir')" class="btn grey btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
                         <button type="button" @click="compartirContenido" class="btn btn-outline-primary"><i class="fas fa-share"></i> Compartir</button>
+                        <button type="button" @click="vaciarArray('#modalCompartir')" class="btn grey btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="modal fade text-left" id="modalForo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true" data-backdrop="static">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header" style="background-color: #1976d2; color: white;">
                         <h4 class="modal-title" id="myModalLabel17">Crear Foro</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="row" style="margin: 0px">
-                            <label for="pregunta"><strong>Título de tu foro</strong></label>
-                            <input type="text" v-model="tituloForo" class="form-control" name="titulo_foro" id="titulo_foro">
-                        </div>
-                        <br>
-                        <div class="row" style="margin: 0px">
-                            <label for="pregunta"><strong>Describe el tema de tu foto</strong></label>
-                            <textarea v-model="descripcionForo" class="form-control" name="pregunta_foro" id="pregunta_foro" cols="30" rows="10"></textarea>    
-                        </div>
-                        <hr>
-                        <h3>Selecciona los estudiantes para los cuales estara dirigido este foro</h3>
                         <div class="row">
-                            <div class="col-4">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="gradoSelect" name="grado" class="form-control">
-                                        <option value="">Seleccione un grado</option>
-                                        <option value="1">1º</option>
-                                        <option value="2">2º</option>
-                                        <option value="3">3º</option>
-                                        <option value="4">4º</option>
-                                        <option value="5">5º</option>
-                                        <option value="6">6º</option>
-                                        <option value="7">7º</option>
-                                        <option value="8">8º</option>
-                                        <option value="9">9º</option>
-                                        <option value="10">10º</option>
-                                        <option value="11">11º</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-graduation-cap"></i>
+                            <div class="col-lg-6">
+                                <h3 style="color: #ff425c;"><strong>1. </strong>Información general del foro</h3>
+                                <hr>
+                                <div class="row" style="margin: 0px">
+                                    <label for="pregunta"><strong>Título de tu foro</strong></label>
+                                    <input type="text" v-model="tituloForo" class="form-control" name="titulo_foro" id="titulo_foro">
+                                </div>
+                                <br>
+                                <div class="row" style="margin: 0px">
+                                    <label for="pregunta"><strong>Describe el tema de tu foto</strong></label>
+                                    <QuillEditor  style="height: 300px; width: 100%" theme="snow" toolbar="full" />
+                                </div>
+                            </div>  
+                            <div class="col-lg-6">
+                                <h3 style="color: #ff425c;"><strong>2. </strong>Selecciona los estudiantes para los cuales estará dirigido este foro</h3>
+                                <hr>
+                                <br>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <fieldset class="form-group position-relative has-icon-left">
+                                            <select v-model="gradoSelect" name="grado" class="form-control">
+                                                <option value="">Seleccione un grado</option>
+                                                <option value="1">1º</option>
+                                                <option value="2">2º</option>
+                                                <option value="3">3º</option>
+                                                <option value="4">4º</option>
+                                                <option value="5">5º</option>
+                                                <option value="6">6º</option>
+                                                <option value="7">7º</option>
+                                                <option value="8">8º</option>
+                                                <option value="9">9º</option>
+                                                <option value="10">10º</option>
+                                                <option value="11">11º</option>
+                                            </select>
+                                            <div class="form-control-position">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </div>
+                                        </fieldset>
                                     </div>
-                                </fieldset>
-                            </div>
-                            <div class="col-4">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="grupoSelect" name="grupo" class="form-control">
-                                        <option value="">Seleccione un grupo</option>
-                                        <option value="Grupo 1">Grupo 1</option>
-                                        <option value="Grupo 2">Grupo 2</option>
-                                        <option value="Grupo 3">Grupo 3</option>
-                                        <option value="Grupo 4">Grupo 4</option>
-                                        <option value="Grupo 5">Grupo 5</option>
-                                        <option value="Grupo 6">Grupo 6</option>
-                                        <option value="Grupo 7">Grupo 7</option>
-                                        <option value="Grupo 8">Grupo 8</option>
-                                        <option value="Grupo 9">Grupo 9</option>
-                                        <option value="Grupo 10">Grupo 10</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-users"></i>
+                                    <div class="col-4">
+                                        <fieldset class="form-group position-relative has-icon-left">
+                                            <select v-model="grupoSelect" name="grupo" class="form-control">
+                                                <option value="">Seleccione un grupo</option>
+                                                <option value="Grupo 1">Grupo 1</option>
+                                                <option value="Grupo 2">Grupo 2</option>
+                                                <option value="Grupo 3">Grupo 3</option>
+                                                <option value="Grupo 4">Grupo 4</option>
+                                                <option value="Grupo 5">Grupo 5</option>
+                                                <option value="Grupo 6">Grupo 6</option>
+                                                <option value="Grupo 7">Grupo 7</option>
+                                                <option value="Grupo 8">Grupo 8</option>
+                                                <option value="Grupo 9">Grupo 9</option>
+                                                <option value="Grupo 10">Grupo 10</option>
+                                            </select>
+                                            <div class="form-control-position">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                        </fieldset>
                                     </div>
-                                </fieldset>
-                            </div>
-                            <div class="col-3" style="padding: 0">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="jornadaSelect" name="jornada" class="form-control">
-                                        <option value="">Jornada</option>
-                                        <option value="Mañana">Mañana</option>
-                                        <option value="Tarde">Tarde</option>
-                                        <option value="Continua">Continua</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-sun"></i>
-                                    </div>
-                                </fieldset>
+                                    <div class="col-3" style="padding: 0">
+                                        <fieldset class="form-group position-relative has-icon-left">
+                                            <select v-model="jornadaSelect" name="jornada" class="form-control">
+                                                <option value="">Jornada</option>
+                                                <option value="Mañana">Mañana</option>
+                                                <option value="Tarde">Tarde</option>
+                                                <option value="Continua">Continua</option>
+                                            </select>
+                                            <div class="form-control-position">
+                                                <i class="fas fa-sun"></i>
+                                            </div>
+                                        </fieldset>
 
-                                <input type="hidden" name="tipo_registro" value="estudiante">
-                            </div>
-                            <div class="col-1" style="display: flex; height: 80%;">
-                                <button type="button" @click="filtrarEstudiantes(2)" class="btn btn-success"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="table-responsive">
-                            <table id="estudiantes_filtrados_foro" class="table">
-                                <thead>
-                                    <tr>
-                                        <th><input type="checkbox" id="select-all-2" /></th>
-                                        <th>Nombre</th>
-                                        <th>Grupo</th>
-                                        <th>Grado</th>
-                                        <th>Jornada</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, index) in estudiantesFiltrados" :key="index">
-                                        <td></td>
-                                        <td>{{ item.nombre }}</td>
-                                        <td>{{ item.grupo }}</td>
-                                        <td>{{ item.grado }}</td>
-                                        <td>{{ item.jornada }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>                       
+                                        <input type="hidden" name="tipo_registro" value="estudiante">
+                                    </div>
+                                    <div class="col-1" style="display: flex; height: 80%;">
+                                        <button type="button" @click="filtrarEstudiantes(2)" class="btn btn-success"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="table-responsive">
+                                    <table id="estudiantes_filtrados_foro" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><input type="checkbox" id="select-all-2" /></th>
+                                                <th>Nombre</th>
+                                                <th>Grupo</th>
+                                                <th>Grado</th>
+                                                <th>Jornada</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in estudiantesFiltrados" :key="index">
+                                                <td></td>
+                                                <td>{{ item.nombre }}</td>
+                                                <td>{{ item.grupo }}</td>
+                                                <td>{{ item.grado }}</td>
+                                                <td>{{ item.jornada }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> 
+                            </div>    
+                        </div>                      
                     </div>
                     <div class="modal-footer">
+                        <button type="button" @click="crearForo" class="btn btn-outline-primary"><i class="fas fa-share"></i> Crear Foro</button>
                         <button type="button" @click="vaciarArray('#modalForo')" class="btn grey btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-                        <button type="button" @click="crearForo" class="btn btn-outline-primary"><i class="fas fa-share"></i> Compartir</button>
                     </div>
                 </div>
             </div>
@@ -268,10 +277,13 @@
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
 import * as usuarioService from "../services/usuario";
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 export default {
     components: {
-        Skeleton
+        Skeleton,
+        QuillEditor
     },
     data() {
         return {
@@ -567,6 +579,8 @@ export default {
                     }
                 }
             }
+
+            this.descripcionForo = document.querySelector(".ql-editor").innerHTML;
 
             var data = {
                 ids: this.arrayEstudiantesCompartir,

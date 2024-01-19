@@ -813,4 +813,22 @@ class MongoController extends Controller
         return strtr($str, $unwanted);
     }
 
+    
+    public function borrarBusquedasSeleccionadas(Request $request){
+        $collection = self::$mongoDB->selectCollection('busquedas');
+        
+        $ids_eliminar = $request->input("ids_eliminar");
+
+        $ids_eliminar = array_map(function ($id) {
+            return new \MongoDB\BSON\ObjectID($id);
+        }, $ids_eliminar);
+        
+        $condiciones = [
+            '_id' => ['$in' => $ids_eliminar]
+        ];
+          
+        $result = $collection->deleteMany($condiciones);
+
+        return response()->json($result->getDeletedCount(), 200);
+    }
 }
