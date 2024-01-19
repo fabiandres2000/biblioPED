@@ -117,7 +117,7 @@ export default {
                 this.foros = respuesta.data;
                 setTimeout(()=>{
                     this.dataTables();
-                }, 20)
+                }, 500)
             });
         },
         dataTables() {

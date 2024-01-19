@@ -412,10 +412,12 @@ export default {
         ListarForos: async function () {
             this.loading = true;
             await forosService.foros(this.sessionData.tipo_registro).then(respuesta => {
-                $('#lista_foros').DataTable().destroy();
                 this.foros = respuesta.data;
                 setTimeout(()=>{
-                    this.dataTables();
+                    $('#lista_foros').DataTable().destroy();
+                    setTimeout(() => {
+                        this.dataTables();
+                    }, 200);
                 }, 500)
             });
         },
