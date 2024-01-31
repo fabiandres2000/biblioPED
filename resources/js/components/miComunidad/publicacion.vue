@@ -40,7 +40,7 @@
                                                                     </a>
                                                                 </div>
                                                                 <div class="media-body">
-                                                                    <h4 class="card-title"><a href="#">{{ item.usuario.nombre }} - <strong v-if="item.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ item.usuario.grado }}° grado</strong><strong v-if="item.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
+                                                                    <h4 class="card-title"><a class="encabezado_movil" href="#">{{ item.usuario.nombre }} - <strong v-if="item.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ item.usuario.grado }}° grado</strong><strong v-if="item.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
                                                                     <p class="card-subtitle text-muted mb-0 pt-1">
                                                                         <span v-if="item.editado" class="font-small-3">{{ item.fecha_formateada_edicion }} <strong>(editada)</strong></span>
                                                                         <span v-else class="font-small-3">{{ item.fecha_formateada }}</span>
@@ -51,26 +51,27 @@
                                                         <div class="card-content">
                                                             <div class="card-content">
                                                                 <div class="card-body">
-                                                                    <p class="card-text" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
+                                                                    <p class="card-text letra_publicacion" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
                                                                     <img style="margin-bottom: 20px" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
                                                                     <ul class="list-inline">
-                                                                        <li v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
-                                                                        <li v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
+                                                                        <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
+                                                                        <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
                                                                         <li class="pr-1"><a href="#" class=""><span class="fa fa-commenting-o"></span> ({{item.comentarios.length}}) Comentarios</a></li>
                                                                     </ul>
+                                                                    <div class="miDivMegusta" :id="'divmegusta'+index">
+                                                                        <p style="font-weight: bold" v-html="item.usuarios_likes"></p>
+                                                                    </div>
                                                                 </div>
                                                             </div>                     
                                                             <div class="card-footer px-0 py-0">
-                                                                <div class="card-body">
+                                                                <div class="card-body" style="max-height: 400px; overflow-y: scroll;">
                                                                     <div v-for="(item2, index2) in item.comentarios" :key="index2">
-                                                                        <div class="media" style="padding-left: 20px; margin-bottom: 15px">
+                                                                        <div class="media media_box_movil" style="padding-left: 20px; margin-bottom: 15px">
                                                                             <div class="media-body">
                                                                                 <div class="media" style="position: relative">
                                                                                     <div class="media-left mr-1">
                                                                                         <a href="#">
-                                                                                            <span class="avatar avatar-online">
-                                                                                                <img :src="'/'+item2.usuario.imagen" alt="avatar">
-                                                                                            </span>
+                                                                                            <span class="avatar avatar-online"><img :src="'/'+item2.usuario.imagen" alt="avatar"></span>
                                                                                         </a>
                                                                                     </div>
                                                                                     <div class="media-body">
@@ -78,10 +79,43 @@
                                                                                             <p class="text-bold-600 mb-0"><a href="#">{{ item2.usuario.nombre }}</a></p>
                                                                                             <p style="margin-bottom: 5px">{{ item2.comentarioTexto }}</p>
                                                                                         </div>
-                                                                                        <i v-if="datosLogin._id.$oid == item2.usuario._id.$oid" @click="eliminarRespuestaComentarioPregunta(item._id.$oid, item2._id.$oid)" class="fas fa-trash-alt eliminarcomemntario"></i>
+                                                                                        <button v-if="datosLogin._id.$oid == item2.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar eliminarcomemntario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                            <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                                                                        </button>
+                                                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                                                            <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentarioP" @click.prevent="verModalEditarComentario(item._id.$oid, item2, 2)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                                                            <a class="dropdown-item" type="button" @click="eliminarRespuestaComentarioPregunta(item._id.$oid, item2._id.$oid)"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                                                                                        </div>
                                                                                         <ul class="list-inline" style="margin-left: 20px">
-                                                                                            <li class="pr-1"><a href="#" class=""><span class="fa fa-thumbs-o-up"></span> Like</a></li>
+                                                                                            <li class="pr-1"><a type="button" @click="likeComentario(item._id.$oid, item2._id.$oid)" class=""><span :class=" item2.like_usuario == 0 ?'fa fa-thumbs-o-up' : 'fa fa-thumbs-up'"></span> ({{item2.likes.length}} Me gusta)</a></li>
+                                                                                            <li @click="setIdPublicacionRespuesta(item._id.$oid, item2)" class="pr-1"><a style="font-weight: bold; color: #009c9f; cursor: pointer" type="button" class=""> Responder </a></li>
                                                                                             <li class="pr-1"><strong> {{ item2.fechaFormateada }}</strong></li>
+                                                                                            <li style="cursor: pointer" @click="verRespuestas('caja_respuestas_'+item2._id.$oid)" v-if="item2.respuestas_comentario.length > 0" class="pr-1"><strong> {{ item2.respuestas_comentario.length }} Respuesta(s)</strong></li>                                                                                            
+                                                                                        </ul>
+                                                                                        <ul v-if="item2.respuestas_comentario.length > 0" style="display: block" :id="'caja_respuestas_'+item2._id.$oid">
+                                                                                            <div style="display: flex; margin-top: 10px" v-for="(item3, index3) in item2.respuestas_comentario" :key="index" class="media-body">
+                                                                                                <div class="media-left mr-1">
+                                                                                                    <a href="#">
+                                                                                                        <span class="avatar avatar-online"><img :src="'/'+item3.usuario.imagen" alt="avatar"></span>
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                                <div class="media-body" style="display: flex">
+                                                                                                    <div class="burbuja2">
+                                                                                                        <p class="text-bold-600 mb-0"><a href="#">{{ item3.usuario.nombre }}</a></p>
+                                                                                                        <p style="margin-bottom: 5px">{{ item3.comentarioTexto }}</p>
+                                                                                                    </div>
+                                                                                                    <div style="margin-left: 10px;display: flex; justify-content: center; align-items: center">
+                                                                                                        
+                                                                                                            <button v-if="datosLogin._id.$oid == item3.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                                                <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                                                                                            </button>
+                                                                                                            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                                                                                <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentarioP" @click.prevent="verModalEditarComentario(item._id.$oid, item3, 1)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                                                                                <button class="dropdown-item" @click="eliminarRespuestaPreguntar(item._id.$oid, item3._id.$oid)" href="#"><i class="feather icon-trash-2"></i> Eliminar</button>
+                                                                                                            </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
@@ -89,15 +123,18 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>                                                        
-                                                                <div class="card-body" style="height: 60px; padding-top: 0px">
+                                                                <div class="card-body" style="padding-top: 0px">
+                                                                    <div class="alert alert-success" v-if="responderActivo">
+                                                                        <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="responderActivo = false" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
+                                                                    </div>
                                                                     <fieldset class="form-group position-relative has-icon-left mb-0">
-                                                                        <input @click='setIdPublicacion(item._id.$oid, "001")' :id="'inputComentario001'" type="text" class="form-control" placeholder="Write comments...">
+                                                                        <input @click='setIdPublicacion(item._id.$oid, index)' :id="'inputComentario'+index" type="text" class="form-control" placeholder="Write comments...">
                                                                         <div style="top: 7px; left: 4px" class="form-control-position">
-                                                                            <i @click="mostrarEmojis('001')" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
+                                                                            <i @click="mostrarEmojis(index)" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
                                                                         </div>
                                                                         <i @click="guardarComentario"  class="comentar fas fa-paper-plane"></i>
                                                                     </fieldset>
-                                                                    <div :id="'EmojiPicker001'" style="position: relative; top: -378px; right: -233px; display: none">
+                                                                    <div :id="'EmojiPicker'+index" style="position: relative; top: -378px; right: -233px; display: none">
                                                                         <EmojiPicker 
                                                                             :disable-skin-tones="true"
                                                                             :native="true" 
@@ -179,6 +216,61 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade text-left" id="modalEditarComentarioP" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document" v-if="comentarioSeleccionado != null">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="card-header" style="background-color: #a8dbc4; width: 100%">
+                            <div class="media">
+                                <div class="media-left mr-1">
+                                    <a href="#">
+                                        <span class="avatar avatar-md avatar-busy"><img :src="'/'+comentarioSeleccionado.usuario.imagen" alt="avatar"></span>
+                                        <i></i>
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="card-title"><a href="#">{{ comentarioSeleccionado.usuario.nombre }} - <strong v-if="comentarioSeleccionado.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ comentarioSeleccionado.usuario.grado }}° grado</strong><strong v-if="comentarioSeleccionado.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
+                                    <p class="card-subtitle text-muted mb-0 pt-1">
+                                        <span class="font-small-3">{{ comentarioSeleccionado.fecha }} {{ comentarioSeleccionado.horas }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="close btn_cerar_modal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="max-height: 600px; overflow-y: auto; padding-bottom: 7px;">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <fieldset class="form-group position-relative has-icon-left mb-0">
+                                    <input v-model="comentarioSeleccionado.comentarioTexto" id="inputComentario001" type="text" class="form-control" placeholder="Write comments...">
+                                    <div style="top: 7px; left: 4px" class="form-control-position">
+                                        <i @click="mostrarEmojis('001')" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
+                                    </div>
+                                    <i v-if="tipoeditarComentario==2" @click="guardarEdicionComentario" class="comentar fas fa-paper-plane"></i>
+                                    <i v-if="tipoeditarComentario==1" @click="guardarEdicionRespuesta" class="comentar fas fa-paper-plane"></i>
+                                </fieldset>
+                                <div :id="'EmojiPicker001'" style="position: relative; top: 14px; right: 0px; display: none">
+                                    <EmojiPicker 
+                                        :disable-skin-tones="true"
+                                        :native="true" 
+                                        @select="onSelectEmoji"
+                                        :disable-sticky-group-names="true"
+                                        :hide-search="true"
+                                        :hide-group-icons="false"
+                                        :disabled-groups="['activities', 'travel_places', 'objects', 'flags']"
+                                    />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -209,7 +301,14 @@ export default {
             imageFileEditar: null,
             intervalId: null,
             item: null,
-            idParametro: null
+            idParametro: null,
+            responderActivo: false,
+            comentarioSeleccionado: null,
+            tipoeditarComentario: null,
+            idPublicacionEditarComentario: null,
+            comentarioDesdeModal: false,
+            padreComentarioResponder: 0,
+            comentarioResponder: null,
         }
     },
     mounted() {
@@ -262,29 +361,58 @@ export default {
             this.indexComentario = index;
         },
         async guardarComentario() {
-            var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
-            var datos = {
-                comentarioTexto: comentarioTexto,
-                idPost: this.selectedPosted
-            }
+            if(this.responderActivo == false){
+                var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idPost: this.selectedPosted
+                }
 
-            if (comentarioTexto != "") {
-                await comunidadService.registrarComentarioPost(datos).then(respuesta => {
-                    var respuesta_ok = respuesta.data;
-                    if (respuesta_ok[1] == 1) {
-                        $("#inputComentario" + this.indexComentario).val("");
-                        var miDiv = $("#EmojiPicker" + this.indexComentario);
-                        if (miDiv.css("display") === "block") {
-                            miDiv.css("display", "none");
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario" + this.indexComentario).val("");
+                            var miDiv = $("#EmojiPicker" + this.indexComentario);
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
+                            }
+                            toastr.success(respuesta_ok[0]);
+                            this.listarPublicacionPorID();
+                        } else {
+                            toastr.error(respuesta_ok[0]);
                         }
-                        toastr.success(respuesta_ok[0]);
-                        this.listarPublicacionPorID();
-                    } else {
-                        toastr.error(respuesta_ok[0]);
-                    }
-                });
-            } else {
-                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
+            }else{
+                var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idComentario: this.comentarioResponder._id.$oid,
+                    idPublicacion: this.padreComentarioResponder
+                }
+
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarRespuestaComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario" + this.indexComentario).val("");
+                            var miDiv = $("#EmojiPicker" + this.indexComentario);
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
+                            }
+                            toastr.success(respuesta_ok[0]);
+                            this.infoPost();
+                            this.responderActivo = false;
+                        } else {
+                            toastr.error(respuesta_ok[0]);
+                        }
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
             }
         },
         async eliminarRespuestaComentarioPregunta(id_publicacion, id_comentario) {
@@ -392,6 +520,10 @@ export default {
                 }
             })
         },
+        ocultarDivMegusta(index){
+            var div = document.getElementById('divmegusta'+index);
+            div.style.display = 'none';
+        },
         async EliminarPost(id_publicacion){
             await comunidadService.EliminarPost(id_publicacion).then(respuesta => {
                 var respuesta_ok = respuesta.data;
@@ -416,6 +548,140 @@ export default {
                     toastr.error(respuesta_ok[0]);
                 }
             });
+        },
+        async likeComentario(id_publicacion, id_comentario){
+            var datos = {
+                id_publicacion: id_publicacion,
+                id_comentario: id_comentario
+            }
+
+            await comunidadService.meGustaComentario(datos).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.item = respuesta.data;
+                    });
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        },
+        setIdPublicacionRespuesta(id_publicacion ,item) {
+            this.responderActivo = true;
+            this.comentarioResponder = item;
+            this.padreComentarioResponder = id_publicacion;
+        },
+        verRespuestas(id){
+            $("#"+id).toggle();
+        },
+        async infoPost(){
+            await comunidadService.infoPost(this.selectedPosted).then(respuesta => {
+                this.item = respuesta.data;
+            });
+        },
+        eliminarRespuestaPreguntar(id_publicacion, id_comentario){
+            Swal.fire({
+                title: '¿Estas seguro de eliminar esta respuesta?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, borrar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.eliminarRespuesta(id_publicacion, id_comentario);
+                }
+            })
+        },
+        async eliminarRespuesta(id_publicacion, id_comentario) {
+            await comunidadService.eliminarRespuesta(id_comentario).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    toastr.success(respuesta_ok[0]);
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.item = respuesta.data;
+                    });
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        },
+        verModalEditarComentario(id_publicacion, item, tipo){
+            this.tipoeditarComentario = tipo;
+            this.comentarioSeleccionado = item;
+            this.idPublicacionEditarComentario = id_publicacion;
+        },
+        async guardarEdicionRespuesta(){
+            var comentarioTexto = $("#inputComentario001").val();
+            var datos = {
+                comentarioTexto: comentarioTexto,
+                idComentario: this.comentarioSeleccionado._id.$oid
+            }
+
+            if (comentarioTexto != "") {
+                await comunidadService.editarRespuestaComentario(datos).then(respuesta => {
+                    var respuesta_ok = respuesta.data;
+                    if (respuesta_ok[1] == 1) {
+                        $("#inputComentario001").val("");
+                        var miDiv = $("#EmojiPicker001");
+                        if (miDiv.css("display") === "block") {
+                            miDiv.css("display", "none");
+                        }
+                        toastr.success(respuesta_ok[0]);
+                        comunidadService.infoPost(this.idPublicacionEditarComentario).then(respuesta => {
+                            this.item = respuesta.data;
+                        });
+
+                        $("#modalEditarComentarioP").modal('hide');
+                        this.tipoeditarComentario = null;
+                        this.comentarioSeleccionado = null;
+                        this.idPublicacionEditarComentario = null;                        
+                    } else {
+                        toastr.error(respuesta_ok[0]);
+                    }
+                });
+                
+            } else {
+                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+            }
+        },
+        async guardarEdicionComentario(){
+            var comentarioTexto = $("#inputComentario001").val();
+            var datos = {
+                comentarioTexto: comentarioTexto,
+                idComentario: this.comentarioSeleccionado._id.$oid,
+                idPublicacion: this.idPublicacionEditarComentario
+            }
+
+            if (comentarioTexto != "") {
+                await comunidadService.editarComentario(datos).then(respuesta => {
+                    var respuesta_ok = respuesta.data;
+                    if (respuesta_ok[1] == 1) {
+                        $("#inputComentario001").val("");
+                        var miDiv = $("#EmojiPicker001");
+                        if (miDiv.css("display") === "block") {
+                            miDiv.css("display", "none");
+                        }
+                        toastr.success(respuesta_ok[0]);
+                        comunidadService.infoPost(this.idPublicacionEditarComentario).then(respuesta => {
+                            this.item = respuesta.data;
+                        });
+
+                        $("#modalEditarComentarioP").modal('hide');
+                        this.tipoeditarComentario = null;
+                        this.comentarioSeleccionado = null;
+                        this.idPublicacionEditarComentario = null;
+                        
+                    } else {
+                        toastr.error(respuesta_ok[0]);
+                    }
+                });
+                
+            } else {
+                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+            }
         }
     }
 };
@@ -560,14 +826,6 @@ export default {
     width: 92%;
 }
 
-.eliminarcomemntario {
-    position: absolute;
-    top: 30px;
-    right: 17px;
-    font-size: 15px;
-    color: gray;
-    cursor: pointer;
-}
 
 .eliminarcomemntario:hover {
     color: rgb(85, 84, 84);

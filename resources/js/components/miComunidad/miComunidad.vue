@@ -88,7 +88,7 @@
                                         <section id="timeline" class="timeline-center timeline-wrapper">
                                             <h3 class="page-title text-center">Últimas publicaciones</h3>
                                             <hr>
-                                            <ul class="timeline">                                   
+                                            <ul>                                   
                                                 <li v-for="(item, index) in datos" :key="index" class="timeline-item" style="border-radius: 20px; position: relative">
                                                     <div class="opciones_comentario">
                                                         <div class="btn-group mr-1 mb-1">
@@ -150,10 +150,42 @@
                                                                                             <p class="text-bold-600 mb-0"><a href="#">{{ item2.usuario.nombre }}</a></p>
                                                                                             <p style="margin-bottom: 5px">{{ item2.comentarioTexto }}</p>
                                                                                         </div>
-                                                                                        <i v-if="datosLogin._id.$oid == item2.usuario._id.$oid" @click="eliminarRespuestaComentarioPregunta(item._id.$oid, item2._id.$oid)" class="fas fa-trash-alt eliminarcomemntario"></i>
+                                                                                        <button v-if="datosLogin._id.$oid == item2.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar eliminarcomemntario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                            <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                                                                        </button>
+                                                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                                                            <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentario" @click.prevent="verModalEditarComentario(item._id.$oid, item2, 2, false)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                                                            <a class="dropdown-item" type="button" @click="eliminarRespuestaComentarioPregunta(item._id.$oid, item2._id.$oid)"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                                                                                        </div>
                                                                                         <ul class="list-inline" style="margin-left: 20px">
-                                                                                            <li class="pr-1"><a href="#" class=""><span class="fa fa-thumbs-o-up"></span> Like</a></li>
+                                                                                            <li class="pr-1"><a type="button" @click="likeComentario(item._id.$oid, item2._id.$oid)" class=""><span :class=" item2.like_usuario == 0 ?'fa fa-thumbs-o-up' : 'fa fa-thumbs-up'"></span> ({{item2.likes.length}} Me gusta)</a></li>
+                                                                                            <li @click="setIdPublicacionRespuesta(item._id.$oid, item2)" class="pr-1"><a style="font-weight: bold; color: #009c9f; cursor: pointer" type="button" class=""> Responder </a></li>
                                                                                             <li class="pr-1"><strong> {{ item2.fechaFormateada }}</strong></li>
+                                                                                            <li style="cursor: pointer" @click="verRespuestas('caja_respuestas_'+item2._id.$oid)" v-if="item2.respuestas_comentario.length > 0" class="pr-1"><strong> {{ item2.respuestas_comentario.length }} Respuesta(s)</strong></li>                                                                                            
+                                                                                        </ul>
+                                                                                        <ul v-if="item2.respuestas_comentario.length > 0" style="display: none" :id="'caja_respuestas_'+item2._id.$oid">
+                                                                                            <div style="display: flex; margin-top: 10px" v-for="(item3, index3) in item2.respuestas_comentario" :key="index" class="media-body">
+                                                                                                <div class="media-left mr-1">
+                                                                                                    <a href="#">
+                                                                                                        <span class="avatar avatar-online"><img :src="item3.usuario.imagen" alt="avatar"></span>
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                                <div class="media-body" style="display: flex">
+                                                                                                    <div class="burbuja2">
+                                                                                                        <p class="text-bold-600 mb-0"><a href="#">{{ item3.usuario.nombre }}</a></p>
+                                                                                                        <p style="margin-bottom: 5px">{{ item3.comentarioTexto }}</p>
+                                                                                                    </div>
+                                                                                                    <div style="margin-left: 10px;display: flex; justify-content: center; align-items: center">
+                                                                                                        <button v-if="datosLogin._id.$oid == item3.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                                            <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                                                                                        </button>
+                                                                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                                                                            <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentario" @click.prevent="verModalEditarComentario(item._id.$oid, item3, 1, false)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                                                                            <button class="dropdown-item" @click="eliminarRespuestaPreguntar(item._id.$oid, item3._id.$oid)" href="#"><i class="feather icon-trash-2"></i> Eliminar</button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
@@ -162,7 +194,10 @@
                                                                     </div>
                                                                     <a  data-toggle="modal" data-target="#modalPublicacion" @click.prevent="verTodosComentarios(index)" style="margin-left: 30px" href="" v-if="item.comentarios.length > 3">Mostrar todos los comentarios({{ item.comentarios.length - 3 }})</a>
                                                                 </div>                                                        
-                                                                <div class="card-body" style="height: 60px; padding-top: 0px">
+                                                                <div class="card-body" style="padding-top: 0px; height: 60px">
+                                                                    <div class="alert alert-success" v-if="responderActivo">
+                                                                        <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="responderActivo = false" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
+                                                                    </div>
                                                                     <fieldset class="form-group position-relative has-icon-left mb-0">
                                                                         <input @click='setIdPublicacion(item._id.$oid, index)' :id="'inputComentario'+index" type="text" class="form-control" placeholder="Write comments...">
                                                                         <div style="top: 7px; left: 4px" class="form-control-position">
@@ -220,11 +255,11 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button"  @click="cerrarTodosComentarios" class="close btn_cerar_modal" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close btn_cerar_modal" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" style="max-height: 600px; overflow-y: auto; padding-bottom: 7px;">
+                    <div class="modal-body" style="max-height: 600px; overflow-y: auto; padding-bottom: 7px; overflow-x: hidden">
                         <div class="card-content">
                             <div class="card-body">
                                 <p class="card-text" style="font-size: 15px; font-weight: bold; color: rgb(89, 87, 87); line-height: 24px;">{{ publiSeleccionada.detalle }}</p>
@@ -250,10 +285,42 @@
                                                 <p class="text-bold-600 mb-0"><a href="#">{{ item2.usuario.nombre }}</a></p>
                                                 <p style="margin-bottom: 5px">{{ item2.comentarioTexto }}</p>
                                             </div>
-                                            <i style="right: 32px;" v-if="datosLogin._id.$oid == item2.usuario._id.$oid" @click="eliminarRespuestaComentarioPregunta(publiSeleccionada._id.$oid, item2._id.$oid)" class="fas fa-trash-alt eliminarcomemntario"></i>
+                                            <button v-if="datosLogin._id.$oid == item2.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar eliminarcomemntario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                            </button>
+                                            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentario" @click.prevent="verModalEditarComentario(publiSeleccionada._id.$oid, item2, 2, true)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                <a class="dropdown-item" type="button" @click="eliminarRespuestaComentarioPregunta(publiSeleccionada._id.$oid, item2._id.$oid)"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                                            </div>
                                             <ul class="list-inline" style="margin-left: 20px">
-                                                <li class="pr-1"><a href="#" class=""><span class="fa fa-thumbs-o-up"></span> Like</a></li>
+                                                <li class="pr-1"><a type="button" @click="likeComentario(publiSeleccionada._id.$oid, item2._id.$oid)" class=""><span :class=" item2.like_usuario == 0 ?'fa fa-thumbs-o-up' : 'fa fa-thumbs-up'"></span> ({{item2.likes.length}} Me gusta)</a></li>
+                                                <li @click="setIdPublicacionRespuesta(publiSeleccionada._id.$oid, item2)" class="pr-1"><a style="font-weight: bold; color: #009c9f; cursor: pointer" type="button" class=""> Responder </a></li>
                                                 <li class="pr-1"><strong> {{ item2.fechaFormateada }}</strong></li>
+                                                <li style="cursor: pointer" @click="verRespuestas('caja_respuestas_modal_'+item2._id.$oid)" v-if="item2.respuestas_comentario.length > 0" class="pr-1"><strong> {{ item2.respuestas_comentario.length }} Respuesta(s)</strong></li>                                                                                            
+                                            </ul>
+                                            <ul style="display: none" v-if="item2.respuestas_comentario.length > 0" :id="'caja_respuestas_modal_'+item2._id.$oid">
+                                                <div style="display: flex; margin-top: 10px" v-for="(item3, index3) in item2.respuestas_comentario" :key="index" class="media-body">
+                                                    <div class="media-left mr-1">
+                                                        <a href="#">
+                                                            <span class="avatar avatar-online"><img :src="item3.usuario.imagen" alt="avatar"></span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body" style="display: flex">
+                                                        <div class="burbuja2">
+                                                            <p class="text-bold-600 mb-0"><a href="#">{{ item3.usuario.nombre }}</a></p>
+                                                            <p style="margin-bottom: 5px">{{ item3.comentarioTexto }}</p>
+                                                        </div>
+                                                        <div style="margin-left: 10px;display: flex; justify-content: center; align-items: center">
+                                                            <button v-if="datosLogin._id.$oid == item3.usuario._id.$oid" type="button" style="background-color: transparent; border-color: transparent; min-width: 1.5rem;" class="btn btn-dark dropdown-toggle menu_editar_eliminar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <i style="font-size: 18px; color: #404e67" class="feather icon-more-horizontal"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 41px, 0px);">
+                                                                <a class="dropdown-item" href=""  data-toggle="modal" data-target="#modalEditarComentario" @click.prevent="verModalEditarComentario(publiSeleccionada._id.$oid, item3, 1, true)"><i class="feather icon-edit-2"></i> Editar</a>
+                                                                <button class="dropdown-item" @click="eliminarRespuestaPreguntar(publiSeleccionada._id.$oid, item3._id.$oid)" href="#"><i class="feather icon-trash-2"></i> Eliminar</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </ul>
                                         </div>
                                     </div>
@@ -261,7 +328,10 @@
                             </div>
                         </div>
                         <div style="width: 100%; background-color: white; position: sticky; bottom: -7px;">
-                            <div class="card-body" style="height: 60px; padding-top: 12px">
+                            <div class="card-body" style="padding-top: 12px; height: 60px">   
+                                <div class="alert alert-success" v-if="responderActivo">
+                                    <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="responderActivo = false" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
+                                </div>                            
                                 <fieldset class="form-group position-relative has-icon-left mb-0">
                                     <input @click='setIdPublicacion(publiSeleccionada._id.$oid, indexpubliSeleccionada)' :id="'inputComentario01'" type="text" class="form-control" placeholder="Write comments...">
                                     <div style="top: 7px; left: 4px" class="form-control-position">
@@ -371,6 +441,65 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade text-left" id="modalEditarComentario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document" v-if="comentarioSeleccionado != null">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="card-header" style="background-color: #a8dbc4; width: 100%">
+                            <div class="media">
+                                <div class="media-left mr-1">
+                                    <a href="#">
+                                        <span class="avatar avatar-md avatar-busy"><img :src="'/'+comentarioSeleccionado.usuario.imagen" alt="avatar"></span>
+                                        <i></i>
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="card-title"><a href="#">{{ comentarioSeleccionado.usuario.nombre }} - <strong v-if="comentarioSeleccionado.usuario.tipo_registro == 'estudiante'" style="color: #7d7d7d">{{ comentarioSeleccionado.usuario.grado }}° grado</strong><strong v-if="comentarioSeleccionado.usuario.tipo_registro == 'docente'" style="color: #7d7d7d">Docente</strong></a></h4>
+                                    <p class="card-subtitle text-muted mb-0 pt-1">
+                                        <span class="font-small-3">{{ comentarioSeleccionado.fecha }} {{ comentarioSeleccionado.horas }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="close btn_cerar_modal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="max-height: 600px; overflow-y: auto; padding-bottom: 7px;">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <fieldset class="form-group position-relative has-icon-left mb-0">
+                                    <input v-model="comentarioSeleccionado.comentarioTexto" id="inputComentario001" type="text" class="form-control" placeholder="Write comments...">
+                                    <div style="top: 7px; left: 4px" class="form-control-position">
+                                        <i @click="mostrarEmojis('001')" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
+                                    </div>
+                                    <i v-if="tipoeditarComentario==2" @click="guardarEdicionComentario" class="comentar fas fa-paper-plane"></i>
+                                    <i v-if="tipoeditarComentario==1" @click="guardarEdicionRespuesta" class="comentar fas fa-paper-plane"></i>
+                                </fieldset>
+                                <div :id="'EmojiPicker001'" style="position: relative; top: 14px; right: 0px; display: none">
+                                    <EmojiPicker 
+                                        :disable-skin-tones="true"
+                                        :native="true" 
+                                        @select="onSelectEmoji"
+                                        :disable-sticky-group-names="true"
+                                        :hide-search="true"
+                                        :hide-group-icons="false"
+                                        :disabled-groups="['activities', 'travel_places', 'objects', 'flags']"
+                                    />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div @click="scrollToTop" v-if="nuevas_publicaciones" class="alert alert-warning" style="background-color: #0098d0 !important; width: fit-content;position: fixed;top: 92px;z-index: 20000;left: 45%;color: white !important;border-radius: 20px;border: 4px solid white !important;font-weight: bold; cursor: pointer">
+            <i class="fas fa-arrow-up"></i> Hay ({{numero_nuevas_publicaciones}}) nuevas publicaciones
+        </div>
     </div>
 </template>
 <script>
@@ -413,17 +542,29 @@ export default {
             detallePublicacionEditar: '',
             selectedImageEditar: null,
             imageFileEditar: null,
-            intervalId: null
+            intervalId: null,
+            pagina_comentarios: 0,
+            numero_post: 0,
+            nuevas_publicaciones: false,
+            numero_nuevas_publicaciones: 0,
+            padreComentarioResponder: 0,
+            comentarioResponder: null,
+            responderActivo: false,
+            comentarioSeleccionado: null,
+            tipoeditarComentario: null,
+            idPublicacionEditarComentario: null,
+            comentarioDesdeModal: false
         }
     },
     mounted() {
         this.verificarLogin();
+        this.obtenerNumeroPublicaciones();
         if (window.innerWidth > 450) {
             window.addEventListener("scroll", this.actualizarPixelesDesplazados);
         }
         this.misDatos();
         this.listarUsuariosComunidad();
-        this.intervalId = setInterval(this.listarPublicaciones2, 60000);
+        this.intervalId = setInterval(this.verificarNuevasPublicaciones, 20000);
     },
     beforeDestroy() {
         clearInterval(this.intervalId);
@@ -467,7 +608,7 @@ export default {
                 const respuesta_ok = response.data;
                 if (respuesta_ok[1] === 1) {
                     toastr.success(respuesta_ok[0]);
-                    this.listarPublicaciones2();
+                    this.scrollToTop();
                     this.listarUsuariosComunidad();
                 } else {
                     toastr.error(respuesta_ok[0]);
@@ -498,16 +639,40 @@ export default {
                     'width': '31%'
                 });
             }
+
+            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight) {
+                this.listarPublicaciones2();
+            }
         },
         async listarPublicaciones() {
             this.loading = true;
-            await comunidadService.listarPublicaciones().then(respuesta => {
+            this.pagina_comentarios = 1;
+            await comunidadService.listarPublicaciones(this.pagina_comentarios).then(respuesta => {
                 this.datos = respuesta.data;
                 this.loading = false;
             });
         },
         async listarPublicaciones2() {
-            await comunidadService.listarPublicaciones().then(respuesta => {
+            this.pagina_comentarios += 1;
+            await comunidadService.listarPublicaciones(this.pagina_comentarios).then(respuesta => {
+                if(this.pagina_comentarios == 1){
+                    this.datos = respuesta.data;
+                }else{
+                    respuesta.data.forEach(element => {
+                        this.datos.push(element);
+                    });
+                }
+
+                if(respuesta.data.length == 0){
+                    this.pagina_comentarios -= 1;
+                }
+            });
+        },
+        async listarPublicaciones3() {
+            this.obtenerNumeroPublicaciones();
+            this.nuevas_publicaciones = false;
+            this.pagina_comentarios = 1;
+            await comunidadService.listarPublicaciones(this.pagina_comentarios).then(respuesta => {
                 this.datos = respuesta.data;
             });
         },
@@ -530,62 +695,127 @@ export default {
             this.indexComentario = index;
         },
         async guardarComentario() {
-            var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
-            var datos = {
-                comentarioTexto: comentarioTexto,
-                idPost: this.selectedPosted
-            }
+            if(this.responderActivo == false){
+                var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idPost: this.selectedPosted
+                }
 
-            if (comentarioTexto != "") {
-                await comunidadService.registrarComentarioPost(datos).then(respuesta => {
-                    var respuesta_ok = respuesta.data;
-                    if (respuesta_ok[1] == 1) {
-                        $("#inputComentario" + this.indexComentario).val("");
-                        var miDiv = $("#EmojiPicker" + this.indexComentario);
-                        if (miDiv.css("display") === "block") {
-                            miDiv.css("display", "none");
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario" + this.indexComentario).val("");
+                            var miDiv = $("#EmojiPicker" + this.indexComentario);
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
+                            }
+                            toastr.success(respuesta_ok[0]);
+                            this.infoPost();
+                            this.listarUsuariosComunidad();
+                        } else {
+                            toastr.error(respuesta_ok[0]);
                         }
-                        toastr.success(respuesta_ok[0]);
-                        this.listarPublicaciones2();
-                        this.listarUsuariosComunidad();
-                    } else {
-                        toastr.error(respuesta_ok[0]);
-                    }
-                });
-            } else {
-                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
+            }else{
+                var comentarioTexto = $("#inputComentario" + this.indexComentario).val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idComentario: this.comentarioResponder._id.$oid,
+                    idPublicacion: this.padreComentarioResponder
+                }
+
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarRespuestaComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario" + this.indexComentario).val("");
+                            var miDiv = $("#EmojiPicker" + this.indexComentario);
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
+                            }
+                            toastr.success(respuesta_ok[0]);
+                            this.infoPost();
+                            this.responderActivo = false;
+                        } else {
+                            toastr.error(respuesta_ok[0]);
+                        }
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
             }
         },
         async guardarComentarioModal() {
-            var comentarioTexto = $("#inputComentario01").val();
+            if(this.responderActivo == false){
+                var comentarioTexto = $("#inputComentario01").val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idPost: this.selectedPosted
+                }
 
-            var datos = {
-                comentarioTexto: comentarioTexto,
-                idPost: this.selectedPosted
-            }
-
-            if (comentarioTexto != "") {
-                await comunidadService.registrarComentarioPost(datos).then(respuesta => {
-                    var respuesta_ok = respuesta.data;
-                    if (respuesta_ok[1] == 1) {
-                        $("#inputComentario01").val("");
-                        var miDiv = $("#EmojiPicker01");
-                        if (miDiv.css("display") === "block") {
-                            miDiv.css("display", "none");
-                        }
-                        toastr.success(respuesta_ok[0]);
-                        comunidadService.listarPublicaciones().then(respuesta => {
-                            this.datos = respuesta.data;
-                            if (this.indexpubliSeleccionada != null) {
-                                this.publiSeleccionada = this.datos[this.indexpubliSeleccionada];
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario01").val("");
+                            var miDiv = $("#EmojiPicker01");
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
                             }
-                        });
-                    } else {
-                        toastr.error(respuesta_ok[0]);
-                    }
-                });
-            } else {
-                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                            toastr.success(respuesta_ok[0]);
+                            const indiceObjeto = this.datos.findIndex(item => item._id.$oid === this.selectedPosted);
+                            comunidadService.infoPost(this.selectedPosted).then(respuesta => {
+                                this.datos[indiceObjeto] = respuesta.data;
+                                if (this.indexpubliSeleccionada != null) {
+                                    this.publiSeleccionada = respuesta.data;
+                                }
+                            });
+                            this.listarUsuariosComunidad();
+                        } else {
+                            toastr.error(respuesta_ok[0]);
+                        }
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
+            }else{
+                var comentarioTexto = $("#inputComentario01").val();
+                var datos = {
+                    comentarioTexto: comentarioTexto,
+                    idComentario: this.comentarioResponder._id.$oid,
+                    idPublicacion: this.selectedPosted
+                }
+
+                if (comentarioTexto != "") {
+                    await comunidadService.registrarRespuestaComentarioPost(datos).then(respuesta => {
+                        var respuesta_ok = respuesta.data;
+                        if (respuesta_ok[1] == 1) {
+                            $("#inputComentario01").val("");
+                            var miDiv = $("#EmojiPicker01");
+                            if (miDiv.css("display") === "block") {
+                                miDiv.css("display", "none");
+                            }
+                            toastr.success(respuesta_ok[0]);
+                            const indiceObjeto = this.datos.findIndex(item => item._id.$oid === this.selectedPosted);
+                            comunidadService.infoPost(this.selectedPosted).then(respuesta => {
+                                this.datos[indiceObjeto] = respuesta.data;
+                                if (this.indexpubliSeleccionada != null) {
+                                    this.publiSeleccionada = respuesta.data;
+                                }
+                            });
+                            this.responderActivo = false;
+                        } else {
+                            toastr.error(respuesta_ok[0]);
+                        }
+                    });
+                } else {
+                    toastr.warning("¡No ha escrito nada en la caja de comentarios");
+                }
             }
         },
         async eliminarRespuestaComentarioPregunta(id_publicacion, id_comentario) {
@@ -609,10 +839,11 @@ export default {
                 var respuesta_ok = respuesta.data;
                 if (respuesta_ok[1] == 1) {
                     toastr.success(respuesta_ok[0]);
-                    comunidadService.listarPublicaciones().then(respuesta => {
-                        this.datos = respuesta.data;
+                    const indiceObjeto = this.datos.findIndex(item => item._id.$oid === id_publicacion);
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.datos[indiceObjeto] = respuesta.data;
                         if (this.indexpubliSeleccionada != null) {
-                            this.publiSeleccionada = this.datos[this.indexpubliSeleccionada];
+                            this.publiSeleccionada = respuesta.data;
                         }
                     });
                     this.listarUsuariosComunidad();
@@ -679,7 +910,10 @@ export default {
                 const respuesta_ok = response.data;
                 if (respuesta_ok[1] === 1) {
                     toastr.success(respuesta_ok[0]);
-                    this.listarPublicaciones2();
+                    const indiceObjeto = this.datos.findIndex(item => item._id.$oid === this.publicacionEditar._id.$oid);
+                    comunidadService.infoPost(this.publicacionEditar._id.$oid).then(respuesta => {
+                        this.datos[indiceObjeto] = respuesta.data;
+                    });
                 } else {
                     toastr.error(respuesta_ok[0]);
                 }
@@ -713,7 +947,7 @@ export default {
                 var respuesta_ok = respuesta.data;
                 if (respuesta_ok[1] == 1) {
                     toastr.success(respuesta_ok[0]);
-                    this.listarPublicaciones2();
+                    this.scrollToTop();
                     this.listarUsuariosComunidad();
                 } else {
                     toastr.error(respuesta_ok[0]);
@@ -728,7 +962,10 @@ export default {
             await comunidadService.meGustaPost(datos).then(respuesta => {
                 var respuesta_ok = respuesta.data;
                 if (respuesta_ok[1] == 1) {
-                    this.listarPublicaciones2();
+                    const indiceObjeto = this.datos.findIndex(item => item._id.$oid === id_publicacion);
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.datos[indiceObjeto] = respuesta.data;
+                    });
                 } else {
                     toastr.error(respuesta_ok[0]);
                 }
@@ -741,6 +978,196 @@ export default {
         ocultarDivMegusta(index){
             var div = document.getElementById('divmegusta'+index);
             div.style.display = 'none';
+        },
+        async likeComentario(id_publicacion, id_comentario){
+            var datos = {
+                id_publicacion: id_publicacion,
+                id_comentario: id_comentario
+            }
+
+            await comunidadService.meGustaComentario(datos).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    const indiceObjeto = this.datos.findIndex(item => item._id.$oid === id_publicacion);
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.datos[indiceObjeto] = respuesta.data;
+                        if (this.indexpubliSeleccionada != null) {
+                            this.publiSeleccionada = respuesta.data;
+                        }
+                    });
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        },
+        async infoPost(){
+            await comunidadService.infoPost(this.selectedPosted).then(respuesta => {
+                this.datos[this.indexComentario] = respuesta.data;
+            });
+        },
+        async obtenerNumeroPublicaciones(){
+            await comunidadService.obtenerNumeroPublicaciones(this.selectedPosted).then(respuesta => {
+                this.numero_post = respuesta.data;
+            });
+        },
+        async verificarNuevasPublicaciones(){
+            await comunidadService.obtenerNumeroPublicaciones(this.selectedPosted).then(respuesta => {
+                var numero_publicacioens_server = respuesta.data;
+                if(numero_publicacioens_server > this.numero_post){
+                    this.nuevas_publicaciones = true;
+                    this.numero_nuevas_publicaciones = numero_publicacioens_server - this.numero_post; 
+                }
+            });
+        },
+        scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+                duration: 1000
+            });
+
+            setTimeout(()=>{
+                this.listarPublicaciones3();
+            }, 1010);
+        },
+        setIdPublicacionRespuesta(id_publicacion ,item) {
+            this.responderActivo = true;
+            this.comentarioResponder = item;
+            this.padreComentarioResponder = id_publicacion;
+        },
+        verRespuestas(id){
+            $("#"+id).toggle();
+        },
+        eliminarRespuestaPreguntar(id_publicacion, id_comentario){
+            Swal.fire({
+                title: '¿Estas seguro de eliminar esta respuesta?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, borrar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.eliminarRespuesta(id_publicacion, id_comentario);
+                }
+            })
+        },
+        async eliminarRespuesta(id_publicacion, id_comentario) {
+            await comunidadService.eliminarRespuesta(id_comentario).then(respuesta => {
+                var respuesta_ok = respuesta.data;
+                if (respuesta_ok[1] == 1) {
+                    toastr.success(respuesta_ok[0]);
+                    const indiceObjeto = this.datos.findIndex(item => item._id.$oid === id_publicacion);
+                    comunidadService.infoPost(id_publicacion).then(respuesta => {
+                        this.datos[indiceObjeto] = respuesta.data;
+                        if (this.indexpubliSeleccionada != null) {
+                            this.publiSeleccionada = respuesta.data;
+                        }
+                    });
+                } else {
+                    toastr.error(respuesta_ok[0]);
+                }
+            });
+        },
+        verModalEditarComentario(id_publicacion, item, tipo, modal){
+            this.tipoeditarComentario = tipo;
+            this.comentarioSeleccionado = item;
+            this.idPublicacionEditarComentario = id_publicacion;
+            this.comentarioDesdeModal = modal;
+
+            if(this.comentarioDesdeModal){
+                $("#modalPublicacion").modal('hide');
+            }
+            
+        },
+        async guardarEdicionRespuesta(){
+            var comentarioTexto = $("#inputComentario001").val();
+            var datos = {
+                comentarioTexto: comentarioTexto,
+                idComentario: this.comentarioSeleccionado._id.$oid
+            }
+
+            if (comentarioTexto != "") {
+                await comunidadService.editarRespuestaComentario(datos).then(respuesta => {
+                    var respuesta_ok = respuesta.data;
+                    if (respuesta_ok[1] == 1) {
+                        $("#inputComentario001").val("");
+                        var miDiv = $("#EmojiPicker001");
+                        if (miDiv.css("display") === "block") {
+                            miDiv.css("display", "none");
+                        }
+                        toastr.success(respuesta_ok[0]);
+                        const indiceObjeto = this.datos.findIndex(item => item._id.$oid === this.idPublicacionEditarComentario);
+                        comunidadService.infoPost(this.idPublicacionEditarComentario).then(respuesta => {
+                            this.datos[indiceObjeto] = respuesta.data;
+                            if (this.indexpubliSeleccionada != null) {
+                                this.publiSeleccionada = respuesta.data;
+                            }
+                        });
+
+                        $("#modalEditarComentario").modal('hide');
+                        this.tipoeditarComentario = null;
+                        this.comentarioSeleccionado = null;
+                        this.idPublicacionEditarComentario = null;
+
+                        if(this.comentarioDesdeModal){
+                            $("#modalPublicacion").modal('show');
+                        }
+                        
+                    } else {
+                        toastr.error(respuesta_ok[0]);
+                    }
+                });
+                
+            } else {
+                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+            }
+        },
+        async guardarEdicionComentario(){
+            var comentarioTexto = $("#inputComentario001").val();
+            var datos = {
+                comentarioTexto: comentarioTexto,
+                idComentario: this.comentarioSeleccionado._id.$oid,
+                idPublicacion: this.idPublicacionEditarComentario
+            }
+
+            if (comentarioTexto != "") {
+                await comunidadService.editarComentario(datos).then(respuesta => {
+                    var respuesta_ok = respuesta.data;
+                    if (respuesta_ok[1] == 1) {
+                        $("#inputComentario001").val("");
+                        var miDiv = $("#EmojiPicker001");
+                        if (miDiv.css("display") === "block") {
+                            miDiv.css("display", "none");
+                        }
+                        toastr.success(respuesta_ok[0]);
+                        const indiceObjeto = this.datos.findIndex(item => item._id.$oid === this.idPublicacionEditarComentario);
+                        comunidadService.infoPost(this.idPublicacionEditarComentario).then(respuesta => {
+                            this.datos[indiceObjeto] = respuesta.data;
+                            if (this.indexpubliSeleccionada != null) {
+                                this.publiSeleccionada = respuesta.data;
+                            }
+                        });
+
+                        $("#modalEditarComentario").modal('hide');
+                        this.tipoeditarComentario = null;
+                        this.comentarioSeleccionado = null;
+                        this.idPublicacionEditarComentario = null;
+
+                        if(this.comentarioDesdeModal){
+                            $("#modalPublicacion").modal('show');
+                        }
+                        
+                    } else {
+                        toastr.error(respuesta_ok[0]);
+                    }
+                });
+                
+            } else {
+                toastr.warning("¡No ha escrito nada en la caja de comentarios");
+            }
         }
     }
 };
@@ -885,10 +1312,17 @@ export default {
     width: 92%;
 }
 
+.burbuja2 {
+    border-radius: 14px;
+    padding: 10px;
+    background-color: #efefefeb;
+    width: 80%;
+}
+
 .eliminarcomemntario {
     position: absolute;
-    top: 30px;
-    right: 17px;
+    top: 20px;
+    right: 2px;
     font-size: 15px;
     color: gray;
     cursor: pointer;

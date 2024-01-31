@@ -15,15 +15,16 @@
                                         <a @click.prevent="getAboutLink(0)" href="#">Inicio</a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="#">Busqueda</a>
+                                        <a href="#">Búsqueda</a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="#">Busqueda de Imagenes</a>
+                                        <a href="#">Búsqueda de Imágenes</a>
                                     </li>
                                 </ol>
                             </div>
                         </div>
                     </div>
+                    <headerColegio></headerColegio>
                 </div>
                 <div class="content-body">
                     <!-- Search form-->
@@ -122,12 +123,14 @@
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeletonImagen.vue';
 import cheerio from 'cheerio';
-import TipoBusqueda from './tipoBusqueda.vue'
+import TipoBusqueda from './tipoBusqueda';
+import headerColegio from './header/header';
 
 export default {
     components: {
         Skeleton,
-        TipoBusqueda
+        TipoBusqueda,
+        headerColegio
     },
     data() {
         return {
@@ -176,7 +179,6 @@ export default {
                 });
             } catch (error) {
                 console.error(error);
-            } finally {
                 this.loading = false; 
             }
         },
@@ -195,6 +197,7 @@ export default {
                 });
             });
             this.numero_registros_imagenes = this.images.length;
+            this.loading = false; 
         },
         async BuscarConAudio() {
             var elemento = this.$refs.microfono;

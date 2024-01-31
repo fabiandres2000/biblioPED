@@ -78,7 +78,117 @@ class ComunidadController extends Controller
         }
     }
 
-    public function listarPublicaciones(){
+    public function infoPost(Request $request){
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
+
+        $id = $request->input('id');
+        $idUsuario = (string) Session::get('id');
+
+        $publicacion = $collection->find([
+            '_id' => new \MongoDB\BSON\ObjectID($id),
+        ])->toArray();
+
+        $publicacion = $publicacion[0];
+
+        if(in_array($idUsuario, json_decode(json_encode($publicacion->likes)))){
+            $publicacion->like = true;
+        }else{
+            $publicacion->like = false;
+        }
+
+        $publicacion->usuario = $collection2->findOne([
+            '_id' => new \MongoDB\BSON\ObjectID($publicacion->id_usuario),
+        ]);
+
+        $comentarios = $publicacion->comentarios;
+        if(count($comentarios) > 0){
+            $comentarios = iterator_to_array($publicacion['comentarios']);
+            usort($comentarios, function($a, $b) {
+                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+                return $dateTimeB <=> $dateTimeA; 
+            });  
+            
+            $publicacion->comentarios = $comentarios;
+        }
+
+        $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha'] . ' ' . $publicacion['horas'], new \DateTimeZone('America/Bogota'));
+
+        $publicacion->fecha_formateada = $dateTimeA->format('d M, Y \a\ \l\a\s g.i A');
+
+        if (property_exists($publicacion, 'editado')){
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha_edicion'] . ' ' . $publicacion['horas_edicion'], new \DateTimeZone('America/Bogota'));
+            $publicacion->fecha_formateada_edicion = $dateTimeB->format('d M, Y \a\ \l\a\s g.i A');
+        }
+
+        foreach ($publicacion->comentarios as $comentario){
+            $comentario->usuario = $collection2->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($comentario->id_usuario),
+            ]);
+
+            $fechaHora = $comentario['fecha'] . ' ' . $comentario['horas'];
+            $timezone = new \DateTimeZone('America/Bogota');
+
+            $fechaActual = new \DateTime('now', $timezone);
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $fechaHora, $timezone);
+
+            $diferencia =(int)$fechaActual->getTimestamp() - (int)$dateTimeA->getTimestamp();
+
+            $fechaFormateada = '';
+            if ($diferencia < 60) {
+                $fechaFormateada = "Hace un momento";
+            } elseif ($diferencia < 3600) {
+                $minutos = round($diferencia / 60);
+                $fechaFormateada = "Hace {$minutos} minuto(s)";
+            } elseif ($diferencia < 86400) {
+                $horas = round($diferencia / 3600);
+                $fechaFormateada = "Hace {$horas} horas";
+            } elseif ($diferencia < 1296000) { 
+                $dias = round($diferencia / 86400);
+                $fechaFormateada = "Hace {$dias} días";
+            } else {
+                $fechaFormateada = $dateTimeA->format('d M, Y \a \l\a\s h:i A');
+            }
+
+            $comentario->fechaFormateada = $fechaFormateada;
+
+            
+            if(in_array($idUsuario, json_decode(json_encode($comentario->likes)))){
+                $comentario->like_usuario = 1;
+            }else{
+                $comentario->like_usuario = 0;
+            }
+
+            $comentario->respuestas_comentario = self::respuestasComentarioPost($comentario["_id"]);
+            
+        }
+
+        $publicacion->usuarios_likes = "";
+
+        foreach ($publicacion->likes as $usuario_like_id) {
+            $usuario_like = $collection2->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($usuario_like_id),
+            ]);
+
+            $publicacion->usuarios_likes .= '<i style="font-size: 8px" class="fas fa-dot-circle"></i> '.$usuario_like->nombre."<br>";
+        }
+
+        return $publicacion;
+
+    }
+
+    public function listarPublicaciones(Request $request){
+
+        $pagina = $request->input('pagina');
+
+        $limit = 5;
+    
+        if ($pagina == null || $pagina == "") {
+            $pagina = 1;
+        }
+    
+        $offset = ($pagina - 1) * $limit;
 
         $collection = self::$mongoDB->selectCollection('publicaciones');
         $collection2 = self::$mongoDB->selectCollection('usuarios');
@@ -90,6 +200,8 @@ class ComunidadController extends Controller
             $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
             return $dateTimeB <=> $dateTimeA; 
         });  
+
+        $publicaciones = array_slice($publicaciones, $offset, $limit);
 
         $idUsuario = (string) Session::get('id');
 
@@ -155,6 +267,15 @@ class ComunidadController extends Controller
                 }
 
                 $comentario->fechaFormateada = $fechaFormateada;
+
+                
+                if(in_array($idUsuario, json_decode(json_encode($comentario->likes)))){
+                    $comentario->like_usuario = 1;
+                }else{
+                    $comentario->like_usuario = 0;
+                }
+                
+                $comentario->respuestas_comentario = self::respuestasComentarioPost($comentario["_id"]);
             }
 
             $publicacion->usuarios_likes = "";
@@ -189,6 +310,7 @@ class ComunidadController extends Controller
             '_id' => new \MongoDB\BSON\ObjectID(),
             'id_usuario' => Session::get('id'),
             'comentarioTexto' => $comentarioTexto,
+            'likes'=> [],
             'fecha' => $fechaActual->format('d/m/Y'),
             'horas' => $horaActual->format('H:i:s'),
         ];
@@ -198,7 +320,6 @@ class ComunidadController extends Controller
             ['$push' => ['comentarios' => $elemento_ingresar]]
         );
 
-       
 
         if ($resultado->getModifiedCount() > 0) {
             $collectionUsuarios->updateOne(
@@ -358,6 +479,7 @@ class ComunidadController extends Controller
                 $publicacion = $collection->findOne([
                     '_id' => new \MongoDB\BSON\ObjectID($id_publicacion), 
                 ]);
+
                 self::guardarNotificacion((string) $publicacion->id_usuario, (string) $publicacion['_id'], 2);
             }
             return response()->json(["", 1], 200);
@@ -377,6 +499,7 @@ class ComunidadController extends Controller
         $horaActual = new \DateTime('now', $timezone);
 
         $idUsuario = (string) Session::get('id');
+
         if($id_usuario_publicacion != $idUsuario){
             if($tipo == 2){
                 $noti = [
@@ -389,15 +512,40 @@ class ComunidadController extends Controller
                     'tipo' => 2
                 ];
             }else{
-                $noti = [
-                    'id_usuario' => $id_usuario_publicacion,
-                    'ruta' => 'publicacion/'.$id_notificacion,
-                    'tema' => '<strong>'.Session::get('nombre').'</strong> ha comentado tu publiación',
-                    'fecha' => $fechaActual->format('d/m/Y'),
-                    'horas' => $horaActual->format('H:i:s'),
-                    'estado' => 'cerrado',
-                    'tipo' => 3
-                ];
+                if($tipo == 3){
+                    $noti = [
+                        'id_usuario' => $id_usuario_publicacion,
+                        'ruta' => 'publicacion/'.$id_notificacion,
+                        'tema' => '<strong>'.Session::get('nombre').'</strong> ha comentado tu publiación',
+                        'fecha' => $fechaActual->format('d/m/Y'),
+                        'horas' => $horaActual->format('H:i:s'),
+                        'estado' => 'cerrado',
+                        'tipo' => 3
+                    ];
+                }else{
+                    if($tipo == 22){
+                        $noti = [
+                            'id_usuario' => $id_usuario_publicacion,
+                            'ruta' => 'publicacion/'.$id_notificacion,
+                            'tema' => '<strong>'.Session::get('nombre').'</strong> ha indicado que le gusta tu comentario',
+                            'fecha' => $fechaActual->format('d/m/Y'),
+                            'horas' => $horaActual->format('H:i:s'),
+                            'estado' => 'cerrado',
+                            'tipo' => 2
+                        ]; 
+                    }else{
+                        $noti = [
+                            'id_usuario' => $id_usuario_publicacion,
+                            'ruta' => 'publicacion/'.$id_notificacion,
+                            'tema' => '<strong>'.Session::get('nombre').'</strong> ha respondido tu comentario',
+                            'fecha' => $fechaActual->format('d/m/Y'),
+                            'horas' => $horaActual->format('H:i:s'),
+                            'estado' => 'cerrado',
+                            'tipo' => 3
+                        ];
+                    }
+                }
+                
             }
         
             $collection2->insertOne($noti);
@@ -405,82 +553,219 @@ class ComunidadController extends Controller
        
     }
 
-    public function publicacionGet(Request $request){
-
+    public function numeroPost(){
         $collection = self::$mongoDB->selectCollection('publicaciones');
-        $collection2 = self::$mongoDB->selectCollection('usuarios');
+    
+        $publicacion = $collection->count();
 
-        $idUsuario = (string) Session::get('id');
-        $id_publicacion = $request->input('id_publicacion');
+        return response()->json($publicacion);
+    }
 
-        $publicacion = $collection->findOne([
-            '_id' =>  new \MongoDB\BSON\ObjectID($id_publicacion)
-        ]);
-
+    public function meGustaComentario(Request $request){
        
-        if(in_array($idUsuario, json_decode(json_encode($publicacion->likes)))){
-            $publicacion->like = true;
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+
+        $id_publicacion = $request->input('id_publicacion');
+        $id_comentario = $request->input('id_comentario');
+        $idUsuario = (string) Session::get('id');
+
+        $publicacion = $collection->find([
+            '_id' => new \MongoDB\BSON\ObjectID($id_publicacion)
+        ])->toArray()[0];
+
+
+        $bandera = false;
+        
+        $index = 0;
+        foreach ($publicacion->comentarios as $key) {
+            if((string) $key["_id"] == $id_comentario){
+                $comentario = $key;
+                break;
+            }
+            $index++;
+        }
+              
+        $likesArray = json_decode(json_encode($comentario->likes), true);
+        $keyInArray = array_search($idUsuario, $likesArray);
+
+        if ($keyInArray !== false) {
+            unset($publicacion->comentarios[$index]->likes[$keyInArray]);
+        } else {
+            $publicacion->comentarios[$index]->likes[] = $idUsuario;
+            $bandera = true;
+        }
+
+        $resultado = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($id_publicacion)],
+            ['$set' => ['comentarios' => $publicacion->comentarios]]
+        );
+
+        if ($resultado->getModifiedCount() > 0) {
+            if($bandera){
+                $publicacion = $collection->findOne([
+                    '_id' => new \MongoDB\BSON\ObjectID($id_publicacion), 
+                ]);
+
+                $comentario = null;
+                foreach ($publicacion->comentarios as $key) {
+                    if((string) $key["_id"] == $id_comentario){
+                        $comentario = $key;
+                    }
+                }
+                
+                self::guardarNotificacion((string) $comentario->id_usuario, (string) $publicacion['_id'], 22);
+            }
+            return response()->json(["", 1], 200);
         }else{
-            $publicacion->like = false;
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
         }
+    }
 
-        $publicacion->usuario = $collection2->findOne([
-            '_id' => new \MongoDB\BSON\ObjectID($publicacion->id_usuario),
-        ]);
+    public function guardarRespuestaComentarioPost(Request $request){
+        $collectionp = self::$mongoDB->selectCollection('publicaciones');
+        $collection = self::$mongoDB->selectCollection('respuesta_comentario_post');
+        $collectionUsuarios = self::$mongoDB->selectCollection('usuarios');
 
-        $comentarios = $publicacion->comentarios;
-        if(count($comentarios) > 0){
-            $comentarios = iterator_to_array($publicacion['comentarios']);
-            usort($comentarios, function($a, $b) {
-                $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
-                $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
-                return $dateTimeB <=> $dateTimeA; 
-            });  
-            
-            $publicacion->comentarios = $comentarios;
-        }
+        $idUsuario = Session::get('id');
+        
+        $comentarioTexto = $request->input('comentarioTexto');
+        $idComentario = $request->input('idComentario');
+        $idPublicacion = $request->input('idPublicacion');
+       
+        $timezone = new \DateTimeZone('America/Bogota');
 
-        $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha'] . ' ' . $publicacion['horas'], new \DateTimeZone('America/Bogota'));
+        $fechaActual = new \DateTime('now', $timezone);
+        $horaActual = new \DateTime('now', $timezone);
 
-        $publicacion->fecha_formateada = $dateTimeA->format('d M, Y \a\ \l\a\s g.i A');
+        $elemento_ingresar = [
+            'id_usuario' => Session::get('id'),
+            'comentarioTexto' => $comentarioTexto,
+            'idComentario' => $idComentario,
+            'idPublicacion' => $idPublicacion,
+            'fecha' => $fechaActual->format('d/m/Y'),
+            'horas' => $horaActual->format('H:i:s'),
+        ];
 
-        if (property_exists($publicacion, 'editado')){
-            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $publicacion['fecha_edicion'] . ' ' . $publicacion['horas_edicion'], new \DateTimeZone('America/Bogota'));
-            $publicacion->fecha_formateada_edicion = $dateTimeB->format('d M, Y \a\ \l\a\s g.i A');
-        }
+        $resultado = $collection->insertOne(
+           $elemento_ingresar
+        );
 
-        foreach ($publicacion->comentarios as $comentario){
-            $comentario->usuario = $collection2->findOne([
-                '_id' => new \MongoDB\BSON\ObjectID($comentario->id_usuario),
+
+        if ($resultado->getInsertedCount() > 0) {
+
+            $publicacion = $collectionp->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($idPublicacion), 
             ]);
 
-            $fechaHora = $comentario['fecha'] . ' ' . $comentario['horas'];
-            $timezone = new \DateTimeZone('America/Bogota');
-
-            $fechaActual = new \DateTime('now', $timezone);
-            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $fechaHora, $timezone);
-
-            $diferencia =(int)$fechaActual->getTimestamp() - (int)$dateTimeA->getTimestamp();
-
-            $fechaFormateada = '';
-            if ($diferencia < 60) {
-                $fechaFormateada = "Hace un momento";
-            } elseif ($diferencia < 3600) {
-                $minutos = round($diferencia / 60);
-                $fechaFormateada = "Hace {$minutos} minuto(s)";
-            } elseif ($diferencia < 86400) {
-                $horas = round($diferencia / 3600);
-                $fechaFormateada = "Hace {$horas} horas";
-            } elseif ($diferencia < 1296000) { 
-                $dias = round($diferencia / 86400);
-                $fechaFormateada = "Hace {$dias} días";
-            } else {
-                $fechaFormateada = $dateTimeA->format('d M, Y \a \l\a\s h:i A');
+            $comentario = null;
+            foreach ($publicacion->comentarios as $key) {
+                if((string) $key["_id"] == $idComentario){
+                    $comentario = $key;
+                }
             }
 
-            $comentario->fechaFormateada = $fechaFormateada;
+            self::guardarNotificacion((string) $comentario->id_usuario, (string) $publicacion['_id'], 33);
+            return response()->json(["¡Se ha registrado su respuesta correctamente!", 1], 200);
+        }else{
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
+        }
+    }
+
+    public function respuestasComentarioPost($id_comentario){
+
+        $collection = self::$mongoDB->selectCollection('respuesta_comentario_post');
+        $collection2 = self::$mongoDB->selectCollection('usuarios');
+
+        $respuestas = $collection->find([
+            "idComentario" => (string) $id_comentario
+        ])->toArray();
+
+        usort($respuestas, function($a, $b) {
+            $dateTimeA = \DateTime::createFromFormat('d/m/Y H:i:s', $a['fecha'] . ' ' . $a['horas'], new \DateTimeZone('America/Bogota'));
+            $dateTimeB = \DateTime::createFromFormat('d/m/Y H:i:s', $b['fecha'] . ' ' . $b['horas'], new \DateTimeZone('America/Bogota'));
+            return $dateTimeB <=> $dateTimeA; 
+        });  
+
+        foreach ($respuestas as $respuesta) {
+            $respuesta->usuario = $collection2->findOne([
+                '_id' => new \MongoDB\BSON\ObjectID($respuesta->id_usuario),
+            ]);
         }
 
-        return $publicacion;
+        return $respuestas;
+    }
+
+    public function eliminarRespuestaComentario(Request $request){
+        $collection = self::$mongoDB->selectCollection('respuesta_comentario_post');
+
+        $id_comentario = $request->input('id_comentario');
+
+
+        $result = $collection->deleteOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($id_comentario)],
+        );
+        
+        if ($result->getDeletedCount() > 0) {
+            return response()->json(["¡Se ha eliminado su comentario correctamente!", 1], 200);
+        } else {
+            return response()->json(["¡ No se encontró la publicación o el comentario no existe!", 0], 200);
+        }
+    }
+
+    public function editarRespuestaComentarioPost(Request $request){
+        $collection = self::$mongoDB->selectCollection('respuesta_comentario_post');
+
+        $comentarioTexto = $request->input('comentarioTexto');
+        $idComentario = $request->input('idComentario');
+       
+        $resultado = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($idComentario)],
+            ['$set' => ['comentarioTexto' => $comentarioTexto]]
+        );
+
+        if ($resultado->getModifiedCount() > 0) {
+            return response()->json(["¡Se ha modificado su respuesta correctamente!", 1], 200);
+        }else{
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
+        }
+    }
+
+
+    public function editarComentarioPost(Request $request){
+        $collection = self::$mongoDB->selectCollection('publicaciones');
+
+        $comentarioTexto = $request->input('comentarioTexto');
+        $idComentario = $request->input('idComentario');
+        $idPublicacion = $request->input('idPublicacion');
+
+        $publicacion = $collection->find([
+            '_id' => new \MongoDB\BSON\ObjectID($idPublicacion)
+        ])->toArray()[0];
+
+
+        $bandera = false;
+        
+        $index = 0;
+        foreach ($publicacion->comentarios as $key) {
+            if((string) $key["_id"] == $idComentario){
+                $comentario = $key;
+                $comentario->comentarioTexto = $comentarioTexto;
+                break;
+            }
+            $index++;
+        }
+
+        $publicacion->comentarios[$index] = $comentario;    
+
+        $resultado = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($idPublicacion)],
+            ['$set' => ['comentarios' => $publicacion->comentarios]]
+        );
+
+        if ($resultado->getModifiedCount() > 0) {
+            return response()->json(["Comentario Modificado correctamente.", 1], 200);
+        }else{
+            return response()->json(["¡Ocurrio un error, intente nuevamente!", 0], 200);
+        }
     }
 }

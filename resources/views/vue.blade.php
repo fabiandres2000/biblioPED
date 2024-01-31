@@ -147,6 +147,18 @@
            background-color: #009199;
            color: #FFFFFF
         }
+
+        .btn-warning-2{
+            border-color: #f2c701 !important;
+            background-color: #f2c701 !important;
+            color: #1b2942 !important;
+        }
+
+        .btn-warning-2:hover {
+            border-color: #f0d664 !important;
+            background-color: #f0d664 !important;
+            color: #1b2942 !important;
+        }
     </style>
 </head>
 
@@ -249,6 +261,12 @@
                                 style="padding: 0.6rem 0.8rem 0.6rem 0.9rem"
                                 class="nav-link nav-link-label btn btn-warning" href="/mi-comunidad"><i
                                     class="fas fa-book"></i> Diccionario</a>
+                        </li>
+                        <li class="nav-item"
+                            style="display: flex; justify-content: center; align-items: center; margin-right: 20px">
+                            <a href="/banco-mentefactos" style="padding: 0.6rem 0.8rem 0.6rem 0.9rem"
+                                class="nav-link nav-link-label btn btn-warning-2" href="/mi-comunidad"><i
+                                    class="fas fa-image"></i> Banco de mentefactos</a>
                         </li>
                         @if (Session::has('logueado'))
                             <li class="nav-item" style="display: flex; justify-content: center; align-items: center;">
@@ -1423,6 +1441,9 @@
                 url: '/api/buscar-palabra-diccionario?palabra=' + textoBuscar,
                 type: 'GET',
                 success: function(response) {
+                    response.significado = response.significado.replace(/\. (\d+)\./g, ".<br> $1.");
+                    response.significado = response.significado.replace(/- /g, "");
+
                     for (const item of abreviaturas) {
                         response.significado = response.significado.split(item.abreviatura).join("<span style='color:" + item.color + "; font-weight: bold'>" + item.abreviatura + "</span>");
                     }

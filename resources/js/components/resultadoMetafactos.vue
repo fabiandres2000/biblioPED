@@ -4,7 +4,7 @@
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
                 <div class="content-header row">
-                    <div class="content-header-left col-md-6 col-12 mb-2">
+                    <div  style="display: flex; flex-direction: column; justify-content: center;" class="content-header-left col-md-6 col-12 mb-2">
                         <h3 class="content-header-title mb-0">
                             Resultado de la búsqueda
                         </h3>
@@ -15,15 +15,16 @@
                                         <a @click.prevent="getAboutLink(0)" href="#">Inicio</a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="#">Busqueda</a>
+                                        <a href="#">Búsqueda</a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="#">Busqueda de Imagenes</a>
+                                        <a href="#">Búsqueda de Imágenes</a>
                                     </li>
                                 </ol>
                             </div>
                         </div>
                     </div>
+                    <headerColegio></headerColegio>
                 </div>
                 <div class="content-body">
                     <!-- Search form-->
@@ -124,17 +125,19 @@
 </template>
 <script>
 import * as busquedaService from "../services/busqueda";
-import Skeleton from './skeleton/skeletonImagen.vue';
+import Skeleton from './skeleton/skeletonImagen';
 import cheerio from 'cheerio';
-import TipoBusqueda from './tipoBusqueda.vue';
+import TipoBusqueda from './tipoBusqueda';
 import 'vue-inner-image-zoom/lib/vue-inner-image-zoom.css';
-import InnerImageZoom from 'vue-inner-image-zoom'
+import InnerImageZoom from 'vue-inner-image-zoom';
+import headerColegio from './header/header'
 
 export default {
     components: {
         Skeleton,
         TipoBusqueda,
-        InnerImageZoom
+        InnerImageZoom,
+        headerColegio
     },
     data() {
         return {

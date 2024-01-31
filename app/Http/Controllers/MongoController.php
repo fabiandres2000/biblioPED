@@ -102,7 +102,7 @@ class MongoController extends Controller
            
 
             $match2 = ['$match' => [
-                'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
+                'contenido_texto' => ['$regex' => " ".$variable1." ", '$options' => 'i'],
                 'contenido_busqueda.id' => ['$nin' => $array_id]
             ]];
 
@@ -129,10 +129,9 @@ class MongoController extends Controller
 
             $resultados = array_merge($resultados1, $resultados2);
 
-            if(count($resultados) >= 1){
-
+            if(count($resultados) >= 3){
+                
                 $resultados = array_slice($resultados, $offset, 10); 
-
 
                 $palabra = $variable1;
     
@@ -154,7 +153,7 @@ class MongoController extends Controller
                 $palabrasArray = explode(' ', $variable1);
 
                 $palabrasFiltradas = array_filter($palabrasArray, function($palabra) {
-                    return mb_strlen($palabra) > 3;
+                    return mb_strlen($palabra) >= 3;
                 });
 
                 $match = ['$match' => [
@@ -220,7 +219,10 @@ class MongoController extends Controller
             if($variable2 == "imagenes"){
                 $resultados = $collection->aggregate([
                     ['$match' => [
-                        'titulo' => ['$regex' => $variable1, '$options' => 'i'],
+                        '$or' => [
+                            ['tema' => ['$regex' => $variable1, '$options' => 'i']],
+                            ['titulo' => ['$regex' => $variable1, '$options' => 'i']],
+                        ]
                     ]],
                     ['$project' => [
                         '_id' => 0,
@@ -479,7 +481,7 @@ class MongoController extends Controller
         }
        
         $match2 = ['$match' => [
-            'contenido_texto' => ['$regex' => $variable1, '$options' => 'i'],
+            'contenido_texto' => ['$regex' => " ".$variable1." ", '$options' => 'i'],
             'contenido_busqueda.id' => ['$nin' => $array_id]
         ]];
 
@@ -505,12 +507,12 @@ class MongoController extends Controller
         
         $numero_filas = count(array_merge($resultados1, $resultados2));
 
-        if($numero_filas < 1){
+        if($numero_filas < 3){
 
             $palabrasArray = explode(' ', $variable1);
 
             $palabrasFiltradas = array_filter($palabrasArray, function($palabra) {
-                return mb_strlen($palabra) > 3;
+                return mb_strlen($palabra) >= 3;
             });
 
             $numero_filas = 0;
@@ -830,5 +832,21 @@ class MongoController extends Controller
         $result = $collection->deleteMany($condiciones);
 
         return response()->json($result->getDeletedCount(), 200);
+    }
+
+    public function listarMentefactos(Request $request){
+        $collection = self::$mongoDB->selectCollection('multimedia');
+        $asignatura = $request->input("asignatura");
+
+
+        $condiciones = [
+            'asignatura' => $asignatura,
+            'tipo_multimedia' => 'metafacto'
+        ];
+          
+        $result = $collection->find($condiciones)->toArray();
+
+        return response()->json($result, 200);
+
     }
 }

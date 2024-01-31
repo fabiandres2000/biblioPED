@@ -103,7 +103,7 @@
                                     <input type="text" :id="'comentario'+index" style="border-radius: 40px !important; background-color: #404e670f" class="form-control" placeholder="Escribe una respuesta a este comentario....">
                                 </div>
                                 <div class="col-1" style="display: flex; align-items: center">
-                                    <button @click="responderComentario('comentario'+index, index)" style="width: 100%; background-color: #00b5b8 !important;" class="btn btn-success"><i style="color: #fff" class="fas fa-paper-plane"></i></button>
+                                    <button @click="responderComentario('comentario'+index, item._id.$oid)" style="width: 100%; background-color: #00b5b8 !important;" class="btn btn-success"><i style="color: #fff" class="fas fa-paper-plane"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -239,11 +239,10 @@
             async cancelarCambios(){
                 document.querySelector(".ql-editor").innerHTML = "";
             },
-            async responderComentario(elemento, index){
+            async responderComentario(elemento, id){
                 var valor = document.getElementById(elemento).value;
-                
                 var datos = {
-                    id_comentario: this.foro.comentarios[index]._id.$oid,
+                    id_comentario: id,
                     respuesta: valor,
                 }
 

@@ -53,8 +53,9 @@
                                                     <div class="user-action">
                                                         <div>
                                                             <div class="custom-control" style="display: flex; justify-content: center; align-items: center;">
-                                                                <button data-toggle="tooltip" data-placement="top" title="Eliminar Apunte" type="button" class="btn btn-outline-danger" @click="eliminarApunte(item2)"><i class="fas fa-trash"></i></button>
-                                                                <button data-toggle="tooltip" data-placement="top" title="Generar PDF" type="button" class="btn btn-outline-primary" @click="convertirHTMLtoPDF(item2)" style="margin-left: 10px"><i class="fas fa-file-pdf"></i></button>
+                                                                <button data-toggle="tooltip" data-placement="top" title="Generar PDF" type="button" class="btn btn-outline-primary" @click="convertirHTMLtoPDF(item2)"><i class="fas fa-file-pdf"></i></button>
+                                                                <a :href="'ver-apunte/'+item2.id_contenido+'/'+item2.tipo_contenido" data-toggle="tooltip" data-placement="top" title="Ver Apunte" type="button" class="btn btn-outline-success" style="margin-left: 10px"><i class="fas fa-eye"></i></a>
+                                                                <button data-toggle="tooltip" data-placement="top" title="Eliminar Apunte" type="button" class="btn btn-outline-danger" @click="eliminarApunte(item2)" style="margin-left: 10px"><i class="fas fa-trash"></i></button>
                                                             </div>
                                                         </div>
                                                     </div>

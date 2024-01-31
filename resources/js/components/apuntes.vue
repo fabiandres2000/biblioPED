@@ -17,15 +17,13 @@
                     <!-- Search form-->
                     <section id="search-website" class="card overflow-hidden">
                         <div class="card-header">
-                            <h4 class="card-title">Contenido encontrado</h4>
+                            <h4 class="card-title">Apunte</h4>
                             <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
                                     <li data-toggle="tooltip" data-placement="top" title="Retroceder"><a @click="goBack"><i class="fa-2x fas fa-arrow-left"></i></a></li>
-                                    <li data-toggle="tooltip" data-placement="top" title="Compartir"  v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalCompartir"><i class="fa-2x fas fa-share-alt"></i></a></li>
-                                    <li data-toggle="tooltip" data-placement="top" title="Crear Foro" v-if="sessionData.tipo_registro == 'docente'"><a type="button"  data-toggle="modal" data-target="#modalForo"><i class="fa-2x fas fa-comments"></i></a></li>
-                                    <li data-toggle="tooltip" data-placement="top" title="Marcar como favorito"><a @click="agregarFavorito"><i :class="favorito == true ? 'fas fa-star fa-2x' : 'fa-2x far fa-star'" :style="favorito ? 'color: #009c9f' : 'color: #404e67'"></i></a></li>
-                                    <li data-toggle="tooltip" data-placement="top" title="Maximizar"><a data-action="expand"><i class="fa-2x fas fa-compress"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Marcar como favorito"><a @click="agregarFavorito"><i :class="favorito == true ? 'fas fa-star fa-2x' : 'far fa-star fa-2x'" :style="favorito ? 'color: #009c9f' : 'color: #404e67'"></i></a></li>
+                                    <li data-toggle="tooltip" data-placement="top" title="Maximizar"><a data-action="expand"><i class="fas fa-compress fa-2x"></i></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -50,227 +48,7 @@
         </div>
         <button @click="guardarSeleccion" style="position: fixed; right: 20px; top: 84%; z-index: 100;" type="button" class="btn btn-float btn-float-lg btn-outline-primary btn-round">
             <i class="fa fa-save"></i>
-        </button>
-
-        <div class="modal fade text-left" id="modalCompartir" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true" data-backdrop="static">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #1976d2; color: white;">
-                        <h4 class="modal-title" id="myModalLabel17">Selecciona los estudiantes con los que deseas compartir este contenido</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-4">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="gradoSelect" name="grado" class="form-control">
-                                        <option value="">Seleccione un grado</option>
-                                        <option value="1">1º</option>
-                                        <option value="2">2º</option>
-                                        <option value="3">3º</option>
-                                        <option value="4">4º</option>
-                                        <option value="5">5º</option>
-                                        <option value="6">6º</option>
-                                        <option value="7">7º</option>
-                                        <option value="8">8º</option>
-                                        <option value="9">9º</option>
-                                        <option value="10">10º</option>
-                                        <option value="11">11º</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <div class="col-4">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="grupoSelect" name="grupo" class="form-control">
-                                        <option value="">Seleccione un grupo</option>
-                                        <option value="Grupo 1">Grupo 1</option>
-                                        <option value="Grupo 2">Grupo 2</option>
-                                        <option value="Grupo 3">Grupo 3</option>
-                                        <option value="Grupo 4">Grupo 4</option>
-                                        <option value="Grupo 5">Grupo 5</option>
-                                        <option value="Grupo 6">Grupo 6</option>
-                                        <option value="Grupo 7">Grupo 7</option>
-                                        <option value="Grupo 8">Grupo 8</option>
-                                        <option value="Grupo 9">Grupo 9</option>
-                                        <option value="Grupo 10">Grupo 10</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <div class="col-3" style="padding: 0">
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <select v-model="jornadaSelect" name="jornada" class="form-control">
-                                        <option value="">Jornada</option>
-                                        <option value="Mañana">Mañana</option>
-                                        <option value="Tarde">Tarde</option>
-                                        <option value="Continua">Continua</option>
-                                    </select>
-                                    <div class="form-control-position">
-                                        <i class="fas fa-sun"></i>
-                                    </div>
-                                </fieldset>
-
-                                <input type="hidden" name="tipo_registro" value="estudiante">
-                            </div>
-                            <div class="col-1" style="display: flex; height: 80%;">
-                                <button type="button" @click="filtrarEstudiantes(1)" class="btn btn-success"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="table-responsive">
-                            <table id="estudiantes_filtrados" class="table">
-                                <thead>
-                                    <tr>
-                                        <th><input type="checkbox" id="select-all" /></th>
-                                        <th>Nombre</th>
-                                        <th>Grupo</th>
-                                        <th>Grado</th>
-                                        <th>Jornada</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, index) in estudiantesFiltrados" :key="index">
-                                        <td></td>
-                                        <td>{{ item.nombre }}</td>
-                                        <td>{{ item.grupo }}</td>
-                                        <td>{{ item.grado }}</td>
-                                        <td>{{ item.jornada }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" @click="compartirContenido" class="btn btn-outline-primary"><i class="fas fa-share"></i> Compartir</button>
-                        <button type="button" @click="vaciarArray('#modalCompartir')" class="btn grey btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade text-left" id="modalForo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel17" aria-hidden="true" data-backdrop="static">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #1976d2; color: white;">
-                        <h4 class="modal-title" id="myModalLabel17">Crear Foro</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <h3 style="color: #ff425c;"><strong>1. </strong>Información general del foro</h3>
-                                <hr>
-                                <div class="row" style="margin: 0px">
-                                    <label for="pregunta"><strong>Título de tu foro</strong></label>
-                                    <input type="text" v-model="tituloForo" class="form-control" name="titulo_foro" id="titulo_foro">
-                                </div>
-                                <br>
-                                <div class="row" style="margin: 0px">
-                                    <label for="pregunta"><strong>Describe el tema de tu foto</strong></label>
-                                    <QuillEditor  style="height: 300px; width: 100%" theme="snow" toolbar="full" />
-                                </div>
-                            </div>  
-                            <div class="col-lg-6">
-                                <h3 style="color: #ff425c;"><strong>2. </strong>Selecciona los estudiantes para los cuales estará dirigido este foro</h3>
-                                <hr>
-                                <br>
-                                <div class="row">
-                                    <div class="col-4">
-                                        <fieldset class="form-group position-relative has-icon-left">
-                                            <select v-model="gradoSelect" name="grado" class="form-control">
-                                                <option value="">Seleccione un grado</option>
-                                                <option value="1">1º</option>
-                                                <option value="2">2º</option>
-                                                <option value="3">3º</option>
-                                                <option value="4">4º</option>
-                                                <option value="5">5º</option>
-                                                <option value="6">6º</option>
-                                                <option value="7">7º</option>
-                                                <option value="8">8º</option>
-                                                <option value="9">9º</option>
-                                                <option value="10">10º</option>
-                                                <option value="11">11º</option>
-                                            </select>
-                                            <div class="form-control-position">
-                                                <i class="fas fa-graduation-cap"></i>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                    <div class="col-4">
-                                        <fieldset class="form-group position-relative has-icon-left">
-                                            <select v-model="grupoSelect" name="grupo" class="form-control">
-                                                <option value="">Seleccione un grupo</option>
-                                                <option value="Grupo 1">Grupo 1</option>
-                                                <option value="Grupo 2">Grupo 2</option>
-                                                <option value="Grupo 3">Grupo 3</option>
-                                                <option value="Grupo 4">Grupo 4</option>
-                                                <option value="Grupo 5">Grupo 5</option>
-                                                <option value="Grupo 6">Grupo 6</option>
-                                                <option value="Grupo 7">Grupo 7</option>
-                                                <option value="Grupo 8">Grupo 8</option>
-                                                <option value="Grupo 9">Grupo 9</option>
-                                                <option value="Grupo 10">Grupo 10</option>
-                                            </select>
-                                            <div class="form-control-position">
-                                                <i class="fas fa-users"></i>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                    <div class="col-3" style="padding: 0">
-                                        <fieldset class="form-group position-relative has-icon-left">
-                                            <select v-model="jornadaSelect" name="jornada" class="form-control">
-                                                <option value="">Jornada</option>
-                                                <option value="Mañana">Mañana</option>
-                                                <option value="Tarde">Tarde</option>
-                                                <option value="Continua">Continua</option>
-                                            </select>
-                                            <div class="form-control-position">
-                                                <i class="fas fa-sun"></i>
-                                            </div>
-                                        </fieldset>
-
-                                        <input type="hidden" name="tipo_registro" value="estudiante">
-                                    </div>
-                                    <div class="col-1" style="display: flex; height: 80%;">
-                                        <button type="button" @click="filtrarEstudiantes(2)" class="btn btn-success"><i class="fas fa-search"></i></button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="table-responsive">
-                                    <table id="estudiantes_filtrados_foro" class="table">
-                                        <thead>
-                                            <tr>
-                                                <th><input type="checkbox" id="select-all-2" /></th>
-                                                <th>Nombre</th>
-                                                <th>Grupo</th>
-                                                <th>Grado</th>
-                                                <th>Jornada</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(item, index) in estudiantesFiltrados" :key="index">
-                                                <td></td>
-                                                <td>{{ item.nombre }}</td>
-                                                <td>{{ item.grupo }}</td>
-                                                <td>{{ item.grado }}</td>
-                                                <td>{{ item.jornada }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div> 
-                            </div>    
-                        </div>                      
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" @click="crearForo" class="btn btn-outline-primary"><i class="fas fa-share"></i> Crear Foro</button>
-                        <button type="button" @click="vaciarArray('#modalForo')" class="btn grey btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </button>     
     </div>
 </template>
 <script>
@@ -404,15 +182,16 @@ export default {
         BuscarContenido: async function () {
             this.loading = true;
             try {
-                await busquedaService.busquedaContenido(this.id, this.tipo).then(respuesta => {
-                    this.datos = respuesta.data.datos[0];
-                    document.title =  this.datos.titulo;
-                    this.contenido_html = this.datos.cont_documento;
+                await busquedaService.buscarApuntes(this.id, this.tipo).then(respuesta => {
+                    this.datos = respuesta.data;
+                    this.apunteContenido = respuesta.data;
+                    this.contenido_html = this.apunteContenido.data;
                     this.loading = false;
                     this.verificarFavorito();
                 });
             } catch (error) {
                 console.log(error);
+                this.loading = false;
             }
         },
         async verificarFavorito(){
@@ -423,7 +202,7 @@ export default {
         async agregarFavorito(){
             if(this.favorito == false){
                 const datos = {
-                    id: this.datos.id,
+                    id: parseInt(this.id),
                     titulo: this.datos.titulo,
                     ruta: 'contenido/'+this.id+'/'+this.tipo
                 };
@@ -438,7 +217,7 @@ export default {
                     }
                 });
             }else{
-                await usuarioService.eliminar_favorito(this.datos.id).then(respuesta => {
+                await usuarioService.eliminar_favorito(parseInt(this.id)).then(respuesta => {
                     var respuesta_ok = respuesta.data;
                     toastr.success(respuesta_ok);  
                     this.verificarFavorito(); 
@@ -531,79 +310,6 @@ export default {
                 }
             });
         },
-        async compartirContenido(){
-            this.arrayEstudiantesCompartir = [];
-
-            if(this.table != null){
-                var selectedData = this.table.rows({ selected: true }).data().toArray();
-                for (let index = 0; index < selectedData.length; index++) {
-                    const element = selectedData[index];
-                    var registro = this.estudiantesFiltrados.find((item) => item.nombre == element[1] && item.grupo == element[2] && item.grado == element[3] && item.jornada == element[4]);
-                    if(registro != null) {
-                        this.arrayEstudiantesCompartir.push(registro._id.$oid);
-                    }
-                }
-            }
-
-            var data = {
-                ids: this.arrayEstudiantesCompartir,
-                titulo: this.datos.titulo,
-                ruta: 'contenido/'+this.id+'/'+this.tipo
-            }
-
-            var tabla = this.table;
-
-            if(this.arrayEstudiantesCompartir.length > 0) {
-                await usuarioService.compartirContenido(data).then(respuesta => {
-                    this.vaciarArray('#modalCompartir');
-                    toastr.success(respuesta.data);
-                    setTimeout(()=>{
-                        tabla.rows().deselect();
-                    }, 300)
-                });
-            }else{
-                toastr.warning("¡Debe seleccionar al menos un estudiante!");
-            }
-        },
-        async crearForo(){
-            this.arrayEstudiantesCompartir = [];
-
-            if(this.table != null){
-                var selectedData = this.table.rows({ selected: true }).data().toArray();
-                for (let index = 0; index < selectedData.length; index++) {
-                    const element = selectedData[index];
-                    var registro = this.estudiantesFiltrados.find((item) => item.nombre == element[1] && item.grupo == element[2] && item.grado == element[3] && item.jornada == element[4]);
-                    if(registro != null) {
-                        this.arrayEstudiantesCompartir.push(registro._id.$oid);
-                    }
-                }
-            }
-
-            this.descripcionForo = document.querySelector(".ql-editor").innerHTML;
-
-            var data = {
-                ids: this.arrayEstudiantesCompartir,
-                id_contenido: this.datos.id,
-                tipo_contenido: this.tipo,
-                titulo: this.tituloForo,
-                descripcion: this.descripcionForo,
-                ruta: 'contenido/'+this.id+'/'+this.tipo
-            }
-
-            var tabla = this.table;
-
-            if(this.arrayEstudiantesCompartir.length > 0 && this.tituloForo != "" && this.descripcionForo != "") {
-                await usuarioService.crearForo(data).then(respuesta => {
-                    this.vaciarArray('#modalForo');
-                    toastr.success(respuesta.data);
-                    setTimeout(()=>{
-                        tabla.rows().deselect();
-                    }, 300)
-                });
-            }else{
-                toastr.warning("¡Debe seleccionar al menos un estudiante!");
-            }
-        },
         escondermostrar(){
             var div = document.getElementById("colores");
             if(this.escondido){
@@ -667,11 +373,12 @@ export default {
 }
 </script>
 <style>
+
     .list-inline li {
-        margin-left: 5px;
-        margin-right: 5px;
+        margin-left: 10px;
+        margin-right: 10px;
     }
-    
+
     #content{
         cursor: url('data:image/png;base64,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'), auto;
     }

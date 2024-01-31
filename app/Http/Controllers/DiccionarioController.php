@@ -18,6 +18,7 @@ use Smalot\PdfParser\Parser;
 
 use Goutte\Client as GoutteClient;
 
+
 require 'conexion.php';
 
 class DiccionarioController extends Controller{
@@ -165,6 +166,7 @@ class DiccionarioController extends Controller{
         $cache = [];
 
         $string_resultante = [];
+        $bandera = false;
 
         foreach ($palabras as $palabra) {
             if(strlen($palabra) > 2){
@@ -173,24 +175,30 @@ class DiccionarioController extends Controller{
                 if (isset($cache[$palabra])) {
                     $palabraMasSimilar = $cache[$palabra];
                 } else {
-                    
-                    $resultado = $collection->find();
+                    $palabra_existente = $collection->find(
+                        ['palabra' => $palabra],
+                    )->toArray();
+
+                    if(count($palabra_existente) > 0){
+                        $palabraMasSimilar = $palabra_existente[0]->palabra;
+                    }else{
+                        $resultado = $collection->find();
     
-                    $palabraMasSimilar = "";
-                    $distanciaEdicionMinima = PHP_INT_MAX;
-    
-                    foreach ($resultado as $documento) {
-                        $palabraEnColeccion = $documento->palabra;
-                        if(mb_strlen($palabra, 'UTF-8') == mb_strlen($palabraEnColeccion, 'UTF-8')){
+                        $palabraMasSimilar = "";
+                        $distanciaEdicionMinima = PHP_INT_MAX;
+        
+                        foreach ($resultado as $documento) {
+                            $palabraEnColeccion = $documento->palabra;
                             $distanciaEdicion = levenshtein($palabra, $palabraEnColeccion);
                             if ($distanciaEdicion < $distanciaEdicionMinima) {
                                 $distanciaEdicionMinima = $distanciaEdicion;
                                 $palabraMasSimilar = $palabraEnColeccion;
                             }
                         }
-                    }
-    
-                    $cache[$palabra] = $palabraMasSimilar;
+        
+                        $cache[$palabra] = $palabraMasSimilar;
+                        $bandera = true;
+                    }                    
                 }
     
                 if ($palabraMasSimilar !== "") {
@@ -209,8 +217,6 @@ class DiccionarioController extends Controller{
 
 
         $concatenado = implode(' ', $string_resultante);
-        
-        $bandera = true;
 
         return response()->json(
             [
@@ -254,7 +260,10 @@ class DiccionarioController extends Controller{
 
     public function buscarPalabraDiccionario(Request $request){
         $palabra_r = $request->input("palabra");
-        $palabra_similar = self::palabraAproximadaDiccionario($palabra_r);
+
+        $singularWord = Str::singular($palabra_r);
+
+        $palabra_similar = self::palabraAproximadaDiccionario($singularWord);
 
         $collection_diccionario = self::$mongoDB->selectCollection('diccionario');
 
@@ -290,14 +299,25 @@ class DiccionarioController extends Controller{
             $significado = $palabra_encontrada->significado;
         }
 
+
+        if($palabra_encontrada != null){
+            return [
+                "mensaje_opcional" => $mensaje_opcional,
+                "significado" => $significado,
+                "bandera" => $bandera,
+                "imagenes" => $palabra_encontrada->imagenes,
+                "sugerencias" => $bandera2 == true ?  $palabra_similar[1] : []
+            ];
+        }else{
+            return [
+                "mensaje_opcional" => $mensaje_opcional,
+                "significado" => $significado,
+                "bandera" => $bandera,
+                "imagenes" => [],
+                "sugerencias" => $bandera2 == true ?  $palabra_similar[1] : []
+            ];
+        }
         
-        return [
-            "mensaje_opcional" => $mensaje_opcional,
-            "significado" => $significado,
-            "bandera" => $bandera,
-            "imagenes" => $palabra_encontrada->imagenes,
-            "sugerencias" => $bandera2 == true ?  $palabra_similar[1] : []
-        ];
     }
 
     public function palabraAproximadaDiccionario($palabras) {
@@ -364,9 +384,12 @@ class DiccionarioController extends Controller{
         $collection_diccionario = self::$mongoDB->selectCollection('diccionario');
 
         $palabra_encontrada = $collection_diccionario->find(
-            [], 
-            [ 'skip' => 48713 ],
-        );
+            [],
+            [
+                'skip' => 5000,
+                'limit' => 15000,
+            ]
+        )->toArray();
 
         foreach ($palabra_encontrada as $documento) {
             $query = $documento->palabra;

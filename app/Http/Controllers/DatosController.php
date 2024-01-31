@@ -215,7 +215,12 @@ class DatosController extends Controller
 
     public function migrarMetafactos()
     {
+        $collection = self::$mongoDB->selectCollection('multimedia');
         
+              
+        $collection->deleteMany([
+            'tipo_multimedia' => "metafacto"
+        ]);
 
         $resultados = DB::table('imagenes_moduloe as ime')
         ->select('ime.id', 'ime.imagen', 'tme.titulo', 'ame.nombre', 'ame.grado')
@@ -236,8 +241,6 @@ class DatosController extends Controller
                 'fecha' => date('d/m/Y'),
                 'horas' => date('H:i:s'),
             ];
-
-            $collection = self::$mongoDB->selectCollection('multimedia');
 
             $collection->insertOne($dato);
         }

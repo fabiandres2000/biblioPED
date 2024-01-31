@@ -8,7 +8,7 @@
                 </li>
                 <li class="nav-item">
                     <a :class="tipo == 'imagenes' ? 'nav-link active' : 'nav-link'" @click.prevent="getAboutLink(2)"><i class="fa fa-file-image-o"></i>
-                        Imagenes</a>
+                        Imágenes</a>
                 </li>
                 <li class="nav-item">
                     <a :class="tipo == 'videos' ? 'nav-link active' : 'nav-link'" @click.prevent="getAboutLink(3)"><i class="fa fa-file-video-o"></i>
@@ -16,7 +16,7 @@
                 </li>
                 <li class="nav-item">
                     <a :class="tipo == 'metafactos' ? 'nav-link active' : 'nav-link'" @click.prevent="getAboutLink(4)"><i class="fa fa-file-video-o"></i>
-                        Metafactos</a>
+                        Mentefactos</a>
                 </li>
             </ul>
         </div>

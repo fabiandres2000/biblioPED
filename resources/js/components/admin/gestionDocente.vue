@@ -132,9 +132,9 @@
                                                     <div class="row">
                                                         <div class="col-6">
                                                             <fieldset class="form-group position-relative has-icon-left">
-                                                                <input v-model="datosRegistro.correo" type="text" class="form-control" name="correo" placeholder="Ingrese un email" required>
+                                                                <input v-model="datosRegistro.correo" type="text" class="form-control" name="correo" placeholder="Ingrese un usuario" required>
                                                                 <div class="form-control-position">
-                                                                    <i class="feather icon-mail"></i>
+                                                                    <i class="feather icon-user"></i>
                                                                 </div>
                                                             </fieldset>
                                                         </div>

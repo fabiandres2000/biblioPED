@@ -5,21 +5,22 @@
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
                 <div class="content-header row">
-                    <div class="content-header-left col-md-6 col-12 mb-2">
+                    <div class="content-header-left col-md-6 col-12 mb-2" style="display: flex; flex-direction: column; justify-content: center;">
                         <h3 class="content-header-title mb-0">Resultado de la búsqueda</h3>
                         <div class="row breadcrumbs-top">
                             <div class="breadcrumb-wrapper col-12">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="/">Inicio</a>
                                     </li>
-                                    <li class="breadcrumb-item"><a href="/">Busqueda</a>
+                                    <li class="breadcrumb-item"><a href="/">Búsqueda</a>
                                     </li>
-                                    <li class="breadcrumb-item"><a href="/">Busqueda de Contenido</a> 
+                                    <li class="breadcrumb-item"><a href="/">Búsqueda de Contenido</a> 
                                     </li>
                                 </ol>
                             </div>
                         </div>
                     </div>
+                    <headerColegio></headerColegio>
                 </div>
                 <div class="content-body">
                     <!-- Search form-->
@@ -70,7 +71,7 @@
                                             <li style="padding-left: 15px; margin-top: 20px;"  v-for="(item, index) in datos" :key="index" class="row item_lista">
                                                 <p class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
                                                 <div class="col-md-4 col-sm-12">
-                                                    <video :key="'video'+index" width="270" height="200" controls>
+                                                    <video :key="'video'+index" width="350" height="190" controls>
                                                         <source :src="'/videos/'+item.contenido_busqueda.ruta" type="video/mp4">
                                                         <source :src="'/videos/'+(item.contenido_busqueda.ruta.split('.')[0])+'.ogg'" type="video/ogg">
                                                     </video>
@@ -83,7 +84,7 @@
                                                         <li><strong>Grado {{ item.contenido_busqueda.grado }}°</strong></li>
                                                         <li>{{ item.contenido_busqueda.fecha }}</li>
                                                     </ul>
-                                                    <p>{{ item.contenido_busqueda.parrafo }}</p>
+                                                    <p style="color: #131414">{{ item.contenido_busqueda.parrafo }}</p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -165,13 +166,15 @@
 import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
 import TipoBusqueda from './tipoBusqueda.vue';
-import filtro from './filtro/filtro.vue'
+import filtro from './filtro/filtro.vue';
+import headerColegio from './header/header'
 
 export default {
     components: {
         Skeleton,
         TipoBusqueda,
-        filtro
+        filtro,
+        headerColegio
     },
     data() {
         return {

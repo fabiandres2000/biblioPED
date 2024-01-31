@@ -12,6 +12,8 @@ use App\Http\Controllers\DatosController;
 use App\Http\Controllers\ExportarController;
 use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\DiccionarioController;
+use App\Http\Controllers\PalabrasBDController;
+
 
 use Illuminate\Http\Request;
 
@@ -119,8 +121,13 @@ Route::prefix('api')->group(function () {
     Route::post('/editar-publicacion', [ComunidadController::class, 'editarPublicacion'])->name('editarPublicacion');
     Route::get('/eliminar-post', [ComunidadController::class, 'eliminarPost'])->name('eliminarPost');
     Route::post('/me-gusta', [ComunidadController::class, 'meGusta'])->name('meGusta');
-    Route::get('/publicacion-get', [ComunidadController::class, 'publicacionGet'])->name('publicacionGet');
-    
+    Route::get('/info-post', [ComunidadController::class, 'infoPost'])->name('infoPost');
+    Route::get('/numero-posts', [ComunidadController::class, 'numeroPost'])->name('numeroPost');
+    Route::post('/me-gusta-comentario', [ComunidadController::class, 'meGustaComentario'])->name('meGustaComentario');
+    Route::post('/guardar-respuesta-comentario-post', [ComunidadController::class, 'guardarRespuestaComentarioPost'])->name('guardarRespuestaComentarioPost');
+    Route::get('/eliminar-respuesta-comentario', [ComunidadController::class, 'eliminarRespuestaComentario'])->name('eliminarRespuestaComentario');
+    Route::post('/editar-respuesta-comentario-post', [ComunidadController::class, 'editarRespuestaComentarioPost'])->name('editarRespuestaComentarioPost');
+    Route::post('/editar-comentario-post', [ComunidadController::class, 'editarComentarioPost'])->name('editarComentarioPost');
     
     Route::get('/diccionario', [DiccionarioController::class, 'leerDiccionario'])->name('palabras_tilde');
     Route::get('/corregir-cadena', [DiccionarioController::class, 'palabraAproximada'])->name('verificarTildes');
@@ -129,6 +136,12 @@ Route::prefix('api')->group(function () {
     Route::get('/buscar-palabra-diccionario', [DiccionarioController::class, 'buscarPalabraDiccionario'])->name('buscarPalabraDiccionario');
     Route::get('/insertar-palabras', [DiccionarioController::class, 'insertarPalabras'])->name('insertarPalabras');
     Route::get('/insertar-imagenes', [DiccionarioController::class, 'insertarImagenes'])->name('insertarImagenes');
+
+    Route::get('/insertar-palabras-bd', [PalabrasBDController::class, 'procesarArchivoTxt'])->name('procesarArchivoTxt');
+    Route::get('/limpiar-bd', [PalabrasBDController::class, 'limpiarBD'])->name('limpiarBD');
+    Route::get('/insertar-palabras-tilde-bd', [PalabrasBDController::class, 'palabras_tilde'])->name('palabras_tilde');
+    
+    Route::get('/listar-mentafactos', [MongoController::class, 'listarMentefactos'])->name('listarMentefactos');
 });
 
 Route::get('/{any}', function () {

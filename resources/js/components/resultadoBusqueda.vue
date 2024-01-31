@@ -5,21 +5,22 @@
             <div class="content-overlay"></div>
             <div class="content-wrapper" style="padding: 0.8rem">
                 <div class="content-header row">
-                    <div class="content-header-left col-md-6 col-12 mb-2">
+                    <div style="display: flex; flex-direction: column; justify-content: center;" class="content-header-left col-md-6 col-12 mb-2">
                         <h3 class="content-header-title mb-0">Resultado de la búsqueda</h3>
                         <div class="row breadcrumbs-top">
                             <div class="breadcrumb-wrapper col-12">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="/">Inicio</a>
                                     </li>
-                                    <li class="breadcrumb-item"><a href="/">Busqueda</a>
+                                    <li class="breadcrumb-item"><a href="/">Búsqueda</a>
                                     </li>
-                                    <li class="breadcrumb-item"><a href="/">Busqueda de Contenido</a> 
+                                    <li class="breadcrumb-item"><a href="/">Búsqueda de Contenido</a> 
                                     </li>
                                 </ol>
                             </div>
                         </div>
                     </div>
+                    <headerColegio></headerColegio>
                 </div>
                 <div class="content-body">
                     <!-- Search form-->
@@ -70,7 +71,7 @@
                                             <li v-for="(item, index) in datos" class="media" style="display: flex; justify-content: center; align-items: center;">
                                                 <div class="media-body media-search" style="max-width: 75%;">
                                                     <p class="lead mb-0"><a :href="'/contenido/'+item.contenido_busqueda.id_contenido+'/'+item.contenido_busqueda.tipo_contenido"><span class="text-bold-600 under">{{ item.contenido_busqueda.titulo }}</span></a></p>
-                                                    <p v-html="item.parrafo"></p>
+                                                    <p v-html="item.parrafo" style="color: #131414"></p>
                                                     <ul class="list-inline list-inline-pipe text-muted">
                                                         <li> Grado {{ item.contenido_busqueda.grado }}º</li>
                                                         <li><strong>{{ item.contenido_busqueda.tipo_contenido == "N" ? "Asignatura" : "Módulo Transversal" }}</strong></li>
@@ -169,12 +170,14 @@ import * as busquedaService from "../services/busqueda";
 import Skeleton from './skeleton/skeleton.vue';
 import TipoBusqueda from './tipoBusqueda.vue'
 import filtro from './filtro/filtro.vue'
+import headerColegio from './header/header'
 
 export default {
     components: {
         Skeleton,
         TipoBusqueda,
-        filtro
+        filtro,
+        headerColegio
     },
     data() {
         return {

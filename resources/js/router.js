@@ -22,7 +22,8 @@ import ResultadoMetafactos from './components/resultadoMetafactos.vue'
 import miComunidad from './components/miComunidad/miComunidad.vue'
 import publicacion from './components/miComunidad/publicacion.vue'
 import dashboard from './components/admin.vue'
-
+import bancoMentefactos from './components/mentefactos.vue'
+import verApuntes from './components/apuntes.vue'
 
 const routes = [
   {
@@ -140,6 +141,16 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: dashboard
+  },
+  {
+    path: '/banco-mentefactos',
+    name: 'bancoMentefactos',
+    component: bancoMentefactos
+  },
+  {
+    path: '/ver-apunte/:id/:tipo',
+    name: 'verApuntes',
+    component: verApuntes
   },
 ]
 
