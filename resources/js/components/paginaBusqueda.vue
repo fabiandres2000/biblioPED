@@ -32,7 +32,7 @@
                                                 <option class="text-left" value="contenido"><i class="feather icon-globe"></i> Buscar Contenido</option>
                                                 <option class="text-left" value="imagenes"><i class="fa fa-file-image-o"></i> Buscar Imagenes</option>
                                                 <option class="text-left" value="videos"><i class="feather icon-video"></i> Buscar Videos</option>
-                                                <option class="text-left" value="metafactos"><i class="feather icon-video"></i> Buscar Metafactos</option>
+                                                <option class="text-left" value="metafactos"><i class="feather icon-video"></i> Buscar Mentefactos</option>
                                             </select>
                                         </div>
                                     </div>

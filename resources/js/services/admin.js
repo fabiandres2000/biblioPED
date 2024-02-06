@@ -105,3 +105,19 @@ export function obtenerdatos() {
 export function estadisticaData() {
     return http().get('/api/estadisticaData');
 }
+
+export function infoColegio() {
+    return http().get('/api/info-colegio');
+}
+
+export function editarInfoColegio($data) {
+    return http().post(
+        '/api/editar-info-colegio', 
+        $data, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}

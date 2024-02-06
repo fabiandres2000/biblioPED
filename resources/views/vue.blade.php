@@ -66,6 +66,8 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('css/form_login_multi.css') }}">
 
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/users.css') }}">
+
     <style>
         body {
             overflow-x: hidden
@@ -158,6 +160,10 @@
             border-color: #f0d664 !important;
             background-color: #f0d664 !important;
             color: #1b2942 !important;
+        }
+
+        #toast-container > div {
+            opacity:1;
         }
     </style>
 </head>

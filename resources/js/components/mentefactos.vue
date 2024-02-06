@@ -238,7 +238,7 @@ export default {
         font-size: 25px;
         position: relative;
         margin-top: 44px;
-        left: 76%;
+        left: 70%;
     }
 
     .loader {

@@ -23,8 +23,7 @@ class AdminController extends Controller
     protected static $mongoClient;
     protected static $mongoDB;
 
-    public function __construct()
-    {
+    public function __construct(){
         $instanciaConexion = new ClaseConexion();
 
         if (!isset(self::$mongoClient)) {
@@ -639,8 +638,6 @@ class AdminController extends Controller
         return 1;
     }
 
-
-
     public function listarEstudiantes(){
         
         $collection = self::$mongoDB->selectCollection('usuarios');
@@ -659,7 +656,6 @@ class AdminController extends Controller
 
         return response()->json( $usuarios, 200);
     }
-
 
     public function registroEstudiante(Request $request){
        
@@ -700,7 +696,6 @@ class AdminController extends Controller
 
     }
 
-
     public function editarEstudiante(Request $request){
         $collection = self::$mongoDB->selectCollection('usuarios');
 
@@ -735,8 +730,6 @@ class AdminController extends Controller
         );
         return response()->json(["Estudiante modificado corectamente.", 1, "estudiante"], 200);
     }
-
-
 
     public function datosDashboard(){
         
@@ -965,7 +958,6 @@ class AdminController extends Controller
         return response()->json( $datos, 200);
     }
 
-
     public function mapaCalor(){
         $collectionBusquedas = self::$mongoDB->selectCollection('busquedas_globales');
 
@@ -1049,7 +1041,6 @@ class AdminController extends Controller
         return $datos;
 
     }
-
 
     public function partir_por_horas($dia, $datos){
 
@@ -1141,5 +1132,47 @@ class AdminController extends Controller
         }
 
         return $array;
+    }
+
+    public function infoColegio(){
+        $collection = self::$mongoDB->selectCollection('institucion');
+
+        $datos = [];
+        
+        $datos = $collection->findOne();
+
+        return response()->json($datos);
+
+    }
+
+    public function editarInfoColegio(Request $request){
+        $collection = self::$mongoDB->selectCollection('institucion');
+
+        $idInstitucion = $request->input('id_institucion');
+        $infoColegio = json_decode($request->input('infoColegio'), true);
+        $logoImagen = $request->file('logoImagen');
+        $portadaImagen = $request->file('portadaImagen');
+
+        if ($logoImagen !== null) {
+            $logoImagen->move(public_path('img/colegio'), 'logo_colegio.png');
+        }
+        
+        if ($portadaImagen !== null) {
+            $portadaImagen->move(public_path('img/colegio'), 'portada_colegio.png');
+        }
+
+        $resultado = $collection->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectID($idInstitucion)], 
+            [            
+                '$set' => [
+                    'nombre' => $infoColegio['nombre'],
+                    'sede' => $infoColegio['sede'],
+                    'municipio' => $infoColegio['municipio'],
+                    'departamento' => $infoColegio['departamento'],
+                ]
+            ]
+        );
+
+        return response()->json(["¡La información ficada correctamente!", 1], 200);
     }
 }

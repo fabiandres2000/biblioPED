@@ -1,8 +1,7 @@
 <template lang="">
     <div>
         <div class="row" style="padding-top: 20px; background-image: url('/img/fondo_social.png'); background-size: 100% 780px; background-repeat-y: repeat;">
-            <div class="col-1"></div>
-            <div class="col-10">
+            <div id="cuerpo_pagina" class="col-12" style="padding-left: 120px; padding-right: 120px">
                 <div class="app-content content">
                 <div class="content-overlay"></div>
                 <div class="content-wrapper">
@@ -10,21 +9,21 @@
                     </div>
                     <div class="content-body">
                         <div id="user-profile">
-                            <div class="row">
+                            <div v-if="!loading" class="row">
                                 <div class="col-12">
                                     <div class="card profile-with-cover">
-                                        <div class="card-img-top img-fluid bg-cover height-300" style="background: url('/img/comunidad/upc_baner.png') 50%;"></div>
+                                        <div class="card-img-top img-fluid bg-cover height-300" :style="'background: url('+infoColegio.portada+') 50%;'"></div>
                                         <div class="media profil-cover-details w-100">
                                             <div class="media-left pl-2 pt-2" style="margin-top: 20px">
                                                 <a href="#" class="profile-image">
-                                                    <img src="/img/comunidad/logo.png" class="rounded-circle img-border height-100" alt="Card image">
+                                                    <img :src="infoColegio.logo" class="rounded-circle img-border height-100" alt="Card image">
                                                 </a>
                                             </div>
                                             <div class="media-body pt-4 px-2">
                                                 <div class="row">
                                                     <div class="col" style="padding-top: 35px;">
-                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">colegio Nacional Loperena</h3>
-                                                        <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">Sede - Principal</h3>
+                                                        <h3 style="margin-bottom: 7px; font-size: 1.2rem; color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">{{infoColegio.nombre}}</h3>
+                                                        <h3 style="font-size: 1.2rem;  color: #009199; font-weight: bold; text-shadow: none" class="card-title titulo_principal">Sede - {{infoColegio.sede}}</h3>
                                                     </div>
                                                     <div class="col text-right">
                                                         
@@ -51,7 +50,7 @@
                                 </div>
                             </div>
                             <div v-if="!loading">
-                                <div id="miembros" style="text-align: center; position: absolute; top: 472px;height: 600px; width: 31%; background-image: url('/img/podio.png')" class="miembrosComunidad">
+                                <div id="miembros" style="left: 25px; text-align: center; position: absolute; top: 472px;height: 545px; width: 400px; background-image: url('/img/podio.png'); background-size: 100% 100%" class="miembrosComunidad">
                                     <br>
                                     <h4 style="font-weight: bold; color: #323d51">Usuarios destacados <br> en tu comunidad </h4>
                                     <hr>
@@ -61,10 +60,10 @@
                                             <div class="card profile-card-with-stats" style="border-radius: 13px;">
                                                 <div class="text-center">
                                                     <div class="card-body" style="padding: 0;">
-                                                        <img :src="'/'+item.imagen" class="rounded-circle height-150" alt="Card image" style="height: 55px !important; margin: 4px;">
+                                                        <img :src="'/'+item.imagen" class="rounded-circle height-150" alt="Card image" style="height: 50px !important; margin: 4px;">
                                                     </div>
                                                     <div class="card-body" style="padding: 0.5rem; height: 52px">
-                                                        <h4 class="card-title" style="margin-bottom: 6px;font-size: 13px;">{{item.nombre}}</h4>
+                                                        <h4 class="card-title" style="margin-bottom: 6px;font-size: 10px;">{{item.nombre}}</h4>
                                                     </div>
                                                     <div class="btn-group" role="group" aria-label="Profile example" style="margin-bottom: 10px;">
                                                         <button style="padding: 3px; width: 49px;" type="button" class="btn btn-float box-shadow-0 btn-outline-info">
@@ -88,7 +87,7 @@
                                         <section id="timeline" class="timeline-center timeline-wrapper">
                                             <h3 class="page-title text-center">Últimas publicaciones</h3>
                                             <hr>
-                                            <ul>                                   
+                                            <ul v-if="datos.length != 0">                                   
                                                 <li v-for="(item, index) in datos" :key="index" class="timeline-item" style="border-radius: 20px; position: relative">
                                                     <div class="opciones_comentario">
                                                         <div class="btn-group mr-1 mb-1">
@@ -123,7 +122,7 @@
                                                             <div class="card-content">
                                                                 <div class="card-body">
                                                                     <p class="card-text letra_publicacion" style="font-size: 20px;font-weight: bold;color: rgb(89, 87, 87);line-height: 24px;">{{ item.detalle }}</p>
-                                                                    <img style="margin-bottom: 20px" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
+                                                                    <img @click="verImagenZoom('/imagenes_comunidad/'+item.imagen)" style="margin-bottom: 20px; cursor: pointer" v-if="item.imagen != ''" class="img-fluid" :src="'/imagenes_comunidad/'+item.imagen" alt="Timeline Image 1">
                                                                     <ul class="list-inline">
                                                                         <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-if="!item.like" class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-o-up"></span> ({{ item.likes.length }})</a></li>
                                                                         <li @mouseover="mostrarDivMegusta(index)" @mouseout="ocultarDivMegusta(index)" v-else class="pr-1"><a href="" @click.prevent="meGustaPost(item._id.$oid)" class="" type="button"><span class="fa fa-thumbs-up"></span> ({{ item.likes.length }}) Me gusta </a></li>
@@ -194,18 +193,18 @@
                                                                     </div>
                                                                     <a  data-toggle="modal" data-target="#modalPublicacion" @click.prevent="verTodosComentarios(index)" style="margin-left: 30px" href="" v-if="item.comentarios.length > 3">Mostrar todos los comentarios({{ item.comentarios.length - 3 }})</a>
                                                                 </div>                                                        
-                                                                <div class="card-body" style="padding-top: 0px; height: 60px">
-                                                                    <div class="alert alert-success" v-if="responderActivo">
-                                                                        <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="responderActivo = false" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
+                                                                <div class="card-body" style="padding-top: 0px;">
+                                                                    <div :id="'respondiendo_'+item._id.$oid" class="alert alert-success" style="display: none">
+                                                                        <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="cancelarResponder" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
                                                                     </div>
                                                                     <fieldset class="form-group position-relative has-icon-left mb-0">
-                                                                        <input @click='setIdPublicacion(item._id.$oid, index)' :id="'inputComentario'+index" type="text" class="form-control" placeholder="Write comments...">
+                                                                        <input @click='setIdPublicacion(item._id.$oid, index)' :id="'inputComentario'+index" type="text" class="form-control" placeholder="Escribe tu comentario...">
                                                                         <div style="top: 7px; left: 4px" class="form-control-position">
                                                                             <i @click="mostrarEmojis(index)" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
                                                                         </div>
                                                                         <i @click="guardarComentario"  class="comentar fas fa-paper-plane"></i>
                                                                     </fieldset>
-                                                                    <div :id="'EmojiPicker'+index" style="position: relative; top: -378px; right: -233px; display: none">
+                                                                    <div :id="'EmojiPicker'+index" style="position: absolute; position: absolute; bottom: 83px; right: 24px; display: none">
                                                                         <EmojiPicker 
                                                                             :disable-skin-tones="true"
                                                                             :native="true" 
@@ -222,6 +221,12 @@
                                                     </div>
                                                 </li>
                                             </ul>
+                                            <ul v-else>
+                                                <div style="text-align:center; border-radius: 10px; background-color: white; width: 100%; height: 700px; display: flex; justify-content: center; align-items: center; flex-direction: column">
+                                                    <img style="width: 400px; height: 400px;" src="/img/logo_1_3.png" alt="">
+                                                    <h1 style="color: #515151; font-weight: bold;">Aún no hay publicaciones</h1>
+                                                </div>
+                                            </ul>
                                         </section>
                                     </div>    
                                 </div> 
@@ -232,11 +237,10 @@
                 </div>
             </div>
             </div>
-            <div class="col-1"></div>
         </div>
 
         <div class="modal fade text-left" id="modalPublicacion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document" v-if="publiSeleccionada != null">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document" v-if="publiSeleccionada != null">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class="card-header" style="background-color: #a8dbc4; width: 100%">
@@ -294,7 +298,7 @@
                                             </div>
                                             <ul class="list-inline" style="margin-left: 20px">
                                                 <li class="pr-1"><a type="button" @click="likeComentario(publiSeleccionada._id.$oid, item2._id.$oid)" class=""><span :class=" item2.like_usuario == 0 ?'fa fa-thumbs-o-up' : 'fa fa-thumbs-up'"></span> ({{item2.likes.length}} Me gusta)</a></li>
-                                                <li @click="setIdPublicacionRespuesta(publiSeleccionada._id.$oid, item2)" class="pr-1"><a style="font-weight: bold; color: #009c9f; cursor: pointer" type="button" class=""> Responder </a></li>
+                                                <li @click="setIdPublicacionRespuestaModal(publiSeleccionada._id.$oid, item2)" class="pr-1"><a style="font-weight: bold; color: #009c9f; cursor: pointer" type="button" class=""> Responder </a></li>
                                                 <li class="pr-1"><strong> {{ item2.fechaFormateada }}</strong></li>
                                                 <li style="cursor: pointer" @click="verRespuestas('caja_respuestas_modal_'+item2._id.$oid)" v-if="item2.respuestas_comentario.length > 0" class="pr-1"><strong> {{ item2.respuestas_comentario.length }} Respuesta(s)</strong></li>                                                                                            
                                             </ul>
@@ -329,11 +333,11 @@
                         </div>
                         <div style="width: 100%; background-color: white; position: sticky; bottom: -7px;">
                             <div class="card-body" style="padding-top: 12px; height: 60px">   
-                                <div class="alert alert-success" v-if="responderActivo">
-                                    <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="responderActivo = false" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
+                                <div :id="'respondiendo_modal_'+publiSeleccionada._id.$oid" style="display: none" class="alert alert-success">
+                                    <p style="margin: 0px">Respondiendo comentario de <strong>{{comentarioResponder.usuario.nombre}}</strong> <strong @click="cancelarResponderModal" style="color: red; cursor: pointer">Cancelar<a href=""></a></strong></p>
                                 </div>                            
                                 <fieldset class="form-group position-relative has-icon-left mb-0">
-                                    <input @click='setIdPublicacion(publiSeleccionada._id.$oid, indexpubliSeleccionada)' :id="'inputComentario01'" type="text" class="form-control" placeholder="Write comments...">
+                                    <input @click='setIdPublicacion(publiSeleccionada._id.$oid, indexpubliSeleccionada)' :id="'inputComentario01'" type="text" class="form-control" placeholder="Escribe tu comentario...">
                                     <div style="top: 7px; left: 4px" class="form-control-position">
                                         <i @click="mostrarEmojis('01')" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
                                     </div>
@@ -358,7 +362,7 @@
         </div>
 
         <div class="modal fade text-left" id="modalNewPublicacion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
-            <div class="modal-dialog" role="document" style="margin-top: 9%">
+            <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title" id="myModalLabel18">Crear publicación</h4>
@@ -391,7 +395,7 @@
         </div>
 
         <div class="modal fade text-left" id="modalEditarPublicacion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document" v-if="publicacionEditar != null">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document" v-if="publicacionEditar != null">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class="card-header" style="background-color: #a8dbc4; width: 100%">
@@ -443,7 +447,7 @@
         </div>
 
         <div class="modal fade text-left" id="modalEditarComentario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel18" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document" v-if="comentarioSeleccionado != null">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document" v-if="comentarioSeleccionado != null">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class="card-header" style="background-color: #a8dbc4; width: 100%">
@@ -470,7 +474,7 @@
                         <div class="card-content">
                             <div class="card-body">
                                 <fieldset class="form-group position-relative has-icon-left mb-0">
-                                    <input v-model="comentarioSeleccionado.comentarioTexto" id="inputComentario001" type="text" class="form-control" placeholder="Write comments...">
+                                    <input v-model="comentarioSeleccionado.comentarioTexto" id="inputComentario001" type="text" class="form-control" placeholder="Escribe tu comentario...">
                                     <div style="top: 7px; left: 4px" class="form-control-position">
                                         <i @click="mostrarEmojis('001')" style="font-size: 1.6em; cursor: pointer" class="far fa-laugh-beam"></i>
                                     </div>
@@ -500,6 +504,27 @@
         <div @click="scrollToTop" v-if="nuevas_publicaciones" class="alert alert-warning" style="background-color: #0098d0 !important; width: fit-content;position: fixed;top: 92px;z-index: 20000;left: 45%;color: white !important;border-radius: 20px;border: 4px solid white !important;font-weight: bold; cursor: pointer">
             <i class="fas fa-arrow-up"></i> Hay ({{numero_nuevas_publicaciones}}) nuevas publicaciones
         </div>
+
+        <div class="modal fade text-left" id="modImagenZoom" tabindex="-1" role="dialog" aria-labelledby="myModalLabel15"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+                <div class="modal-content" style="height: 625px;">
+                    <div class="modal-body" style="height: 100%;">
+                        <div id='ListEval' style="width: 100%; height: 540px;overflow: auto;text-align: center;display: flex;justify-content: center;align-items: center;">
+                            <inner-image-zoom style="height: 500px;" zoomScale="1" :src="rutaSeleccionada" />
+                        </div>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button @click.prevent="descargarImagenZoom"  type="button" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i> Descargar</button>
+                            <button style="margin-left: 20px;" type="button" id="btn_salir" class="btn btn-danger" data-dismiss="modal"><i class="ft-corner-up-left position-right"></i><i class="fas fa-times"></i> Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button data-toggle="modal" data-target="#modalNewPublicacion" id="boton_arriba" style="display: none" class="btn btn-warning">
+            <i class="fas fa-comments fa-2x"></i>
+        </button>
     </div>
 </template>
 <script>
@@ -508,10 +533,14 @@ import EmojiPicker from 'vue3-emoji-picker'
 import 'vue3-emoji-picker/css'
 import * as usuarioService from "../../services/usuario";
 import Swal from 'sweetalert2';
+import InnerImageZoom from 'vue-inner-image-zoom';
+import * as adminService from "../../services/admin";
+
 
 export default {
     components: {
-        EmojiPicker
+        EmojiPicker,
+        InnerImageZoom
     },
     data() {
         return {
@@ -548,16 +577,24 @@ export default {
             nuevas_publicaciones: false,
             numero_nuevas_publicaciones: 0,
             padreComentarioResponder: 0,
-            comentarioResponder: null,
+            comentarioResponder: {
+                usuario: {
+                    nombre: ""
+                }
+            },
             responderActivo: false,
             comentarioSeleccionado: null,
             tipoeditarComentario: null,
             idPublicacionEditarComentario: null,
-            comentarioDesdeModal: false
+            comentarioDesdeModal: false,
+            rutaSeleccionada: "",
+            infoColegio: null,
         }
     },
     mounted() {
+        this.loading = true;
         this.verificarLogin();
+        this.infoColegioFunction();
         this.obtenerNumeroPublicaciones();
         if (window.innerWidth > 450) {
             window.addEventListener("scroll", this.actualizarPixelesDesplazados);
@@ -583,6 +620,11 @@ export default {
                 if(respuesta.data == 0){
                     navigate.push({ name: 'paginaBusqueda'})
                 }
+            });
+        },
+        async infoColegioFunction(){
+            await adminService.infoColegio().then(respuesta => {
+                this.infoColegio = respuesta.data;
             });
         },
         openFileInputPublicacion() {
@@ -628,15 +670,31 @@ export default {
                 $('#miembros').css({
                     'position': 'fixed',
                     'top': '11%',
-                    'height': '600px',
-                    'width': '25.7%'
+                    'height': '545px',
+                    'width': '400px',
+                    'left': '130px',
+                });
+
+                $('#boton_arriba').css({
+                    'position': 'fixed',
+                    'bottom': '71px',
+                    'right': '20px',
+                    'border-radius': '50%',
+                    'height': '70px',
+                    'width': '70px',
+                    'display': 'block',
                 });
             } else {
                 $('#miembros').css({
                     'position': 'absolute',
                     'top': '472px',
-                    'height': '600px',
-                    'width': '31%'
+                    'height': '545px',
+                    'width': '400px',
+                    'left': '25px',
+                });
+
+                $('#boton_arriba').css({
+                    'display': 'none'
                 });
             }
 
@@ -645,7 +703,6 @@ export default {
             }
         },
         async listarPublicaciones() {
-            this.loading = true;
             this.pagina_comentarios = 1;
             await comunidadService.listarPublicaciones(this.pagina_comentarios).then(respuesta => {
                 this.datos = respuesta.data;
@@ -740,7 +797,7 @@ export default {
                             }
                             toastr.success(respuesta_ok[0]);
                             this.infoPost();
-                            this.responderActivo = false;
+                            this.cancelarResponder();
                         } else {
                             toastr.error(respuesta_ok[0]);
                         }
@@ -808,7 +865,7 @@ export default {
                                     this.publiSeleccionada = respuesta.data;
                                 }
                             });
-                            this.responderActivo = false;
+                            this.cancelarResponderModal();
                         } else {
                             toastr.error(respuesta_ok[0]);
                         }
@@ -859,6 +916,7 @@ export default {
         async listarUsuariosComunidad() {
             await comunidadService.listarUsuariosComunidad().then(respuesta => {
                 this.usuariosComunidad = respuesta.data;
+                this.loading = false;
             });
         },
         verModalEditar(item){
@@ -1030,10 +1088,21 @@ export default {
                 this.listarPublicaciones3();
             }, 1010);
         },
+        setIdPublicacionRespuestaModal(id_publicacion ,item){
+            if(this.responderActivo != true){
+                this.responderActivo = true;
+                this.comentarioResponder = item;
+                this.padreComentarioResponder = id_publicacion;
+                $("#respondiendo_modal_"+this.padreComentarioResponder).toggle();
+            }
+        },
         setIdPublicacionRespuesta(id_publicacion ,item) {
-            this.responderActivo = true;
-            this.comentarioResponder = item;
-            this.padreComentarioResponder = id_publicacion;
+            if(this.responderActivo != true){
+                this.responderActivo = true;
+                this.comentarioResponder = item;
+                this.padreComentarioResponder = id_publicacion;
+                $("#respondiendo_"+this.padreComentarioResponder).toggle();
+            }
         },
         verRespuestas(id){
             $("#"+id).toggle();
@@ -1168,6 +1237,26 @@ export default {
             } else {
                 toastr.warning("¡No ha escrito nada en la caja de comentarios");
             }
+        },
+        verImagenZoom(rutaSeleccionada) {
+            this.rutaSeleccionada = rutaSeleccionada;
+            $("#modImagenZoom").modal("show");
+        },
+        async descargarImagenZoom() {
+            const link = document.createElement('a');
+            link.href = this.rutaSeleccionada;
+            link.download = "image.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+        cancelarResponder(){
+            this.responderActivo = false;
+            $("#respondiendo_"+this.padreComentarioResponder).toggle();
+        },
+        cancelarResponderModal(){
+            this.responderActivo = false;
+            $("#respondiendo_modal_"+this.padreComentarioResponder).toggle();
         }
     }
 };
@@ -1175,6 +1264,10 @@ export default {
 <style>
 .profile-card-with-stats .btn-float {
     padding: 8px 14px 4px 14px;
+}
+
+.iiz__img {
+    height: 100% !important;
 }
 
 .profile-card-with-cover .card-profile-image {
@@ -1322,7 +1415,7 @@ export default {
 .eliminarcomemntario {
     position: absolute;
     top: 20px;
-    right: 2px;
+    right: -10px;
     font-size: 15px;
     color: gray;
     cursor: pointer;
@@ -1515,4 +1608,13 @@ export default {
         cursor: pointer;
     }
 }
+
+@media (max-width: 1024px) {
+
+    #cuerpo_pagina {
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+    }
+}
+
 </style>

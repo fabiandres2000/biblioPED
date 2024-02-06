@@ -6,9 +6,10 @@
                     <li class=" navigation-header"><span>Menu General</span></li>
                     <hr>
                     <li class="nav-item"><a type="buton" @click="cambiar_tipo('Inicio')"><i class="fas fa-home"></i><span class="menu-title" data-i18n="Email Application">Inicio</span></a></li>
+                    <li class="nav-item"><a type="buton" @click="cambiar_tipo('GI')"><i class="fas fa-school"></i><span class="menu-title" data-i18n="Todo Application">Gestión Institución</span></a></li>
                     <li class="nav-item"><a type="buton" @click="cambiar_tipo('GD')"><i class="fas fa-chalkboard-teacher"></i><span class="menu-title" data-i18n="Email Application">Gestión Docente</span></a></li>
                     <li class="nav-item"><a type="buton" @click="cambiar_tipo('GE')"><i class="fas fa-user-graduate"></i><span class="menu-title" data-i18n="Chat Application">Gestión Estudiante</span></a></li>
-                    <li class="nav-item"><a type="buton" @click="cambiar_tipo('Estadistica')"><i class="fas fa-chart-pie"></i><span class="menu-title" data-i18n="Todo Application">Estadistica</span></a></li>
+                    <li class="nav-item"><a type="buton" @click="cambiar_tipo('Estadistica')"><i class="fas fa-chart-pie"></i><span class="menu-title" data-i18n="Todo Application">Estadística</span></a></li>
                 </ul>
             </div>
         </div>
@@ -22,6 +23,7 @@
                     <gestionDocente v-if="tipoMostrado == 'GD'"></gestionDocente>
                     <gestionEstudiante v-if="tipoMostrado == 'GE'"></gestionEstudiante>
                     <estadistica v-if="tipoMostrado == 'Estadistica'"></estadistica>
+                    <gestionInstitucion v-if="tipoMostrado == 'GI'"></gestionInstitucion>
                 </div>
             </div>
         </div>
@@ -32,6 +34,7 @@ import Inicio from "./admin/inicio.vue";
 import gestionDocente from "./admin/gestionDocente.vue";
 import gestionEstudiante from "./admin/gestionEstudiante.vue";
 import estadistica from "./admin/estadistica.vue";
+import gestionInstitucion from "./admin/gestionInstitucion.vue";
 
 import * as usuarioService from "../services/usuario";
 
@@ -40,7 +43,8 @@ export default {
         Inicio,
         gestionDocente,
         gestionEstudiante,
-        estadistica
+        estadistica,
+        gestionInstitucion
     },
     data() {
         return {

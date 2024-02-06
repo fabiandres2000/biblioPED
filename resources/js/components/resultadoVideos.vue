@@ -58,7 +58,7 @@
                             <!--Search Result-->
                             <div id="search-results" class="card-body">
                                 <div class="row">
-                                    <div class="col-10 col-md-10">
+                                    <div class="col-11 col-md-11">
                                         <p style="padding-left: 18px" class="text-muted font-small-3">Cerca de {{ paginacion.numero_registros }} resultados ({{ tiempoConsulta  }} segundos) </p>
                                         <ul class="media-list p-0">
                                             <!--search with image-->
@@ -69,15 +69,15 @@
                                                 <i class="fas fa-filter"></i>
                                             </button>
                                             <li style="padding-left: 15px; margin-top: 20px;"  v-for="(item, index) in datos" :key="index" class="row item_lista">
-                                                <p class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
+                                                <p style="margin-bottom: 20px !important;" class="lead mb-0 col-12"><a href="#"><span class="text-bold-600">{{ item.contenido_busqueda.tema }}</span></a></p>
                                                 <div class="col-md-4 col-sm-12">
-                                                    <video :key="'video'+index" width="350" height="190" controls>
+                                                    <video :key="'video'+index" style="width: 100%;" height="190" controls>
                                                         <source :src="'/videos/'+item.contenido_busqueda.ruta" type="video/mp4">
                                                         <source :src="'/videos/'+(item.contenido_busqueda.ruta.split('.')[0])+'.ogg'" type="video/ogg">
                                                     </video>
 
                                                 </div>
-                                                <div style="padding-top: 20px;" class="col-md-8 col-sm-12">
+                                                <div style="padding-left: 40px;" class="col-md-8 col-sm-12">
                                                     <p class="mb-0"><a :href="'/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido ==  'asignatura' ? 'N' : 'T')" class="teal darken-1">{{ '/contenido/'+item.contenido_busqueda.id_original+'/'+(item.contenido_busqueda.tipo_contenido == "asignatura" ? 'N' : 'T')  }}<span class="text-bold-600"></span> <i class="fa fa-angle-down" aria-hidden="true"></i></a></p>
                                                     <ul class="list-inline list-inline-pipe text-muted">
                                                         <li><strong>{{ item.contenido_busqueda.asignatura }}</strong></li>
@@ -405,7 +405,7 @@ export default {
 
     #boton_filtro_video {
         position: absolute;
-        right: -179px;
+        right: -82px;
         top: -17px;
     }
 </style>

@@ -93,6 +93,8 @@ Route::prefix('api')->group(function () {
     Route::post('/editar-estudiante', [AdminController::class, 'editarEstudiante'])->name('editarEstudiante');
     Route::get('/datosDashboard', [AdminController::class, 'datosDashboard'])->name('datosDashboard');
     Route::get('/estadisticaData', [AdminController::class, 'estadisticaData'])->name('estadisticaData');
+    Route::get('/info-colegio', [AdminController::class, 'infoColegio'])->name('infoColegio');
+    Route::post('/editar-info-colegio', [AdminController::class, 'editarInfoColegio'])->name('editarInfoColegio');
 
 
     Route::get('/foros', [ForosController::class, 'foros'])->name('foros');
